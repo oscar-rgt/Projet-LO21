@@ -1,0 +1,10 @@
+*.vsidx
+.vs/Projet-LO21/v17/.suo
+*.db
+*.db-shm
+*.db-wal
+*.opendb
+*.ipch
+*.vcxproj
+*.user
+*.filters
