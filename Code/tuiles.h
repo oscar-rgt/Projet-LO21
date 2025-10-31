@@ -1,15 +1,11 @@
-#pragma once
 #include <iostream>
 #include <cstring>
 
-typedef enum { Caserne,
-Ville
-//....
-} typeTuile;
+typedef enum{1 2 3} Orientation;
 
 class Tuile {
 private :
-	int id;
-	typeTuile type;
-	//....
+	int id, niveau;
+	Orientation orientation;
+	hexagone hexagones[3];
 };
