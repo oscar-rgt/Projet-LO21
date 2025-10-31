@@ -11,7 +11,7 @@ private:
 	Type type;
 	bool recouvert;
 
-	Hexagone(Type t, int e = 0, int n = 1, bool r = false) : type(t), etoiles(e), niveau(n), recouvert(r) {};
+	Hexagone(Type t, int e = 0, int n = 1, bool r = false);
 	~Hexagone() {}
 	Hexagone(const Hexagone& h) = delete;
 	Hexagone& operator=(const Hexagone&) = delete;
