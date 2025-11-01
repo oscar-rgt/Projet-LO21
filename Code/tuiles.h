@@ -19,5 +19,5 @@ private :
 
 	int getId() const { return id; }
 	const Hexagone& getHexagone(int i) const { return hexagones[i]; }
-	Orientation getOrientation() const { return Orientation; }
+	Orientation getOrientation() const { return orientation; }
 };
