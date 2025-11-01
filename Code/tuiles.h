@@ -19,10 +19,5 @@ private :
 
 	int getId() const { return id; }
 	const Hexagone& getHexagone(int i) const { return hexagones[i]; }
-	Orientation getOrientation() const { return orientation; }
-
-public:
-	void affiche();
-	Tuile(int i, const Hexagone& h1, const Hexagone& h2, const Hexagone& h3);
-	~Tuile() {}
+	Orientation getOrientation() const { return Orientation; }
 };
