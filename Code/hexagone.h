@@ -1,6 +1,13 @@
 #include <iostream>
 #include <cstring>
 
+class HexaException {
+	string info;
+public:
+	HexaException(const string& s) :info(s){}
+	const string& getInfo() const { return info; }
+};
+
 
 typedef enum { Habitation, Marche, Caserne, Temple, Jardin, Place } Type;
 
@@ -20,4 +27,6 @@ private:
 	Type getType() const { return type; }
 	int getEtoiles() const { return etoiles; }
 	int getNiveau() const { return niveau; }
+	bool est_recouvert() const { return r; }
+	void recouvrir(bool r);
 };
