@@ -1,5 +1,10 @@
+
 #include <iostream>
-#include <cstring>
+#include <string>
+#include <cstdio>
+#ifndef HEXAGONE_H
+#define HEXAGONE_H
+using namespace std;
 
 class HexaException {
 	string info;
@@ -32,7 +37,7 @@ private:
 	
 
 public:
-	Hexagone(Type t, int n = 1, bool r = false, int e = 0);
+	Hexagone(Type t, int n = 1, bool r = false, int e=0);
 	Hexagone& operator=(const Hexagone&) = default;
 	Hexagone(const Hexagone& h) = default;
 	Hexagone() = default;
@@ -40,3 +45,5 @@ public:
 
     void affiche();
 };
+
+#endif // HEXAGONE_H

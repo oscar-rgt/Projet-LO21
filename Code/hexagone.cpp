@@ -5,7 +5,7 @@
 using namespace std;
 
 
-Hexagone::Hexagone(Type t, int n = 1, bool r = false, int e = 0) : type(t), niveau(n), recouvert(r) {
+Hexagone::Hexagone(Type t, int n, bool r, int e) : type(t), niveau(n), recouvert(r) {
 	if (t == Place) {
 		etoiles = e;
 	}
