@@ -1,28 +1,7 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\",
-  "Documents": [
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Code\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\tuiles.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Code\\tuiles.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\hexagone.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Code\\hexagone.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\tuiles.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Code\\tuiles.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\hexagone.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:Code\\hexagone.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    }
-  ],
+  "Documents": [],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
@@ -30,77 +9,11 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": -1,
           "Children": [
-            {
-              "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "main.cpp",
-              "DocumentMoniker": "C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\main.cpp",
-              "RelativeDocumentMoniker": "Code\\main.cpp",
-              "ToolTip": "C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\main.cpp",
-              "RelativeToolTip": "Code\\main.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAMAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-11-01T11:47:29.233Z",
-              "IsPinned": true,
-              "EditorCaption": ""
-            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "hexagone.cpp",
-              "DocumentMoniker": "C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\hexagone.cpp",
-              "RelativeDocumentMoniker": "Code\\hexagone.cpp",
-              "ToolTip": "C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\hexagone.cpp",
-              "RelativeToolTip": "Code\\hexagone.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-10-31T15:53:04.826Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "hexagone.h",
-              "DocumentMoniker": "C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\hexagone.h",
-              "RelativeDocumentMoniker": "Code\\hexagone.h",
-              "ToolTip": "C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\hexagone.h",
-              "RelativeToolTip": "Code\\hexagone.h",
-              "ViewState": "AgIAABYAAAAAAAAAAAAewCUAAAAWAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-10-31T15:53:16.334Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "tuiles.cpp",
-              "DocumentMoniker": "C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\tuiles.cpp",
-              "RelativeDocumentMoniker": "Code\\tuiles.cpp",
-              "ToolTip": "C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\tuiles.cpp",
-              "RelativeToolTip": "Code\\tuiles.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-10-31T15:33:20.647Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "tuiles.h",
-              "DocumentMoniker": "C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\tuiles.h",
-              "RelativeDocumentMoniker": "Code\\tuiles.h",
-              "ToolTip": "C:\\Users\\2005a\\Desktop\\UTC\\LO21\\Projet\\Projet-LO21\\Code\\tuiles.h",
-              "RelativeToolTip": "Code\\tuiles.h",
-              "ViewState": "AgIAAAUAAAAAAAAAAAAewA0AAAAXAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-10-31T15:33:17.907Z",
-              "EditorCaption": ""
             }
           ]
         }
