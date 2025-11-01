@@ -7,6 +7,6 @@
 *.ipch
 *.suo
 projet/.vs/projet/v17/DocumentLayout.json
-#*.vcxproj
-#*.filters
+*.vcxproj
+*.filters
 *.user
