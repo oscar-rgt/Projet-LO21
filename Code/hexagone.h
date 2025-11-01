@@ -14,6 +14,7 @@ typedef enum { Habitation, Marche, Caserne, Temple, Jardin, Place } Type;
 
 class Hexagone {
 private:
+	friend class Tuiles;
 	int niveau, etoiles;
 	Type type;
 	bool recouvert;

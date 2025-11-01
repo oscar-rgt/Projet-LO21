@@ -4,7 +4,7 @@
 
 typedef enum{1 2 3} Orientation;
 
-class Tuile : public Hexagone {
+class Tuile{
 private :
 	int id;
 	Orientation orientation;

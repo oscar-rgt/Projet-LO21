@@ -11,7 +11,7 @@ Hexagone::Hexagone(Type t, int n = 1, bool r = false, int e = 0) : type(t), nive
 
 void Hexagone::recouvrir(bool r) {
 	if (est_recouvert()) {
-		throw HexaException("Hexagone deja recouvert");-
+		throw HexaException("Hexagone deja recouvert");
 	}
 	recouvert = r;
 }
