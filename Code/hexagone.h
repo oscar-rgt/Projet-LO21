@@ -22,11 +22,9 @@ private:
 	~Hexagone() {}
 	Hexagone(const Hexagone& h) = delete;
 	Hexagone& operator=(const Hexagone&) = delete;
-	
-
 	Type getType() const { return type; }
 	int getEtoiles() const { return etoiles; }
 	int getNiveau() const { return niveau; }
-	bool est_recouvert() const { return r; }
+	bool est_recouvert() const { return recouvert; }
 	void recouvrir(bool r);
 };
