@@ -2,6 +2,8 @@
 #include <cstring>
 #include "hexagone.h"
 
+using namespace std;
+
 
 Hexagone::Hexagone(Type t, int n = 1, bool r = false, int e = 0) : type(t), niveau(n), recouvert(r) {
 	if (t == Place) {
@@ -14,4 +16,8 @@ void Hexagone::recouvrir(bool r) {
 		throw HexaException("Hexagone deja recouvert");
 	}
 	recouvert = r;
+}
+
+void Hexagone::affiche() {
+	cout << " / \\\n| a |\n \\ /";
 }

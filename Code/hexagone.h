@@ -19,13 +19,24 @@ private:
 	Type type;
 	bool recouvert;
 
-	Hexagone(Type t, int e = 0, int n = 1, bool r = false);
-	~Hexagone() {}
-	Hexagone(const Hexagone& h) = delete;
-	Hexagone& operator=(const Hexagone&) = delete;
+	
+	
+	
+	
 	Type getType() const { return type; }
 	int getEtoiles() const { return etoiles; }
 	int getNiveau() const { return niveau; }
 	bool est_recouvert() const { return recouvert; }
 	void recouvrir(bool r);
+
+	
+
+public:
+	Hexagone(Type t, int n = 1, bool r = false, int e = 0);
+	Hexagone& operator=(const Hexagone&) = default;
+	Hexagone(const Hexagone& h) = default;
+	Hexagone() = default;
+	~Hexagone() {}
+
+    void affiche();
 };
