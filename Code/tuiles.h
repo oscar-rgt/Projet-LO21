@@ -1,10 +1,13 @@
 #include <iostream>
 #include <cstring>
-#include "Hexagone.h"
+#include "hexagone.h"
 
 using namespace std;
 
 enum Orientation {N, SE, SO};
+
+
+
 
 class Tuile{
 private :
@@ -18,10 +21,14 @@ private :
 	Tuile& operator=(const Tuile& t) = delete;
 
 	int getId() const { return id; }
-	const Hexagone& getHexagone(int i) const { return hexagones[i]; }
+	
 	Orientation getOrientation() const { return orientation; }
 public:
+	const Hexagone& getHexagone(int i) const { return hexagones[i]; }
 	void affiche();
 	Tuile(int i, const Hexagone& h1, const Hexagone& h2, const Hexagone& h3);
 	~Tuile() {}
 };
+
+
+void Quadrillage();

@@ -6,13 +6,11 @@ using namespace std;
 
 int main() {
 	try {
-		Hexagone h1(Temple);
+		Hexagone h1(Place, 1, false, 3);
 		Hexagone h2(Jardin);
 		Hexagone h3(Habitation);
 		Tuile t1(0, h1, h2, h3);
-
-		t1.affiche();
-
+		Quadrillage();
 	}
 	catch (const HexaException& e) {
 		cout << "erreur ; " << e.getInfo();

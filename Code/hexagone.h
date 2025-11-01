@@ -23,27 +23,23 @@ private:
 	int niveau, etoiles;
 	Type type;
 	bool recouvert;
-
-	
-	
-	
-	
 	Type getType() const { return type; }
-	int getEtoiles() const { return etoiles; }
 	int getNiveau() const { return niveau; }
 	bool est_recouvert() const { return recouvert; }
 	void recouvrir(bool r);
+	int getEtoiles() const { return etoiles; }
 
 	
 
 public:
+	
 	Hexagone(Type t, int n = 1, bool r = false, int e=0);
 	Hexagone& operator=(const Hexagone&) = default;
 	Hexagone(const Hexagone& h) = default;
 	Hexagone() = default;
 	~Hexagone() {}
 
-    void affiche();
+    void affiche(int i);
 };
 
 #endif // HEXAGONE_H
