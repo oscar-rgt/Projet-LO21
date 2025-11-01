@@ -19,3 +19,10 @@ private :
 	const Hexagone& getHexagone(int i) const { return hexagones[i]; }
 	Orientation getOrientation() const { return Orientation; }
 };
+
+class Pioche {
+private : 
+	Tuile* tab[61];
+public:
+	Pioche();
+};
