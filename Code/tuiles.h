@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 #include <cstring>
 #include "hexagone.h"
@@ -5,9 +7,6 @@
 using namespace std;
 
 enum Orientation {N, SE, SO};
-
-
-
 
 class Tuile{
 private :
@@ -30,6 +29,3 @@ public:
 };
 
 
-void Quadrillage();
-string remplirQuadrillage(string old, int ligne, Tuile& t, int emplacement[6][4]);
-int place_libre(int ligne, int emplacement[6][4]);
