@@ -39,7 +39,7 @@ public:
 	Hexagone() = default;
 	~Hexagone() {}
 
-    void affiche(int i);
+    char affiche();
 };
 
 #endif // HEXAGONE_H

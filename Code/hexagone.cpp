@@ -18,32 +18,26 @@ void Hexagone::recouvrir(bool r) {
 	recouvert = r;
 }
 
-void Hexagone::affiche(int i) {
+char Hexagone::affiche() {
 	// Habitation, Marche, Caserne, Temple, Jardin, Place
-	string s = "";
-	for (int j = 0; j < i; j++) {
-		s += " ";
-	}
-	cout << s <<" / \\\n" << s << "| ";
 	switch (type) {
 	case Habitation:
-		cout << "H";
+		return 'H';
 		break;
 	case Marche:
-		cout << "M";
+		return 'M';
 		break;
 	case Caserne:
-		cout << "C";
+		return 'C';
 		break;
 	case Temple:
-		cout << "T";
+		return 'T';
 		break;
 	case Jardin:
-		cout << "J";
+		return 'J';
 		break;
 	case Place:
-		cout << getEtoiles();
+		return '0' + getEtoiles();
 		break;
 	}
-	cout << " | \n" << s << " \\ / ";
 }

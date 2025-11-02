@@ -3,8 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{07C06A9B-3CBC-4D64-91BA-FD803FF65BEE}|Code\\Code.vcxproj|C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{07C06A9B-3CBC-4D64-91BA-FD803FF65BEE}|Code\\Code.vcxproj|solutionrelative:Code\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{07C06A9B-3CBC-4D64-91BA-FD803FF65BEE}|Code\\Code.vcxproj|C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\tuiles.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{07C06A9B-3CBC-4D64-91BA-FD803FF65BEE}|Code\\Code.vcxproj|solutionrelative:Code\\tuiles.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{07C06A9B-3CBC-4D64-91BA-FD803FF65BEE}|Code\\Code.vcxproj|C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\tuiles.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{07C06A9B-3CBC-4D64-91BA-FD803FF65BEE}|Code\\Code.vcxproj|solutionrelative:Code\\tuiles.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{07C06A9B-3CBC-4D64-91BA-FD803FF65BEE}|Code\\Code.vcxproj|C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\hexagone.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
@@ -13,14 +21,6 @@
     {
       "AbsoluteMoniker": "D:0:0:{07C06A9B-3CBC-4D64-91BA-FD803FF65BEE}|Code\\Code.vcxproj|C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\hexagone.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{07C06A9B-3CBC-4D64-91BA-FD803FF65BEE}|Code\\Code.vcxproj|solutionrelative:Code\\hexagone.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{07C06A9B-3CBC-4D64-91BA-FD803FF65BEE}|Code\\Code.vcxproj|C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{07C06A9B-3CBC-4D64-91BA-FD803FF65BEE}|Code\\Code.vcxproj|solutionrelative:Code\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{07C06A9B-3CBC-4D64-91BA-FD803FF65BEE}|Code\\Code.vcxproj|C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\tuiles.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{07C06A9B-3CBC-4D64-91BA-FD803FF65BEE}|Code\\Code.vcxproj|solutionrelative:Code\\tuiles.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -30,7 +30,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 5,
+          "SelectedChildIndex": 3,
           "Children": [
             {
               "$type": "Bookmark",
@@ -38,39 +38,39 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "main.cpp",
-              "DocumentMoniker": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\main.cpp",
-              "RelativeDocumentMoniker": "Code\\main.cpp",
-              "ToolTip": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\main.cpp",
-              "RelativeToolTip": "Code\\main.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAaAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-11-01T16:03:20.851Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 2,
-              "Title": "hexagone.cpp",
-              "DocumentMoniker": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\hexagone.cpp",
-              "RelativeDocumentMoniker": "Code\\hexagone.cpp",
-              "ToolTip": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\hexagone.cpp",
-              "RelativeToolTip": "Code\\hexagone.cpp",
-              "ViewState": "AgIAAB4AAAAAAAAAAAAAABoAAAAgAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-11-01T15:56:50.385Z",
+              "Title": "tuiles.h",
+              "DocumentMoniker": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\tuiles.h",
+              "RelativeDocumentMoniker": "Code\\tuiles.h",
+              "ToolTip": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\tuiles.h",
+              "RelativeToolTip": "Code\\tuiles.h",
+              "ViewState": "AgIAAA8AAAAAAAAAAAAAABoAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-11-01T16:01:49.078Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
+              "Title": "tuiles.cpp",
+              "DocumentMoniker": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\tuiles.cpp",
+              "RelativeDocumentMoniker": "Code\\tuiles.cpp",
+              "ToolTip": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\tuiles.cpp",
+              "RelativeToolTip": "Code\\tuiles.cpp",
+              "ViewState": "AgIAADYAAAAAAAAAAAAAAEUAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-11-01T18:20:51.805Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
               "Title": "hexagone.h",
               "DocumentMoniker": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\hexagone.h",
               "RelativeDocumentMoniker": "Code\\hexagone.h",
               "ToolTip": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\hexagone.h",
               "RelativeToolTip": "Code\\hexagone.h",
-              "ViewState": "AgIAABgAAAAAAAAAAAAAACkAAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAACEAAAAAAAAAAAAAACkAAAAEAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2025-11-01T15:55:13.327Z",
               "EditorCaption": ""
@@ -78,27 +78,48 @@
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "tuiles.h",
-              "DocumentMoniker": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\tuiles.h",
-              "RelativeDocumentMoniker": "Code\\tuiles.h",
-              "ToolTip": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\tuiles.h",
-              "RelativeToolTip": "Code\\tuiles.h",
-              "ViewState": "AgIAABsAAAAAAAAAAAAqwCEAAAATAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
-              "WhenOpened": "2025-11-01T16:01:49.078Z",
+              "Title": "hexagone.cpp",
+              "DocumentMoniker": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\hexagone.cpp",
+              "RelativeDocumentMoniker": "Code\\hexagone.cpp",
+              "ToolTip": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\hexagone.cpp",
+              "RelativeToolTip": "Code\\hexagone.cpp",
+              "ViewState": "AgIAABIAAAAAAAAAAAAAACcAAAAMAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-11-01T15:56:50.385Z",
               "EditorCaption": ""
-            },
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "FloatingWindowState": {
+        "Id": "3251bc06-4eac-42ce-8a47-34536a7174ad",
+        "Display": 1,
+        "X": -556,
+        "Y": 404,
+        "Width": 1578,
+        "Height": 738,
+        "WindowState": 2
+      },
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "tuiles.cpp",
-              "DocumentMoniker": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\tuiles.cpp",
-              "RelativeDocumentMoniker": "Code\\tuiles.cpp",
-              "ToolTip": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\tuiles.cpp*",
-              "RelativeToolTip": "Code\\tuiles.cpp*",
-              "ViewState": "AgIAABAAAAAAAAAAAAAqwCUAAAAaAAAAAAAAAA==",
+              "Title": "main.cpp",
+              "DocumentMoniker": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\main.cpp",
+              "RelativeDocumentMoniker": "Code\\main.cpp",
+              "ToolTip": "C:\\Users\\loulo\\Documents\\GitHub\\Projet-LO21\\Code\\main.cpp*",
+              "RelativeToolTip": "Code\\main.cpp*",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAawBEAAAAhAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2025-11-01T18:20:51.805Z",
+              "WhenOpened": "2025-11-01T16:03:20.851Z",
               "EditorCaption": ""
             }
           ]

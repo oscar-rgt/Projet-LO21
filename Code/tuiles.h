@@ -20,15 +20,16 @@ private :
 	Tuile(const Tuile& t) = delete;
 	Tuile& operator=(const Tuile& t) = delete;
 
-	int getId() const { return id; }
-	
-	Orientation getOrientation() const { return orientation; }
+	int getId() const { return id; }	
 public:
-	const Hexagone& getHexagone(int i) const { return hexagones[i]; }
+	Orientation getOrientation() const { return orientation; }
+	Hexagone& getHexagone(int i) { return hexagones[i]; }
 	void affiche();
-	Tuile(int i, const Hexagone& h1, const Hexagone& h2, const Hexagone& h3);
+	Tuile(int i,Hexagone& h1,Hexagone& h2,Hexagone& h3);
 	~Tuile() {}
 };
 
 
 void Quadrillage();
+string remplirQuadrillage(string old, int ligne, Tuile& t, int emplacement[6][4]);
+int place_libre(int ligne, int emplacement[6][4]);
