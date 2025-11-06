@@ -15,4 +15,5 @@ public:
     void ajouterPoints(int delta);
     void ajouterPierre(int n=1);
     bool utiliserPierre(int n=1);
+    void ajouterPierres(int nbRecouverts);
 };
