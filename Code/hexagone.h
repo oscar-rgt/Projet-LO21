@@ -24,7 +24,7 @@ private:
 	Type type;
 	bool recouvert;
 	void recouvrir(bool r);
-	Hexagone& operator=(const Hexagone&) = default;
+	Hexagone& operator=(const Hexagone& h) = default;
 
 public:
 	Hexagone(const Hexagone& h) = default;
