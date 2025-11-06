@@ -14,12 +14,10 @@ private :
 	Orientation orientation;
 	Hexagone hexagones[3];
 	unsigned int prix;
-	
 	Tuile(const Tuile& t) = delete;
 	Tuile& operator=(const Tuile& t) = delete;
-
-	int getId() const { return id; }	
 public:
+	unsigned int getId() const { return id; }
 	Orientation getOrientation() const { return orientation; }
 	Hexagone& getHexagone(int i) { return hexagones[i]; }
 	unsigned int getPrix() const { return prix; }
