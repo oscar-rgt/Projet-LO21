@@ -29,13 +29,15 @@ class Cité {
 
 class Tuile {
   -orientation : Orientation
-  -id : int
+  -id : unsigned int
+  -prix : unsigned int
   -hexagone[3] : Hexagone
-  -Tuile(i:int, h1:Hexagone&, h2:Hexagone&, h3:Hexagone&, o: Orientation)
+  -Tuile(i:unsigned int, h1:Hexagone&, h2:Hexagone&, h3:Hexagone&, o: Orientation, p:unsigned int)
   -~Tuile()
   +getOrientation() : Orientation const
   +getHexagone() : Hexagone&
-  +getId() : int const
+  +getId() : unsigned int const
+  +getPrix() : unsigned int const
 }
 
 class Hexagone {
