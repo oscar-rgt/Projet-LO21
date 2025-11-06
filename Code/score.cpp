@@ -68,3 +68,17 @@ int calcul_points(ScoreInput centre, Type voisins[6]) {
     return score;
 }
 
+#include "score.h"
+
+// ...
+ScoreInput s;
+s.type = t.getHexagone(0).getType(); // ou celui du centre
+s.niveau = t.getHexagone(0).getNiveau();
+s.etoiles = t.getHexagone(0).getEtoiles();
+
+// tableau des 6 voisins du centre
+Type voisins[6] = { ... }; // à remplir selon la grille autour
+
+int gain = calcul_points(s, voisins);
+cout << "→ Cette pose rapporte " << gain << " points !" << endl;
+
