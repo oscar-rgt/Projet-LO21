@@ -1,0 +1,101 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' =============================
+' Classes conceptuelles
+' =============================
+
+class Partie {
+  id : int
+  mode : enum = {solo,multi}
+  nbJoueurs : int[1..4]
+}
+
+class Pile {
+  id : int
+  nbTuiles : int
+}
+
+class Joueur {
+  nom : str
+  score : int
+  pierres : int
+}
+
+class Cité {
+}
+
+
+
+class Tuile {
+  -orientation : Orientation
+  -id : int
+  -hexagone[3] : Hexagone
+  -Tuile(i:int, h1:Hexagone&, h2:Hexagone&, h3:Hexagone&, o: Orientation)
+  -~Tuile()
+  +getOrientation() : Orientation const
+  +getHexagone() : Hexagone&
+  +getId() : int const
+}
+
+class Hexagone {
+  -niveau: int
+  -etoiles: int
+  -type: Type
+  -recouvert: bool
+  -Hexagone(t: Type, n: int, r: bool, e: int)
+  -Hexagone()
+  -recouvrir(r:bool)
+  -Hexagone(const Hexagone& h)
+  -~Hexagone()
+  +getType() : Type const
+  +getNiveau() : int const
+  +est_recouvert() : bool const
+  +getEtoiles() : int const
+  +affiche()
+  +operator=(const Hexagone&) : Hexagone& 
+  
+  
+}
+
+enum Orientation{
+  N
+  SE
+  SO
+}
+
+enum Type{
+  Habitation
+  Marche
+  Caserne
+  Temple
+  Jardin
+  Place
+}
+
+
+class Variante {
+  nom : str
+  regle : str
+}
+
+class IllustreConstructeur {
+  difficulte : enum={facile,moyen,difficile}
+}
+
+' =============================
+' Relations
+' =============================
+
+Partie "1" -- "1..*" Pile : est composée de >
+Partie "1" -- "1..4" Joueur : est jouée par >
+Partie "0..*" -- "0..*" Variante : est jouée avec >
+Partie "1" -- "0..1" IllustreConstructeur : utilise >
+
+Joueur "1" -- "1" Cité : construit >
+Cité "1" -- "0..*" Tuile : contient >
+
+Hexagone "3"*-up-"1"Tuile : est composé de <
+
+
+@enduml
