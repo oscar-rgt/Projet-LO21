@@ -30,13 +30,15 @@ private:
 	int getEtoiles() const { return etoiles; }
 
 	
+	
+	
+	
 
 public:
-	
-	Hexagone(Type t, int n = 1, bool r = false, int e=0);
 	Hexagone& operator=(const Hexagone&) = default;
 	Hexagone(const Hexagone& h) = default;
 	Hexagone() = default;
+	Hexagone(Type t, int n = 1, bool r = false, int e = 0);
 	~Hexagone() {}
 
     char affiche();

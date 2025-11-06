@@ -10,7 +10,6 @@ enum Orientation {N, SE, SO};
 
 class Tuile{
 private :
-	friend class Hexagone;
 	int id;
 	Orientation orientation;
 	Hexagone hexagones[3];
