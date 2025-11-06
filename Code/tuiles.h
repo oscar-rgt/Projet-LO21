@@ -23,7 +23,7 @@ public:
 	Orientation getOrientation() const { return orientation; }
 	Hexagone& getHexagone(int i) { return hexagones[i]; }
 	void affiche();
-	Tuile(int i,Hexagone& h1,Hexagone& h2,Hexagone& h3);
+	Tuile(int i, Hexagone& h1, Hexagone& h2, Hexagone& h3) : id(i), orientation(N), hexagones{ h1, h2, h3 } {}
 	~Tuile() {}
 };
 
