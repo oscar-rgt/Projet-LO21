@@ -17,9 +17,22 @@ class Pile {
 }
 
 class Joueur {
-  nom : str
-  score : int
-  pierres : int
+  -nom : str
+  -score : int
+  -pierres : int
+  +Joueur(n : const std::string&)
+  +getNom() : std::string& const
+  +getPoints() : int const
+  +getPierre() : int const
+  +setPoints() : int
+  +ajouterPoints() : void
+  +utiliserPierre() : bool
+  +ajouterPierres() : void
+}
+
+class Score {
+  +calculPoints(h : Hexagone&, plateau : vector<vector<Hexagone>>&, ligne : int, colonne : int) : int
+  +calculScore(plateau : vector<vector<Hexagone>>&) : int
 }
 
 class Cité {
