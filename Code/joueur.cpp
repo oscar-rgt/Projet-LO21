@@ -39,3 +39,9 @@ bool Joueur::utiliserPierre(int n) {
     }
     return false;
 }
+
+void Joueur::ajouterPierres(int nbRecouverts) {
+    if (nbRecouverts > 0) {
+        pierres += nbRecouverts;
+    }
+}
