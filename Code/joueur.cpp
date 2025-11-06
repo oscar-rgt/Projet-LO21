@@ -24,7 +24,7 @@ void Joueur::setPoints(int p) {
 
 void Joueur::ajouterPoints(int delta) {
     points += delta;
-    if (points < 0) points = 0; // sécurité
+    if (points < 0) points = 0;
 }
 
 void Joueur::ajouterPierre(int n) {
