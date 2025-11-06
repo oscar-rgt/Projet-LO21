@@ -2,7 +2,7 @@
 #include <cstring>
 #include "tuiles.h"
 #include "hexagone.h"
-#include "placement.h"
+#include "quadrillage.h"
 
 using namespace std;
 

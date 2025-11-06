@@ -7,6 +7,7 @@ using namespace std;
 
 
 
+
 void Quadrillage();
 string remplirQuadrillage(string old, int ligne[3], int colonne[3], Tuile& t, int emplacement[6][4]);
 bool estBienPlace(int l[3], int c[3]);
