@@ -68,9 +68,6 @@ int calcul_points(ScoreInput centre, Type voisins[6]) {
     return score;
 }
 
-#include "score.h"
-
-// ...
 ScoreInput s;
 s.type = t.getHexagone(0).getType(); // ou celui du centre
 s.niveau = t.getHexagone(0).getNiveau();
