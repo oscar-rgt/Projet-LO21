@@ -1,10 +1,8 @@
 #include "joueur.h"
 
-// Constructeur
 Joueur::Joueur(const std::string& n)
     : nom(n), points(0), pierres(0) {}
 
-// === Accesseurs ===
 const std::string& Joueur::getNom() const {
     return nom;
 }
@@ -17,7 +15,6 @@ int Joueur::getPierres() const {
     return pierres;
 }
 
-// === Mutateurs / Actions ===
 void Joueur::setPoints(int p) {
     points = p;
 }
