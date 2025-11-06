@@ -34,6 +34,8 @@ class Tuile {
   -hexagone[3] : Hexagone
   -Tuile(i:unsigned int, h1:Hexagone&, h2:Hexagone&, h3:Hexagone&, o: Orientation, p:unsigned int)
   -~Tuile()
+  -operator=(h:const Hexagone&) : Hexagone&
+  +Hexagone(h:const Hexagone&)
   +getOrientation() : Orientation const
   +getHexagone() : Hexagone&
   +getId() : unsigned int const
@@ -48,14 +50,14 @@ class Hexagone {
   -Hexagone(t: Type, n: int, r: bool, e: int)
   -Hexagone()
   -recouvrir(r:bool)
-  -Hexagone(const Hexagone& h)
+  -operator=(h:const Hexagone&) : Hexagone& 
   -~Hexagone()
   +getType() : Type const
   +getNiveau() : int const
   +est_recouvert() : bool const
   +getEtoiles() : int const
   +affiche()
-  +operator=(const Hexagone&) : Hexagone& 
+  +Hexagone(h:const Hexagone&)
   
   
 }
