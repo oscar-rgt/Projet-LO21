@@ -112,7 +112,8 @@ Partie "1" -- "0..1" IllustreConstructeur : utilise >
 Joueur "1" -- "1" Cité : construit >
 Cité "1" -- "0..*" Tuile : contient >
 
-Hexagone "3"*-up-"1"Tuile : est composé de <
+Score --*Joueur
+Hexagone "3"-up-*"1"Tuile : est composé de <
 
 
 @enduml
