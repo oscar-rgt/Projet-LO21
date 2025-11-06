@@ -24,14 +24,14 @@ private:
 	Type type;
 	bool recouvert;
 	void recouvrir(bool r);
-	Hexagone(const Hexagone& h) = default;
+	Hexagone& operator=(const Hexagone&) = default;
 
 public:
+	Hexagone(const Hexagone& h) = default;
 	Type getType() const { return type; }
 	int getNiveau() const { return niveau; }
 	bool est_recouvert() const { return recouvert; }
 	int getEtoiles() const { return etoiles; }
-	Hexagone& operator=(const Hexagone&) = default;
 	Hexagone() = default;
 	Hexagone(Type t, int n = 1, bool r = false, int e = 0);
 	~Hexagone() {}
