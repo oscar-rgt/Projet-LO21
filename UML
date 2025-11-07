@@ -8,12 +8,22 @@ skinparam classAttributeIconSize 0
 class Partie {
   id : int
   mode : enum = {solo,multi}
-  nbJoueurs : int[1..4]
+  joueurs : Joueur[1..4]
+  pileTuiles : Pile*
+  +ajouterJoueur(j : Joueur*) : bool
+  +getId() : int
+  +getMode() : enum
+  +getNbJoueurs() : int
+  +getJoueur(index : int) : Joueur*
+  +getPile() : Pile*
+  +jouerTours() : void
 }
 
 class Pile {
   id : int
   nbTuiles : int
+  +Pile(id_ : int, nb : int)
+  +retirerTuile() : bool
 }
 
 class Joueur {
