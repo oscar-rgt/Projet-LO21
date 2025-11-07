@@ -1,23 +1,26 @@
-#include "partie.h"
+#include <iostream>
 #include "joueur.h"
 #include "pile.h"
+#include "partie.h"
 
 int main() {
-    // Créer une pile de tuiles
-    Pile pile;
-    pile.nbTuiles = 10;
 
-    // Créer une partie
-    Partie p(1, Partie::multi, &pile);
+    // créer une pile de 10 tuiles pour tester
+    Pile pile(1, 10);
 
-    // Créer quelques joueurs
+    // créer des joueurs
     Joueur j1("Alice");
     Joueur j2("Bob");
-    p.ajouterJoueur(&j1);
-    p.ajouterJoueur(&j2);
 
-    // Jouer la partie
-    p.jouerTours();
+    // créer une partie, mode multi, reliée à ta pile
+    Partie partie(42, Partie::multi, &pile);
+
+    // ajouter les joueurs
+    partie.ajouterJoueur(&j1);
+    partie.ajouterJoueur(&j2);
+
+    // lancer la partie
+    partie.jouerTours();
 
     return 0;
 }
