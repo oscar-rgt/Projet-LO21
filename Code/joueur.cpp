@@ -16,7 +16,7 @@ int Joueur::getPierres() const {
 }
 
 void Joueur::setPoints(int p) {
-    points = p;
+    points = (p >= 0) ? p : 0;
 }
 
 void Joueur::ajouterPoints(int delta) {
@@ -24,12 +24,12 @@ void Joueur::ajouterPoints(int delta) {
     if (points < 0) points = 0;
 }
 
-void Joueur::ajouterPierre(int n) {
+void Joueur::ajouterPierres(int n) {
     pierres += n;
     if (pierres < 0) pierres = 0;
 }
 
-bool Joueur::utiliserPierre(int n) {
+bool Joueur::utiliserPierres(int n) {
     if (pierres >= n) {
         pierres -= n;
         return true;
@@ -37,8 +37,8 @@ bool Joueur::utiliserPierre(int n) {
     return false;
 }
 
-void Joueur::ajouterPierres(int nbRecouverts) {
+void Joueur::ajouterPierresRecouvrement(int nbRecouverts) {
     if (nbRecouverts > 0) {
-        pierres += nbRecouverts;
+        ajouterPierres(nbRecouverts);
     }
 }
