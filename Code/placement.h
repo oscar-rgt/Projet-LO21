@@ -1,5 +1,6 @@
 #pragma once
 #include "tuiles.h"
+#include "hexagone.h"
 
 class Plateau {
 private :

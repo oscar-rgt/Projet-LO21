@@ -6,7 +6,6 @@
 #include <vector>
 #include <set>
 #include "tuiles.h"
-#include "hexagone.h"
 
 // Structure pour identifier une cellule hexagonale en 3D
 struct CelluleHex {
