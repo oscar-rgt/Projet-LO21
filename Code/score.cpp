@@ -1,209 +1,178 @@
-/* NUMERO 1
-#include "score.h"
-
-// compte combien de voisins d'un type donné
-int nb_voisins(Type voisins[6], Type t) {
-    int c = 0;
-    for (int i = 0; i < 6; i++)
-        if (voisins[i] == t) c++;
-    return c;
-}
-
-bool temple_valide(Type voisins[6]) {
-    // doit avoir 4 voisins de couleurs différentes (pas Place)
-    int count = 0;
-    Type couleurs[4];
-    for (int i = 0; i < 6; i++) {
-        if (voisins[i] != Place && voisins[i] != (Type)0) {
-            bool deja = false;
-            for (int j = 0; j < count; j++)
-                if (voisins[i] == couleurs[j]) deja = true;
-            if (!deja)
-                couleurs[count++] = voisins[i];
-        }
-    }
-    return (count >= 4);
-}
-
-int calcul_points(ScoreInput centre, Type voisins[6]) {
-    int base = 0;
-
-    // 1️⃣ règles selon le type
-    if (centre.type == Caserne) { // BLEU
-        int nbBleus = nb_voisins(voisins, Caserne);
-        if (nbBleus == 0)
-            base = 0;                // isolé
-        else if (nbBleus == 1)
-            base = 2;                // active son voisin + elle-même
-        else
-            base = 1;                // ajoute à un groupe
-    }
-
-    else if (centre.type == Marche) { // JAUNE
-        int nbJaunes = nb_voisins(voisins, Marche);
-        if (nbJaunes == 0)
-            base = +1;                // isolé
-        else
-            base = -nbJaunes;         // casse les isolés adjacents
-    }
-
-    else if (centre.type == Habitation) { // ROUGE
-        base = +1;
-    }
-
-    else if (centre.type == Temple) { // VIOLET
-        if (temple_valide(voisins))
-            base = +1;
-    }
-
-    else if (centre.type == Jardin) { // VERT
-        base = +2;
-    }
-
-    // 2️⃣ Multiplicateur étoiles
-    int score = base * centre.etoiles;
-
-    // 3️⃣ Bonus de hauteur (niveau - 1)
-    score += (centre.niveau - 1);
-
-    return score;
-}
-
-ScoreInput s;
-s.type = t.getHexagone(0).getType(); // ou celui du centre
-s.niveau = t.getHexagone(0).getNiveau();
-s.etoiles = t.getHexagone(0).getEtoiles();
-
-// tableau des 6 voisins du centre
-Type voisins[6] = { ... }; // à remplir selon la grille autour
-
-int gain = calcul_points(s, voisins);
-cout << "→ Cette pose rapporte " << gain << " points !" << endl;
-
-*/ 
-
-
-
-
-
-
-
-
-
-
-
-
-/* NUMERO 2
 #include "score.h"
 #include <iostream>
 
-using namespace std;
+//constructeur
+Score::Score(Joueur* j, Cité* c)
+    : joueur(j), cite(c), total(0)
+{
+    for (auto type : {TypeQuartier::Habitation, TypeQuartier::Marche,
+                      TypeQuartier::Caserne, TypeQuartier::Temple,
+                      TypeQuartier::Jardin}) {
+        pointsParType[type] = 0;
+    }
+}
 
-// Vérifie les voisins d’un hexagone sur le plateau
-vector<Hexagone*> getVoisins(vector<vector<Hexagone>>& plateau, int ligne, int colonne) {
-    vector<Hexagone*> voisins;
-    int maxL = plateau.size();
-    int maxC = plateau[0].size();
+// Getters
+int Score::getTotal() const {
+    return total;
+}
 
-    // Coordonnées voisines (approximation grille hexagonale)
-    int directions[6][2] = {
-        {-1, 0}, {+1, 0}, // haut / bas
-        {0, -1}, {0, +1}, // gauche / droite
-        {-1, +1}, {+1, -1} // diagonales
-    };
+int Score::getScoreType(TypeQuartier type) const {
+    auto it = pointsParType.find(type);
+    return (it != pointsParType.end()) ? it->second : 0;
+}
 
-    for (auto &d : directions) {
-        int nl = ligne + d[0];
-        int nc = colonne + d[1];
-        if (nl >= 0 && nl < maxL && nc >= 0 && nc < maxC) {
-            voisins.push_back(&plateau[nl][nc]);
+const Joueur* Score::getJoueur() const {
+    return joueur;
+}
+
+//score globale
+void Score::calculerScore() {
+    total = 0;
+
+    for (auto type : {TypeQuartier::Habitation, TypeQuartier::Marche,
+                      TypeQuartier::Caserne, TypeQuartier::Temple,
+                      TypeQuartier::Jardin}) {
+        int pts = calculerScoreType(type);
+        pointsParType[type] = pts;
+        total += pts;
+    }
+
+    joueur->setPoints(total);
+}
+
+//score par type
+int Score::calculerScoreType(TypeQuartier type) {
+    int score = 0;
+    int multiplicateur = 0;
+
+    // Récupère toutes les cases de la cité
+    const std::vector<Hexagone*>& hexas = cite->getHexagones();
+
+    // 1️⃣ Calcul du multiplicateur total pour ce type (étoiles)
+    for (auto* h : hexas) {
+        if (h->getType() == Type::Place) {
+            // On ajoute les étoiles de la couleur correspondante
+            // On suppose que getEtoiles() donne bien le nombre d’étoiles de cette place
+            // et qu’elle est associée à un type de quartier
+            // (ce lien doit être stocké ailleurs : à adapter selon ton implémentation)
+            // Ici, on suppose que chaque place a un "type associé" accessible via une méthode
+            // ex: h->getTypeAssocie()
+            if (h->getTypeAssocie() == type) {
+                multiplicateur += h->getEtoiles();
+            }
         }
     }
 
-    return voisins;
-}
+    // Si aucune étoile de ce type, score = 0 directement
+    if (multiplicateur == 0)
+        return 0;
 
+    // 2️⃣ Calcul des points bruts selon le type de quartier
+    switch (type) {
+        // -------------------------------------
+        case TypeQuartier::Habitation: {
+            // Trouver les groupes contigus d’habitations
+            // On utilise une exploration BFS/DFS pour repérer les groupes
+            std::vector<Hexagone*> visites;
+            int maxGroupe = 0;
 
-// Calcule le score d’un seul hexagone
-int calculPoints(Hexagone& h, vector<vector<Hexagone>>& plateau, int ligne, int colonne) {
-    if (h.est_recouvert()) return 0; // rien s’il est recouvert
+            for (auto* h : hexas) {
+                if (h->getType() == Type::Habitation &&
+                    std::find(visites.begin(), visites.end(), h) == visites.end()) {
 
-    int score = 0;
-    int niveau = h.getNiveau();
-    int etoiles = h.getEtoiles();
-    auto voisins = getVoisins(plateau, ligne, colonne);
+                    // Nouveau groupe
+                    std::vector<Hexagone*> pile = {h};
+                    int tailleGroupe = 0;
 
-    switch (h.getType()) {
+                    while (!pile.empty()) {
+                        Hexagone* actuel = pile.back();
+                        pile.pop_back();
 
-        case Habitation: {
-            // +1 par habitation dans le même groupe, multiplié par étoiles adjacentes
-            int nbH = 1;
-            for (auto v : voisins)
-                if (v->getType() == Habitation && !v->est_recouvert()) nbH++;
+                        if (std::find(visites.begin(), visites.end(), actuel) != visites.end())
+                            continue;
 
-            score = nbH * etoiles * niveau;
+                        visites.push_back(actuel);
+                        tailleGroupe++;
+
+                        for (auto* voisin : cite->getAdjacents(actuel)) {
+                            if (voisin->getType() == Type::Habitation &&
+                                std::find(visites.begin(), visites.end(), voisin) == visites.end()) {
+                                pile.push_back(voisin);
+                            }
+                        }
+                    }
+                    if (tailleGroupe > maxGroupe) maxGroupe = tailleGroupe;
+                }
+            }
+
+            score = maxGroupe * multiplicateur;
             break;
         }
 
-        case Marche: {
-            // +1 par couleur différente autour
-            int couleurs[5] = {0};
-            for (auto v : voisins)
-                if (!v->est_recouvert())
-                    couleurs[v->getType()] = 1;
-
-            int diversite = 0;
-            for (int i = 0; i < 5; i++) diversite += couleurs[i];
-
-            score = diversite * etoiles * niveau;
+        // -------------------------------------
+        case TypeQuartier::Marche: {
+            for (auto* h : hexas) {
+                if (h->getType() == Type::Marche) {
+                    std::vector<Type> typesAdjacents;
+                    for (auto* v : cite->getAdjacents(h)) {
+                        if (v->getType() != Type::Marche &&
+                            v->getType() != Type::Place) {
+                            if (std::find(typesAdjacents.begin(), typesAdjacents.end(), v->getType()) == typesAdjacents.end()) {
+                                typesAdjacents.push_back(v->getType());
+                            }
+                        }
+                    }
+                    score += (int)typesAdjacents.size();
+                }
+            }
+            score *= multiplicateur;
             break;
         }
 
-        case Caserne: {
-            // +1 si sur le bord
-            if (ligne == 0 || colonne == 0 || ligne == (int)plateau.size() - 1 || colonne == (int)plateau[0].size() - 1)
-                score = etoiles * niveau;
+        // -------------------------------------
+        case TypeQuartier::Caserne: {
+            for (auto* h : hexas) {
+                if (h->getType() == Type::Caserne) {
+                    bool isIsolated = true;
+                    for (auto* v : cite->getAdjacents(h)) {
+                        if (v->getType() == Type::Caserne) {
+                            isIsolated = false;
+                            break;
+                        }
+                    }
+                    if (isIsolated) score += 1;
+                }
+            }
+            score *= multiplicateur;
             break;
         }
 
-        case Temple: {
-            // +1 si entouré de 4 types différents
-            int types[6] = {0};
-            for (auto v : voisins)
-                if (!v->est_recouvert())
-                    types[v->getType()] = 1;
-
-            int count = 0;
-            for (int i = 0; i < 6; i++) count += types[i];
-            if (count >= 4)
-                score = etoiles * niveau;
+        // -------------------------------------
+        case TypeQuartier::Temple: {
+            for (auto* h : hexas) {
+                if (h->getType() == Type::Temple) {
+                    const auto& adj = cite->getAdjacents(h);
+                    if (adj.size() == 6) {
+                        score += 2;
+                    }
+                }
+            }
+            score *= multiplicateur;
             break;
         }
 
-        case Jardin: {
-            // +1 pour chaque jardin visible
-            score = etoiles * niveau;
+        // -------------------------------------
+        case TypeQuartier::Jardin: {
+            for (auto* h : hexas) {
+                if (h->getType() == Type::Jardin) {
+                    score += 1;
+                }
+            }
+            score *= multiplicateur;
             break;
         }
-
-        case Place:
-            // La place ne rapporte rien directement
-            score = 0;
-            break;
     }
 
     return score;
 }
-
-
-// Calcule le score total du plateau
-int calculScore(vector<vector<Hexagone>>& plateau) {
-    int total = 0;
-    for (int i = 0; i < (int)plateau.size(); i++) {
-        for (int j = 0; j < (int)plateau[i].size(); j++) {
-            total += calculPoints(plateau[i][j], plateau, i, j);
-        }
-    }
-    return total;
-}
-*/
