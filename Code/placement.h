@@ -1,15 +1,33 @@
 #pragma once
 #include "tuiles.h"
 #include "hexagone.h"
+#include <unordered_map>
+
+struct Coord { //Tuple de coordonnées 
+	int x, y, z;
+	Coord sudEst() { return { x,y + 1,z }; }
+	Coord sudOuest() { return { x+1 ,y + 1,z }; }
+	bool operator==(const Coord& other) { return x == other.x && y == other.y && z == other.z; }
+};
+
+struct CoordHash {
+	size_t operator()(const Coord& c) const noexcept {
+		size_t hx = std::hash<int>()(c.x);
+		size_t hy = std::hash<int>()(c.y);
+		size_t hz = std::hash<int>()(c.z);
+		// combine les trois hash (mélange simple et rapide)
+		return hx ^ (hy << 1) ^ (hz << 2);
+	}
+};
 
 class Plateau {
 private :
-	Tuile** tab; //Tuiles placées sur le plateau dans l'ordre de placement
-	Placement* coordonnees[3]; 
+	std::unordered_map<Coord, Hexagone&, CoordHash> carte; // Espace 3D de pointeurs vers des hexagones 
+	//  carte[{0, 0, 0}] = tuile0;
+
 public :
-	const Tuile** getTab() const { return tab; }
-	void placer(Tuile*);
-	Plateau();
+	void placer(Tuile* t, Coord c);
+	bool estLibre(Coord c) { return (carte.find(c) == carte.end()) }
 };
 
 class Placement {
