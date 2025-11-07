@@ -17,9 +17,32 @@ class Pile {
 }
 
 class Joueur {
-  nom : str
-  score : int
-  pierres : int
+  -nom : std::string
+  -points : int
+  -pierres : int
+  +Joueur(n : const std::string&)
+  +getNom() : const std::string&
+  +getPoints() : int
+  +getPierres() : int
+  +setPoints(p : int) : void
+  +ajouterPoints(delta : int) : void
+  +ajouterPierre(n : int = 1) : void
+  +utiliserPierre(n : int = 1) : bool
+  +ajouterPierresRecouvrement(nbRecouverts : int) : void
+}
+
+
+class Score {
+  -joueur : Joueur*
+  -cite : Cité*
+  -pointsParType : std::map<TypeQuartier,int>
+  -total : int
+  +Score(j : Joueur*, c : Cité*)
+  +calculerScore() : void
+  +calculerScoreType(type : TypeQuartier) : int
+  +getTotal() : int
+  +getScoreType(type : TypeQuartier) : int
+  +getJoueur() : const Joueur*
 }
 
 class Cité {
