@@ -46,133 +46,68 @@ int Score::calculerScoreType(TypeQuartier type) {
     int score = 0;
     int multiplicateur = 0;
 
-    // Récupère toutes les cases de la cité
+    // récupère tous les hexagones de la cité
     const std::vector<Hexagone*>& hexas = cite->getHexagones();
 
-    // 1️⃣ Calcul du multiplicateur total pour ce type (étoiles)
+    // calcul du multiplicateur avec les étoiles
     for (auto* h : hexas) {
-        if (h->getType() == Type::Place) {
-            // On ajoute les étoiles de la couleur correspondante
-            // On suppose que getEtoiles() donne bien le nombre d’étoiles de cette place
-            // et qu’elle est associée à un type de quartier
-            // (ce lien doit être stocké ailleurs : à adapter selon ton implémentation)
-            // Ici, on suppose que chaque place a un "type associé" accessible via une méthode
-            // ex: h->getTypeAssocie()
-            if (h->getTypeAssocie() == type) {
-                multiplicateur += h->getEtoiles();
-            }
+        if (h->getType() == Type::Place && h->getTypeAssocie() == type) {
+            multiplicateur += h->getEtoiles();
         }
     }
 
-    // Si aucune étoile de ce type, score = 0 directement
-    if (multiplicateur == 0)
-        return 0;
+    if (multiplicateur == 0) return 0; // pas d’étoile = pas de score
 
-    // 2️⃣ Calcul des points bruts selon le type de quartier
-    switch (type) {
-        // -------------------------------------
-        case TypeQuartier::Habitation: {
-            // Trouver les groupes contigus d’habitations
-            // On utilise une exploration BFS/DFS pour repérer les groupes
-            std::vector<Hexagone*> visites;
-            int maxGroupe = 0;
-
-            for (auto* h : hexas) {
-                if (h->getType() == Type::Habitation &&
-                    std::find(visites.begin(), visites.end(), h) == visites.end()) {
-
-                    // Nouveau groupe
-                    std::vector<Hexagone*> pile = {h};
-                    int tailleGroupe = 0;
-
-                    while (!pile.empty()) {
-                        Hexagone* actuel = pile.back();
-                        pile.pop_back();
-
-                        if (std::find(visites.begin(), visites.end(), actuel) != visites.end())
-                            continue;
-
-                        visites.push_back(actuel);
-                        tailleGroupe++;
-
-                        for (auto* voisin : cite->getAdjacents(actuel)) {
-                            if (voisin->getType() == Type::Habitation &&
-                                std::find(visites.begin(), visites.end(), voisin) == visites.end()) {
-                                pile.push_back(voisin);
-                            }
-                        }
-                    }
-                    if (tailleGroupe > maxGroupe) maxGroupe = tailleGroupe;
+    //cas par cas
+    for (auto* h : hexas) {
+        switch (type) {
+            case TypeQuartier::Habitation:
+                if (h->getType() == Type::Habitation) {
+                    score += 1;
                 }
-            }
+                break;
 
-            score = maxGroupe * multiplicateur;
-            break;
-        }
-
-        // -------------------------------------
-        case TypeQuartier::Marche: {
-            for (auto* h : hexas) {
+            case TypeQuartier::Marche:
                 if (h->getType() == Type::Marche) {
-                    std::vector<Type> typesAdjacents;
+                    int pointsAdj = 0;
                     for (auto* v : cite->getAdjacents(h)) {
-                        if (v->getType() != Type::Marche &&
-                            v->getType() != Type::Place) {
-                            if (std::find(typesAdjacents.begin(), typesAdjacents.end(), v->getType()) == typesAdjacents.end()) {
-                                typesAdjacents.push_back(v->getType());
-                            }
-                        }
+                        if (v->getType() != Type::Marche && v->getType() != Type::Place)
+                            pointsAdj++;
                     }
-                    score += (int)typesAdjacents.size();
+                    score += pointsAdj;
                 }
-            }
-            score *= multiplicateur;
-            break;
-        }
+                break;
 
-        // -------------------------------------
-        case TypeQuartier::Caserne: {
-            for (auto* h : hexas) {
+            case TypeQuartier::Caserne:
                 if (h->getType() == Type::Caserne) {
-                    bool isIsolated = true;
+                    bool isIsolee = true;
                     for (auto* v : cite->getAdjacents(h)) {
                         if (v->getType() == Type::Caserne) {
-                            isIsolated = false;
+                            isIsolee = false;
                             break;
                         }
                     }
-                    if (isIsolated) score += 1;
+                    if (isIsolee) score += 1;
                 }
-            }
-            score *= multiplicateur;
-            break;
-        }
+                break;
 
-        // -------------------------------------
-        case TypeQuartier::Temple: {
-            for (auto* h : hexas) {
+            case TypeQuartier::Temple:
                 if (h->getType() == Type::Temple) {
-                    const auto& adj = cite->getAdjacents(h);
-                    if (adj.size() == 6) {
+                    if (cite->getAdjacents(h).size() == 6)
                         score += 2;
-                    }
                 }
-            }
-            score *= multiplicateur;
-            break;
-        }
+                break;
 
-        // -------------------------------------
-        case TypeQuartier::Jardin: {
-            for (auto* h : hexas) {
-                if (h->getType() == Type::Jardin) {
+            case TypeQuartier::Jardin:
+                if (h->getType() == Type::Jardin)
                     score += 1;
-                }
-            }
-            score *= multiplicateur;
-            break;
+                break;
         }
     }
 
+    // appliquer le multiplicateur
+    score *= multiplicateur;
+
     return score;
 }
+
