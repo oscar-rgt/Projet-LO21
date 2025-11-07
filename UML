@@ -17,18 +17,20 @@ class Pile {
 }
 
 class Joueur {
-  -nom : str
-  -score : int
+  -nom : std::string
+  -points : int
   -pierres : int
   +Joueur(n : const std::string&)
-  +getNom() : std::string& const
-  +getPoints() : int const
-  +getPierre() : int const
-  +setPoints() : int
-  +ajouterPoints() : void
-  +utiliserPierre() : bool
-  +ajouterPierres() : void
+  +getNom() : const std::string&
+  +getPoints() : int
+  +getPierres() : int
+  +setPoints(p : int) : void
+  +ajouterPoints(delta : int) : void
+  +ajouterPierre(n : int = 1) : void
+  +utiliserPierre(n : int = 1) : bool
+  +ajouterPierresRecouvrement(nbRecouverts : int) : void
 }
+
 
 class Score {
   +calculPoints(h : Hexagone&, plateau : vector<vector<Hexagone>>&, ligne : int, colonne : int) : int
