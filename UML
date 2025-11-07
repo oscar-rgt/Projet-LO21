@@ -33,9 +33,18 @@ class Joueur {
 
 
 class Score {
-  +calculPoints(h : Hexagone&, plateau : vector<vector<Hexagone>>&, ligne : int, colonne : int) : int
-  +calculScore(plateau : vector<vector<Hexagone>>&) : int
+  -joueur : Joueur*
+  -cite : Cité*
+  -pointsParType : std::map<TypeQuartier,int>
+  -total : int
+  +Score(j : Joueur*, c : Cité*)
+  +calculerScore() : void
+  +calculerScoreType(type : TypeQuartier) : int
+  +getTotal() : int
+  +getScoreType(type : TypeQuartier) : int
+  +getJoueur() : const Joueur*
 }
+
 
 class Cité {
 }
