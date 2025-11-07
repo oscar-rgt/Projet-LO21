@@ -2,9 +2,9 @@
 #define PARTIE_H
 
 #include <array>
-#include <string>
 #include <iostream>
 #include "joueur.h"
+#include "pile.h"
 
 class Partie {
 public:
@@ -15,15 +15,17 @@ private:
     Mode mode;
     std::array<Joueur*, 4> joueurs;
     int nbJoueurs;
+    Pile* pileTuiles;
 
 public:
-    Partie(int id_, Mode m);
+    Partie(int id_, Mode m, Pile* pile);
     bool ajouterJoueur(Joueur* j);
     int getId() const;
     Mode getMode() const;
     int getNbJoueurs() const;
     Joueur* getJoueur(int index) const;
-    void jouerTours(int maxTours);
+    Pile* getPile() const;
+    void jouerTours();
 };
 
 #endif
