@@ -2,34 +2,38 @@
 #include "placement.h"
 #include "tuiles.h"
 
+std::vector<Coord> voisinsTuile(Coord c) {
+    return {
+        // Voisins de TOUTE une tuile selon le système even-r
+        {c.x - 1, c.y - 1, c.z}, {c.x, c.y - 1, c.z},
+        {c.x + 1, c.y, c.z},
+        {c.x + 1, c.y + 1, c.z}, {c.x + 1, c.y + 2, c.z},
+        {c.x, c.y + 2, c.z}, {c.x - 1, c.y + 2, c.z},
+        {c.x - 2, c.y + 1, c.z}, {c.x - 1, c.y, c.z}
+    };
+}
 void Plateau::placer(Tuile* t, Coord c){
 	if (!estLibre(c)||!estLibre(c.sudEst())||!estLibre(c.sudOuest())) { return; }
 	carte[c] = t->getHexagone(0);
 	carte[c.sudEst()] = t->getHexagone(1);
 	carte[c.sudOuest()] = t->getHexagone(2);
 	
-	if(c.z==1){
-        std::vector<Coord> voisins = {
-                // Voisins de TOUTE une tuile selon le systeme La disposition horizontale « even-r » décale les lignes paires vers la droite.
-                {c.x -1, c.y-1, c.z}, {c.x, c.y-1, c.z},
-                {c.x +1, c.y, c.z},
-                {c.x+1, c.y+1, c.z}, {c.x +1, c.y +2, c.z},
-                {c.x , c.y + 2, c.z}, {c.x-1, c.y + 2, c.z},
-                {c.x-2, c.y + 1, c.z }, {c.x-1, c.y, c.z }
-            };
-            
-            for (const auto& voisin : voisins) {
-                if (!estLibre(voisin)) {
-                    touchePlateau = true;
-                    break;
-                }
-            }
-            
-            if (!touchePlateau ) { 
-                printf("Placement impossible")
-                return; 
-            }
+	if(c.z == 1) {
+    bool touchePlateau = false;
+    std::vector<Coord> voisins = voisinsTuile(c);
+    
+    for (const auto& voisin : voisins) {
+        if (!estLibre(voisin)) {
+            touchePlateau = true;
+            break;
+        }
     }
+    
+    if (!touchePlateau) { 
+        printf("Placement impossible\n");
+        return; 
+    }
+}
     else {
     // Vérifier que chaque hexagone de la tuile est soutenu par un hexagone en dessous
     Coord dessous_c = {c.x, c.y, c.z - 1};
@@ -57,4 +61,5 @@ void Plateau::placer(Tuile* t, Coord c){
 }
 	
 }
+
 
