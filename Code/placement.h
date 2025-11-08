@@ -28,7 +28,7 @@ private :
 
 public :
 	void placer(Tuile* t, Coord c);
-	bool estLibre(Coord c) { return (carte.find(c) == carte.end()) }
+	bool estLibre(Coord c) { return (carte.find(c) == carte.end()); }
 };
 
 class Placement {
