@@ -6,67 +6,64 @@ skinparam classAttributeIconSize 0
 ' =============================
 
 class Partie {
-  id : int
-  mode : enum = {solo,multi}
-  joueurs : Joueur[1..4]
-  pileTuiles : Pile*
-  nbJoueurs : int
+  -id : int
+  +mode : enum = {solo,multi}
+  -joueurs : Joueur[1..4]
+  -nbJoueurs : int 
+  -pileTuiles : Pile*
+  +Partie(id_ : int, m : Mode, pile : Pile*)
   +ajouterJoueur(j : Joueur*) : bool
   +getId() : int
-  +getMode() : enum
+  +getMode() : Mode
   +getNbJoueurs() : int
-  +getJoueur(index : int) : Joueur*
-  +getPile() : Pile*
-  +jouerTours() : void
+  +getJoueur(index : int) : Joueur* const
+  +getPile() : Pile* const
+  +jouerTours()
 }
 
 class Pile {
-  id : int
-  nbTuiles : int
+  -id : int
+  -nbTuiles : int
   +Pile(id_ : int, nb : int)
   +retirerTuile() : bool
 }
 
 class Joueur {
-  -nom : std::string
+  -nom : string
   -points : int
   -pierres : int
-  +Joueur(n : const std::string&)
-  +getNom() : const std::string&
-  +getPoints() : int
-  +getPierres() : int
-  +setPoints(p : int) : void
-  +ajouterPoints(delta : int) : void
-  +ajouterPierre(n : int = 1) : void
-  +utiliserPierre(n : int = 1) : bool
-  +ajouterPierresRecouvrement(nbRecouverts : int) : void
+  +Joueur(n : const string&)
+  +getNom() : const string& const
+  +getPoints() : int const
+  +getPierres() : int const
+  +setPoints(p : int)
+  +ajouterPoints(delta : int)
+  +ajouterPierre(n : int)
+  +utiliserPierre(n : int) : bool
+  +ajouterPierresRecouvrement(nbRecouverts : int)
 }
 
 
 class Score {
   -joueur : Joueur*
-  -cite : Cité*
+  -cite : Cite*
   -pointsParType : map<TypeQuartier,int>
   -total : int
-  +Score(j : Joueur*, c : Cité*)
-  +calculerScore() : void
+  +Score(j : Joueur*, c : Cite*)
+  +calculerScore()
   +calculerScoreType(type : TypeQuartier) : int
-  +getTotal() : int
-  +getScoreType(type : TypeQuartier) : int
-  +getJoueur() : const Joueur*
+  +getTotal() : int const
+  +getScoreType(type : TypeQuartier) : int const
+  +getJoueur() : const Joueur* const
 }
 
-enum TypeQuartier {
-    Habitation,
-    Marche,
-    Caserne,
-    Temple,
-    Jardin
-}
 
-class Cité {
+class Cite {
+  -carte: map<Coord, Hexagone&, CoordHash>
+  -voisinsTuile(c : Coord) : vector<Coord>
+  +placer(t : Tuile*, c : Coord)
+  +estLibre(c : Coord) : bool 
 }
-
 
 
 class Tuile {
@@ -103,6 +100,18 @@ class Hexagone {
   
   
 }
+struct Coord{
+  x : int
+  y : int
+  z : int
+  sudOuest() : Coord 
+  sudEst() : Coord
+  operator==(other: const Coord&) : bool
+}
+
+struct CoordHash{
+  operator()(c: const Coord&) : size_t const 
+}
 
 enum Orientation{
   N
@@ -110,7 +119,8 @@ enum Orientation{
   SO
 }
 
-enum Type{
+enum TypeHexa{
+  Carriere
   Habitation
   Marche
   Caserne
@@ -119,6 +129,13 @@ enum Type{
   Place
 }
 
+enum TypeQuartier{
+  Habitation
+  Marche
+  Caserne
+  Temple
+  Jardin
+}
 
 class Variante {
   nom : str
@@ -132,17 +149,23 @@ class IllustreConstructeur {
 ' =============================
 ' Relations
 ' =============================
+Tuile ..> Orientation
+Hexagone ..> TypeHexa
+Score ..> TypeQuartier
+Cite ..> Coord
+Cite ..> CoordHash
+CoordHash ..> Coord
 
-Partie "1" -- "1..*" Pile : est composée de >
-Partie "1" -- "1..4" Joueur : est jouée par >
-Partie "0..*" -- "0..*" Variante : est jouée avec >
-Partie "1" -- "0..1" IllustreConstructeur : utilise >
 
-Joueur "1" -- "1" Cité : construit >
-Cité "1" -- "0..*" Tuile : contient >
+Partie *-right- "1..*" Pile : est composée de >
+Partie o-down- "1..4" Joueur : est jouée par >
+Partie o-left- "0..*" Variante : est jouée avec >
+Partie o-up- "0..1" IllustreConstructeur : utilise >
 
-Score --*Joueur
-Hexagone "3"-up-*"1"Tuile : est composé de <
+Joueur  *-- "1" Cite : possede >
+Cite "1" -- "0..*" Hexagone : contient >
+Score -left-*Joueur
+Hexagone "3"-left-*"1"Tuile : est composé de <
 
 
 @enduml
