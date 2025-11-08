@@ -44,12 +44,18 @@ void Cite::placer(Tuile* t, Coord c){
         printf("Placement impossible ");
         return;
     }
-    
+    // A revoir : un hexagone ne sait pas à quelle tuile il appartient => Pas de getTuile
+    ////////////////////////////////////////////////////////////////////////////////
     // Vérifier qu'elle est à cheval sur au moins 2 tuiles différentes
-    Tuile* tuile_dessous_c = carte[dessous_c].getTuile();
-    Tuile* tuile_dessous_sudEst = carte[dessous_sudEst].getTuile();
-    Tuile* tuile_dessous_sudOuest = carte[dessous_sudOuest].getTuile();
+    //Tuile* tuile_dessous_c = carte[dessous_c].getTuile();
+    //Tuile* tuile_dessous_sudEst = carte[dessous_sudEst].getTuile();
+    //Tuile* tuile_dessous_sudOuest = carte[dessous_sudOuest].getTuile();
+    ////////////////////////////////////////////////////////////////////////////////
     
+
+
+    //Plus rien ne fonctionne ici dcp
+    /*
     bool deuxTuilesDifferentes = (tuile_dessous_c != tuile_dessous_sudEst) || 
                                   (tuile_dessous_c != tuile_dessous_sudOuest) || 
                                   (tuile_dessous_sudEst != tuile_dessous_sudOuest);
@@ -57,7 +63,7 @@ void Cite::placer(Tuile* t, Coord c){
     if (!deuxTuilesDifferentes) {
         printf("Placement impossible ");
         return;
-    }
+    }*/
 }
 	
 }

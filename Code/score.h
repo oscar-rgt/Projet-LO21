@@ -4,7 +4,7 @@
 #include <map>
 #include "joueur.h"
 #include "hexagone.h"
-#include "cité.h"
+#include "placement.h"
 
 using namespace std;
 
@@ -19,12 +19,12 @@ enum class TypeQuartier {
 class Score {
 private:
     Joueur* joueur;                        
-    Cité*   cite;                          
+    Cite*   cite;                          
     map<TypeQuartier, int> pointsParType; 
     int total;
 
 public:
-    Score(Joueur* j, Cité* c);
+    Score(Joueur* j, Cite* c);
 
     void calculerScore();
     int calculerScoreType(TypeQuartier type);

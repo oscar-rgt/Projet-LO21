@@ -24,8 +24,6 @@ private:
 	Type type;
 	bool recouvert;
 	void recouvrir(bool r);
-	Hexagone& operator=(const Hexagone& h) = default;// pk private ? sinon:
-	friend class Plateau;
 
 public:
 	Hexagone(const Hexagone& h) = default;
@@ -35,6 +33,7 @@ public:
 	int getEtoiles() const { return etoiles; }
 	Hexagone() = default;
 	Hexagone(Type t, int n = 1, bool r = false, int e = 0);
+	Hexagone& operator=(const Hexagone& h) = default;// à voir pour mettre en private ?
 	~Hexagone() {}
 
     char affiche();

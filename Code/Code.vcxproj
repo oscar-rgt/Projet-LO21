@@ -20,14 +20,24 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="hexagone.cpp" />
+    <ClCompile Include="joueur.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="partie.cpp" />
+    <ClCompile Include="pile.cpp" />
     <ClCompile Include="placement.cpp" />
+    <ClCompile Include="quadrillage.cpp" />
+    <ClCompile Include="score.cpp" />
     <ClCompile Include="tuiles.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hexagone.h" />
+    <ClInclude Include="joueur.h" />
     <ClInclude Include="main.h" />
+    <ClInclude Include="partie.h" />
+    <ClInclude Include="pile.h" />
     <ClInclude Include="placement.h" />
+    <ClInclude Include="quadrillage.h" />
+    <ClInclude Include="score.h" />
     <ClInclude Include="tuiles.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
