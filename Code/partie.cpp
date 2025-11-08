@@ -1,5 +1,7 @@
 #include "partie.h"
 
+using namespace std; 
+
 Partie::Partie(int id_, Mode m, Pile* pile)
     : id(id_), mode(m), nbJoueurs(0), pileTuiles(pile)
 {
@@ -11,7 +13,7 @@ bool Partie::ajouterJoueur(Joueur* j) {
         joueurs[nbJoueurs++] = j;
         return true;
     } else {
-        std::cout << "Partie complète, impossible d'ajouter " << j->getNom() << std::endl;
+        cout << "Partie complète, impossible d'ajouter " << j->getNom() << endl;
         return false;
     }
 }
@@ -26,42 +28,42 @@ Joueur* Partie::getJoueur(int index) const {
 }
 Pile* Partie::getPile() const { return pileTuiles; }
 
-//joue automatiquement jusque la fin de la partie
+
 void Partie::jouerTours() {
     if(nbJoueurs == 0 || !pileTuiles) {
-        std::cout << "Erreur : pas de joueurs ou pas de pile de tuiles.\n";
+        cout << "Erreur : pas de joueurs ou pas de pile de tuiles.\n";
         return;
     }
 
     int tour = 1;
     int currentJoueur = 0;
 
-    std::cout << "=== Début de la partie ===\n";
+    cout << "=== Début de la partie ===\n";
 
     while(pileTuiles->nbTuiles > 0) {
         Joueur* j = joueurs[currentJoueur];
 
-        std::cout << "\nTour " << tour << " : " << j->getNom() << std::endl;
+        cout << "\nTour " << tour << " : " << j->getNom() << endl;
 
-        // Action automatique : poser une tuile fictive
-        std::cout << j->getNom() << " pose une tuile et gagne 1 point.\n";
+        // action automatique de poser une tuile -> a modifier
+        cout << j->getNom() << " pose une tuile et gagne 1 point.\n";
         j->ajouterPoints(1);
 
-        // Retirer une tuile de la pile
+        // retirer une tuile de la pile
         pileTuiles->nbTuiles--;
-        std::cout << "Tuiles restantes : " << pileTuiles->nbTuiles << std::endl;
+        cout << "Tuiles restantes : " << pileTuiles->nbTuiles << endl;
 
-        // Afficher score actuel
-        std::cout << "Score de " << j->getNom() << " : " << j->getPoints() << std::endl;
+        // afficher score actuel
+        cout << "Score de " << j->getNom() << " : " << j->getPoints() << endl;
 
-        // Joueur suivant
+        // joueur suivant
         currentJoueur = (currentJoueur + 1) % nbJoueurs;
         tour++;
     }
 
-    // Fin de partie
-    std::cout << "\n=== Fin de la partie ===\n";
+    // fin de partie
+    cout << "\n=== Fin de la partie ===\n";
     for(int i = 0; i < nbJoueurs; ++i) {
-        std::cout << joueurs[i]->getNom() << " : " << joueurs[i]->getPoints() << " points.\n";
+        cout << joueurs[i]->getNom() << " : " << joueurs[i]->getPoints() << " points.\n";
     }
 }
