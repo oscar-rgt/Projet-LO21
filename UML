@@ -10,6 +10,7 @@ class Partie {
   mode : enum = {solo,multi}
   joueurs : Joueur[1..4]
   pileTuiles : Pile*
+  nbJoueurs : int
   +ajouterJoueur(j : Joueur*) : bool
   +getId() : int
   +getMode() : enum
@@ -45,7 +46,7 @@ class Joueur {
 class Score {
   -joueur : Joueur*
   -cite : Cité*
-  -pointsParType : std::map<TypeQuartier,int>
+  -pointsParType : map<TypeQuartier,int>
   -total : int
   +Score(j : Joueur*, c : Cité*)
   +calculerScore() : void
@@ -55,6 +56,14 @@ class Score {
   +getJoueur() : const Joueur*
 }
 
+enum TypeQuartier {
+    Habitation,
+    Marche,
+    Caserne,
+    Temple,
+    Jardin
+}
+
 class Cité {
 }
 
@@ -62,13 +71,17 @@ class Cité {
 
 class Tuile {
   -orientation : Orientation
-  -id : int
+  -id : unsigned int
+  -prix : unsigned int
   -hexagone[3] : Hexagone
-  -Tuile(i:int, h1:Hexagone&, h2:Hexagone&, h3:Hexagone&, o: Orientation)
+  -Tuile(i:unsigned int, h1:Hexagone&, h2:Hexagone&, h3:Hexagone&, o: Orientation, p:unsigned int)
   -~Tuile()
+  -operator=(h:const Hexagone&) : Hexagone&
+  +Hexagone(h:const Hexagone&)
   +getOrientation() : Orientation const
   +getHexagone() : Hexagone&
-  +getId() : int const
+  +getId() : unsigned int const
+  +getPrix() : unsigned int const
 }
 
 class Hexagone {
@@ -79,14 +92,14 @@ class Hexagone {
   -Hexagone(t: Type, n: int, r: bool, e: int)
   -Hexagone()
   -recouvrir(r:bool)
-  -Hexagone(const Hexagone& h)
+  -operator=(h:const Hexagone&) : Hexagone& 
   -~Hexagone()
   +getType() : Type const
   +getNiveau() : int const
   +est_recouvert() : bool const
   +getEtoiles() : int const
   +affiche()
-  +operator=(const Hexagone&) : Hexagone& 
+  +Hexagone(h:const Hexagone&)
   
   
 }
@@ -128,7 +141,8 @@ Partie "1" -- "0..1" IllustreConstructeur : utilise >
 Joueur "1" -- "1" Cité : construit >
 Cité "1" -- "0..*" Tuile : contient >
 
-Hexagone "3"*-up-"1"Tuile : est composé de <
+Score --*Joueur
+Hexagone "3"-up-*"1"Tuile : est composé de <
 
 
 @enduml
