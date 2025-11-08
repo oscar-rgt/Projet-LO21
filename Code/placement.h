@@ -3,10 +3,10 @@
 #include "hexagone.h"
 #include <unordered_map>
 
-struct Coord { //Tuple de coordonnées 
+struct Coord { //Tuple de coordonnÃ©es 
 	int x, y, z;
-	Coord sudEst() { return { x,y + 1,z }; }
-	Coord sudOuest() { return { x+1 ,y + 1,z }; }
+	Coord sudOuest() { return { x,y + 1,z }; }
+	Coord sudEst() { return { x+1 ,y + 1,z }; }
 	bool operator==(const Coord& other) { return x == other.x && y == other.y && z == other.z; }
 };
 
@@ -15,7 +15,7 @@ struct CoordHash {
 		size_t hx = std::hash<int>()(c.x);
 		size_t hy = std::hash<int>()(c.y);
 		size_t hz = std::hash<int>()(c.z);
-		// combine les trois hash (mélange simple et rapide)
+		// combine les trois hash (mÃ©lange simple et rapide)
 		return hx ^ (hy << 1) ^ (hz << 2);
 	}
 };
