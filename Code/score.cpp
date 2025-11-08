@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-Score::Score(Joueur* j, Cité* c)
+Score::Score(Joueur* j, Cite* c)
     : joueur(j), cite(c), total(0)
 {
     for (auto type : {TypeQuartier::Habitation, TypeQuartier::Marche,
