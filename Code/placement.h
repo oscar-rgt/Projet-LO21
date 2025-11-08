@@ -3,6 +3,8 @@
 #include "hexagone.h"
 #include <unordered_map>
 
+using namespace std;
+
 struct Coord { //Tuple de coordonnées 
 	int x, y, z;
 	Coord sudOuest() { return { x,y + 1,z }; }
@@ -12,19 +14,19 @@ struct Coord { //Tuple de coordonnées
 
 struct CoordHash {
 	size_t operator()(const Coord& c) const noexcept {
-		size_t hx = std::hash<int>()(c.x);
-		size_t hy = std::hash<int>()(c.y);
-		size_t hz = std::hash<int>()(c.z);
+		size_t hx = hash<int>()(c.x);
+		size_t hy = hash<int>()(c.y);
+		size_t hz = hash<int>()(c.z);
 		// combine les trois hash (mélange simple et rapide)
 		return hx ^ (hy << 1) ^ (hz << 2);
 	}
 };
 
-class Plateau {
+class Cite {
 private :
-	std::unordered_map<Coord, Hexagone&, CoordHash> carte; // Espace 3D de pointeurs vers des hexagones 
+	unordered_map<Coord, Hexagone&, CoordHash> carte; // Espace 3D de pointeurs vers des hexagones 
 	//  carte[{0, 0, 0}] = tuile0;
-	std::vector<Coord> voisinsTuile(Coord c);
+	vector<Coord> voisinsTuile(Coord c);
 
 public :
 	void placer(Tuile* t, Coord c);
@@ -38,7 +40,7 @@ private:
 	int ligne;
 	int niveau;
 	Placement();
-	friend class Plateau;
+	friend class Cite;
 public:
 	int getCol() { return colonne; }
 	int getLi() { return ligne; }

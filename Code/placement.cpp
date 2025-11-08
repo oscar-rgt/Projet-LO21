@@ -1,8 +1,8 @@
 #include <iostream>
 #include "placement.h"
 #include "tuiles.h"
-
-std::vector<Coord> voisinsTuile(Coord c) {
+using namespace std;
+vector<Coord> voisinsTuile(Coord c) {
     return {
         // Voisins de TOUTE une tuile selon le système even-r
         {c.x - 1, c.y - 1, c.z}, {c.x, c.y - 1, c.z},
@@ -12,24 +12,24 @@ std::vector<Coord> voisinsTuile(Coord c) {
         {c.x - 2, c.y + 1, c.z}, {c.x - 1, c.y, c.z}
     };
 }
-void Plateau::placer(Tuile* t, Coord c){
+void Cite::placer(Tuile* t, Coord c){
 	if (!estLibre(c)||!estLibre(c.sudEst())||!estLibre(c.sudOuest())) { return; }
 	carte[c] = t->getHexagone(0);
 	carte[c.sudEst()] = t->getHexagone(1);
 	carte[c.sudOuest()] = t->getHexagone(2);
 	
 	if(c.z == 0) {
-    bool touchePlateau = false;
-    std::vector<Coord> voisins = voisinsTuile(c);
+    bool toucheCite = false;
+    vector<Coord> voisins = voisinsTuile(c);
     
     for (const auto& voisin : voisins) {
         if (!estLibre(voisin)) {
-            touchePlateau = true;
+            toucheCite = true;
             break;
         }
     }
     
-    if (!touchePlateau) { 
+    if (!toucheCite) { 
         printf("Placement impossible\n");
         return; 
     }
