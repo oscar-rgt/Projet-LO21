@@ -56,6 +56,13 @@ class Score {
   +getJoueur() : const Joueur*
 }
 
+enum TypeQuartier {
+    Habitation,
+    Marche,
+    Caserne,
+    Temple,
+    Jardin
+}
 
 class Cité {
 }
