@@ -1,0 +1,148 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+' =============================
+' Classes conceptuelles
+' =============================
+
+class Partie {
+  id : int
+  mode : enum = {solo,multi}
+  joueurs : Joueur[1..4]
+  pileTuiles : Pile*
+  nbJoueurs : int
+  +ajouterJoueur(j : Joueur*) : bool
+  +getId() : int
+  +getMode() : enum
+  +getNbJoueurs() : int
+  +getJoueur(index : int) : Joueur*
+  +getPile() : Pile*
+  +jouerTours() : void
+}
+
+class Pile {
+  id : int
+  nbTuiles : int
+  +Pile(id_ : int, nb : int)
+  +retirerTuile() : bool
+}
+
+class Joueur {
+  -nom : std::string
+  -points : int
+  -pierres : int
+  +Joueur(n : const std::string&)
+  +getNom() : const std::string&
+  +getPoints() : int
+  +getPierres() : int
+  +setPoints(p : int) : void
+  +ajouterPoints(delta : int) : void
+  +ajouterPierre(n : int = 1) : void
+  +utiliserPierre(n : int = 1) : bool
+  +ajouterPierresRecouvrement(nbRecouverts : int) : void
+}
+
+
+class Score {
+  -joueur : Joueur*
+  -cite : Cité*
+  -pointsParType : map<TypeQuartier,int>
+  -total : int
+  +Score(j : Joueur*, c : Cité*)
+  +calculerScore() : void
+  +calculerScoreType(type : TypeQuartier) : int
+  +getTotal() : int
+  +getScoreType(type : TypeQuartier) : int
+  +getJoueur() : const Joueur*
+}
+
+enum TypeQuartier {
+    Habitation,
+    Marche,
+    Caserne,
+    Temple,
+    Jardin
+}
+
+class Cité {
+}
+
+
+
+class Tuile {
+  -orientation : Orientation
+  -id : unsigned int
+  -prix : unsigned int
+  -hexagone[3] : Hexagone
+  -Tuile(i:unsigned int, h1:Hexagone&, h2:Hexagone&, h3:Hexagone&, o: Orientation, p:unsigned int)
+  -~Tuile()
+  -operator=(h:const Hexagone&) : Hexagone&
+  +Hexagone(h:const Hexagone&)
+  +getOrientation() : Orientation const
+  +getHexagone() : Hexagone&
+  +getId() : unsigned int const
+  +getPrix() : unsigned int const
+}
+
+class Hexagone {
+  -niveau: int
+  -etoiles: int
+  -type: Type
+  -recouvert: bool
+  -Hexagone(t: Type, n: int, r: bool, e: int)
+  -Hexagone()
+  -recouvrir(r:bool)
+  -operator=(h:const Hexagone&) : Hexagone& 
+  -~Hexagone()
+  +getType() : Type const
+  +getNiveau() : int const
+  +est_recouvert() : bool const
+  +getEtoiles() : int const
+  +affiche()
+  +Hexagone(h:const Hexagone&)
+  
+  
+}
+
+enum Orientation{
+  N
+  SE
+  SO
+}
+
+enum Type{
+  Habitation
+  Marche
+  Caserne
+  Temple
+  Jardin
+  Place
+}
+
+
+class Variante {
+  nom : str
+  regle : str
+}
+
+class IllustreConstructeur {
+  difficulte : enum={facile,moyen,difficile}
+}
+
+' =============================
+' Relations
+' =============================
+
+Partie "1" -- "1..*" Pile : est composée de >
+Partie "1" -- "1..4" Joueur : est jouée par >
+Partie "0..*" -- "0..*" Variante : est jouée avec >
+Partie "1" -- "0..1" IllustreConstructeur : utilise >
+
+Joueur "1" -- "1" Cité : construit >
+Cité "1" -- "0..*" Tuile : contient >
+
+Score --*Joueur
+Hexagone "3"-up-*"1"Tuile : est composé de <
+
+
+@enduml
