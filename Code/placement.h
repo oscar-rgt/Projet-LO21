@@ -24,6 +24,7 @@ class Plateau {
 private :
 	std::unordered_map<Coord, Hexagone&, CoordHash> carte; // Espace 3D de pointeurs vers des hexagones 
 	//  carte[{0, 0, 0}] = tuile0;
+	std::vector<Coord> voisinsTuile(Coord c);
 
 public :
 	void placer(Tuile* t, Coord c);
