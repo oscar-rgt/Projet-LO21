@@ -24,25 +24,11 @@ struct CoordHash {
 
 class Cite {
 private :
-	unordered_map<Coord, Hexagone&, CoordHash> carte; // Espace 3D de pointeurs vers des hexagones 
+	unordered_map<Coord, Hexagone&, CoordHash> carte; // Espace 3D de références d'hexagones 
 	//  carte[{0, 0, 0}] = tuile0;
 	vector<Coord> voisinsTuile(Coord c);
 
 public :
 	void placer(Tuile* t, Coord c);
 	bool estLibre(Coord c) { return (carte.find(c) == carte.end()); }
-};
-
-class Placement {
-private:
-	Hexagone& h;
-	int colonne;
-	int ligne;
-	int niveau;
-	Placement();
-	friend class Cite;
-public:
-	int getCol() { return colonne; }
-	int getLi() { return ligne; }
-	int getNiv() { return niveau; }
 };
