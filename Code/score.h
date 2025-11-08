@@ -3,8 +3,8 @@
 
 #include <map>
 #include "joueur.h"
-#include "cite.h"
 #include "hexagone.h"
+#include "plateau.h"
 
 enum class TypeQuartier {
     Habitation,
@@ -16,17 +16,17 @@ enum class TypeQuartier {
 
 class Score {
 private:
-    Joueur* joueur;             // Joueur concerné
-    Cité* cite;                 // Référence à la cité du joueur
-    std::map<TypeQuartier, int> pointsParType;  // Score détaillé par type de quartier
-    int total;                  // Score total final
+    Joueur* joueur;
+    Plateau* plateau;
+    std::map<TypeQuartier,int> pointsParType;
+    int total;
 
 public:
-    Score(Joueur* j, Cité* c);
+    Score(Joueur* j, Plateau* p);
     void calculerScore();
-    int calculerScoreType(TypeQuartier type);// Calcul du score d’un seul type de quartier
-    int getTotal() const;
-    int getScoreType(TypeQuartier type) const;
+    int  calculerScoreType(TypeQuartier type);
+    int  getTotal() const;
+    int  getScoreType(TypeQuartier type) const;
     const Joueur* getJoueur() const;
 };
 
