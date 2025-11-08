@@ -13,8 +13,7 @@ enum class TypeQuartier {
     Marche,
     Caserne,
     Temple,
-    Jardin,
-    Place
+    Jardin
 };
 
 class Score {
