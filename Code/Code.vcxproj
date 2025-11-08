@@ -19,11 +19,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="hexagone.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="placement.cpp" />
     <ClCompile Include="tuiles.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="hexagone.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="placement.h" />
     <ClInclude Include="tuiles.h" />
