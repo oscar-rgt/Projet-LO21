@@ -59,28 +59,28 @@ int Score::calculerScoreType(TypeQuartier type) {
             case TypeQuartier::Marche:
                 if (h->getType() == Type::Marche) {
                     int ptsAdj = 0;
-                    for (auto* v : cite->getAdjacents(h)) {
+                    /*for (auto* v : cite->getAdjacents(h)) {
                         if (v->getType() != Type::Marche && v->getType() != Type::Place)
                             ptsAdj++;
-                    }
+                    }*/
                     score += ptsAdj;
                 }
                 break;
             case TypeQuartier::Caserne:
                 if (h->getType() == Type::Caserne) {
                     bool isIsolee = true;
-                    for (auto* v : cite->getAdjacents(h)) {
+                    /*for (auto* v : cite->getAdjacents(h)) {
                         if (v->getType() == Type::Caserne) {
                             isIsolee = false;
                             break;
-                        }
+                        }*/
                     }
                     if (isIsolee) score += 1;
                 }
                 break;
             case TypeQuartier::Temple:
                 if (h->getType() == Type::Temple) {
-                    if (cite->getAdjacents(h).size() == 6) score += 2;
+                    //if (cite->getAdjacents(h).size() == 6) score += 2;
                 }
                 break;
             case TypeQuartier::Jardin:
