@@ -105,8 +105,6 @@ int Score::calculerScoreType(TypeQuartier type) {
                 break;
         }
     }
-
-    // applique multiplicateur
     score *= multiplicateur;
     return score;
 }
