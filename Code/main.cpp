@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cstring>
-#include "tuiles.h"
-#include "hexagone.h"
-#include "quadrillage.h"
+#include "main.h"
+
+
 using namespace std;
 
 

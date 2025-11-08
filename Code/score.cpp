@@ -2,8 +2,7 @@
 #include <iostream>
 using namespace std;
 
-Score::Score(Joueur* j, Cité* c)
-    : joueur(j), cite(c), total(0)
+Score::Score(Joueur* j, Cite* c)
 {
     for (auto type : {TypeQuartier::Habitation, TypeQuartier::Marche,
                       TypeQuartier::Caserne, TypeQuartier::Temple,
@@ -42,16 +41,16 @@ void Score::calculerScore() {
 int Score::calculerScoreType(TypeQuartier type) {
     int score = 0;
     int multiplicateur = 0;
-    const vector<Hexagone*>& hexas = cite->getHexagones();
+    //const vector<Hexagone*>& hexas = cite->getHexagones();
 
     //calculer les étoiles
-    for (auto* h : hexas) {
+    /*for (auto* h : hexas) {
         if (h->getType() == Type::Place) multiplicateur += h->getEtoiles();
-    }
+    }*/
 
     if (multiplicateur == 0) return 0;
 
-    for (auto* h : hexas) {
+    /*for (auto* h : hexas) {
         switch (type) {
             case TypeQuartier::Habitation:
                 if (h->getType() == Type::Habitation) score += 1;
@@ -62,7 +61,7 @@ int Score::calculerScoreType(TypeQuartier type) {
                     /*for (auto* v : cite->getAdjacents(h)) {
                         if (v->getType() != Type::Marche && v->getType() != Type::Place)
                             ptsAdj++;
-                    }*/
+                    }
                     score += ptsAdj;
                 }
                 break;
@@ -73,7 +72,7 @@ int Score::calculerScoreType(TypeQuartier type) {
                         if (v->getType() == Type::Caserne) {
                             isIsolee = false;
                             break;
-                        }*/
+                        }
                     }
                     if (isIsolee) score += 1;
                 }
@@ -88,7 +87,7 @@ int Score::calculerScoreType(TypeQuartier type) {
                 break;
         }
     }
-
+    */
     score *= multiplicateur;
     return score;
 }
