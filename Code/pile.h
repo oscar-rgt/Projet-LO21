@@ -3,8 +3,8 @@
 
 class Pile {
 public:
-    int id;         // Identifiant de la pile (facultatif)
-    int nbTuiles;   // Nombre de tuiles restantes dans la pile
+    int id;  
+    int nbTuiles;
     Pile(int id_, int nb);
     bool retirerTuile();
 };
