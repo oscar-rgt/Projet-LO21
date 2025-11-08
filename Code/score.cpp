@@ -8,7 +8,7 @@ Score::Score(Joueur* j, Cité* c)
 {
     for (auto type : {TypeQuartier::Habitation, TypeQuartier::Marche,
                       TypeQuartier::Caserne, TypeQuartier::Temple,
-                      TypeQuartier::Jardin}) {
+                      TypeQuartier::Jardin, TypeQuartier::Place}) {
         pointsParType[type] = 0;
     }
 }
