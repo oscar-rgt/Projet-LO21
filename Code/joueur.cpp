@@ -1,9 +1,11 @@
 #include "joueur.h"
 
-Joueur::Joueur(const std::string& n)
+using namespace std; 
+
+Joueur::Joueur(const string& n)
     : nom(n), points(0), pierres(0) {}
 
-const std::string& Joueur::getNom() const {
+const string& Joueur::getNom() const {
     return nom;
 }
 
