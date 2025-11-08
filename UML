@@ -46,7 +46,7 @@ class Joueur {
 class Score {
   -joueur : Joueur*
   -cite : Cité*
-  -pointsParType : std::map<TypeQuartier,int>
+  -pointsParType : map<TypeQuartier,int>
   -total : int
   +Score(j : Joueur*, c : Cité*)
   +calculerScore() : void
