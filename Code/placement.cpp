@@ -18,7 +18,7 @@ void Plateau::placer(Tuile* t, Coord c){
 	carte[c.sudEst()] = t->getHexagone(1);
 	carte[c.sudOuest()] = t->getHexagone(2);
 	
-	if(c.z == 1) {
+	if(c.z == 0) {
     bool touchePlateau = false;
     std::vector<Coord> voisins = voisinsTuile(c);
     
@@ -61,5 +61,6 @@ void Plateau::placer(Tuile* t, Coord c){
 }
 	
 }
+
 
 
