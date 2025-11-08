@@ -10,6 +10,7 @@ class Partie {
   mode : enum = {solo,multi}
   joueurs : Joueur[1..4]
   pileTuiles : Pile*
+  nbJoueurs : int
   +ajouterJoueur(j : Joueur*) : bool
   +getId() : int
   +getMode() : enum
