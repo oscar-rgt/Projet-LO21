@@ -10,18 +10,12 @@ void Plateau::placer(Tuile* t, Coord c){
 	
 	if(c.z==1){
         std::vector<Coord> voisins = {
-                // Voisins de c (qui ne sont pas sudEst ou sudOuest)
-                {c.x + 1, c.y, c.z}, {c.x - 1, c.y, c.z},
-                {c.x, c.y - 1, c.z},
-                {c.x, c.y, c.z + 1}, {c.x, c.y, c.z - 1},
-                // Voisins de sudEst (qui ne sont pas c ou sudOuest)
-                {c.x - 1, c.y + 1, c.z},
-                {c.x, c.y + 2, c.z},
-                {c.x, c.y + 1, c.z + 1}, {c.x, c.y + 1, c.z - 1},
-                // Voisins de sudOuest (qui ne sont pas c ou sudEst)
-                {c.x + 2, c.y + 1, c.z},
-                {c.x + 1, c.y + 2, c.z},
-                {c.x + 1, c.y + 1, c.z + 1}, {c.x + 1, c.y + 1, c.z - 1}
+                // Voisins de TOUTE une tuile selon le systeme La disposition horizontale « even-r » décale les lignes paires vers la droite.
+                {c.x -1, c.y-1, c.z}, {c.x, c.y-1, c.z},
+                {c.x +1, c.y, c.z},
+                {c.x+1, c.y+1, c.z}, {c.x +1, c.y +2, c.z},
+                {c.x , c.y + 2, c.z}, {c.x-1, c.y + 2, c.z},
+                {c.x-2, c.y + 1, c.z }, {c.x-1, c.y, c.z }
             };
             
             for (const auto& voisin : voisins) {
@@ -63,3 +57,4 @@ void Plateau::placer(Tuile* t, Coord c){
 }
 	
 }
+
