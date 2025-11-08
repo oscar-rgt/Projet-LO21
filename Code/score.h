@@ -4,7 +4,9 @@
 #include <map>
 #include "joueur.h"
 #include "hexagone.h"
-#include "plateau.h"
+#include "cité.h"
+
+using namespace std;
 
 enum class TypeQuartier {
     Habitation,
@@ -16,17 +18,19 @@ enum class TypeQuartier {
 
 class Score {
 private:
-    Joueur* joueur;
-    Plateau* plateau;
-    std::map<TypeQuartier,int> pointsParType;
+    Joueur* joueur;                        
+    Cité*   cite;                          
+    map<TypeQuartier, int> pointsParType; 
     int total;
 
 public:
-    Score(Joueur* j, Plateau* p);
+    Score(Joueur* j, Cité* c);
+
     void calculerScore();
-    int  calculerScoreType(TypeQuartier type);
-    int  getTotal() const;
-    int  getScoreType(TypeQuartier type) const;
+    int calculerScoreType(TypeQuartier type);
+
+    int getTotal() const;
+    int getScoreType(TypeQuartier type) const;
     const Joueur* getJoueur() const;
 };
 
