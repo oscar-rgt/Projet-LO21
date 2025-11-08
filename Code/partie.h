@@ -6,7 +6,7 @@
 #include "joueur.h"
 #include "pile.h"
 
-using namespace std;  // << ajouté ici
+using namespace std;
 
 class Partie {
 public:
