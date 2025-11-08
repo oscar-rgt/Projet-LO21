@@ -6,6 +6,8 @@
 #include "joueur.h"
 #include "pile.h"
 
+using namespace std;  // << ajouté ici
+
 class Partie {
 public:
     enum Mode { solo, multi };
@@ -13,7 +15,7 @@ public:
 private:
     int id;
     Mode mode;
-    std::array<Joueur*, 4> joueurs;
+    array<Joueur*, 4> joueurs;
     int nbJoueurs;
     Pile* pileTuiles;
 
