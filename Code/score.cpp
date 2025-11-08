@@ -7,7 +7,7 @@ Score::Score(Joueur* j, Cité* c)
 {
     for (auto type : {TypeQuartier::Habitation, TypeQuartier::Marche,
                       TypeQuartier::Caserne, TypeQuartier::Temple,
-                      TypeQuartier::Jardin, TypeQuartier::Place}) {
+                      TypeQuartier::Jardin}) {
         pointsParType[type] = 0;
     }
 }
@@ -25,12 +25,12 @@ const Joueur* Score::getJoueur() const {
     return joueur;
 }
 
-//score global
+//score total
 void Score::calculerScore() {
     total = 0;
     for (auto type : {TypeQuartier::Habitation, TypeQuartier::Marche,
                       TypeQuartier::Caserne, TypeQuartier::Temple,
-                      TypeQuartier::Jardin, TypeQuartier::Place}) {
+                      TypeQuartier::Jardin}) {
         int pts = calculerScoreType(type);
         pointsParType[type] = pts;
         total += pts;
@@ -38,7 +38,7 @@ void Score::calculerScore() {
     joueur->setPoints(total);
 }
 
-//score par type
+//score selon type
 int Score::calculerScoreType(TypeQuartier type) {
     int score = 0;
     int multiplicateur = 0;
@@ -46,21 +46,11 @@ int Score::calculerScoreType(TypeQuartier type) {
 
     //calculer les étoiles
     for (auto* h : hexas) {
-        if (h->getType() == Type::Place) {
-            switch (type) {
-                case TypeQuartier::Habitation: multiplicateur += h->getEtoiles(); break;
-                case TypeQuartier::Marche: multiplicateur += h->getEtoiles(); break;
-                case TypeQuartier::Caserne: multiplicateur += h->getEtoiles(); break;
-                case TypeQuartier::Temple: multiplicateur += h->getEtoiles(); break;
-                case TypeQuartier::Jardin: multiplicateur += h->getEtoiles(); break;
-                case TypeQuartier::Place: multiplicateur += h->getEtoiles(); break;
-            }
-        }
+        if (h->getType() == Type::Place) multiplicateur += h->getEtoiles();
     }
 
     if (multiplicateur == 0) return 0;
 
-    //cas par cas selon tuile
     for (auto* h : hexas) {
         switch (type) {
             case TypeQuartier::Habitation:
@@ -95,8 +85,6 @@ int Score::calculerScoreType(TypeQuartier type) {
                 break;
             case TypeQuartier::Jardin:
                 if (h->getType() == Type::Jardin) score += 1;
-                break;
-            case TypeQuartier::Place:
                 break;
         }
     }
