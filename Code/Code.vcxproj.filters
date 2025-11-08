@@ -21,7 +21,7 @@
     <ClCompile Include="main.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
-    <ClCompile Include="quadrillage.cpp">
+    <ClCompile Include="placement.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="tuiles.cpp">
@@ -35,7 +35,7 @@
     <ClInclude Include="main.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
-    <ClInclude Include="quadrillage.h">
+    <ClInclude Include="placement.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
     <ClInclude Include="tuiles.h">

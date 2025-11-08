@@ -21,19 +21,19 @@
   <ItemGroup>
     <ClCompile Include="hexagone.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="quadrillage.cpp" />
+    <ClCompile Include="placement.cpp" />
     <ClCompile Include="tuiles.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="hexagone.h" />
     <ClInclude Include="main.h" />
-    <ClInclude Include="quadrillage.h" />
+    <ClInclude Include="placement.h" />
     <ClInclude Include="tuiles.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{07c06a9b-3cbc-4d64-91ba-fd803ff65bee}</ProjectGuid>
+    <ProjectGuid>{1B66FF1D-5A79-4163-AAD0-1C838738A48E}</ProjectGuid>
     <RootNamespace>Code</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
