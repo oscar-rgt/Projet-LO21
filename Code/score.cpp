@@ -13,8 +13,6 @@ Score::Score(Joueur* j, Plateau* p)
     }
 }
 
-
-// --- GETTERS ---
 int Score::getTotal() const {
     return total;
 }
@@ -29,7 +27,7 @@ const Joueur* Score::getJoueur() const {
 }
 
 
-// --- CALCUL GLOBAL ---
+//score global
 void Score::calculerScore() {
     total = 0;
 
@@ -46,7 +44,7 @@ void Score::calculerScore() {
 }
 
 
-// --- CALCUL PAR TYPE ---
+// score par type
 int Score::calculerScoreType(TypeQuartier type) {
     int score = 0;
     int multiplicateur = 0;
@@ -54,7 +52,7 @@ int Score::calculerScoreType(TypeQuartier type) {
     // récupère tous les hexagones depuis le plateau
     const std::vector<Hexagone*>& hexas = plateau->getHexagones();
 
-    // calcul du multiplicateur via les étoiles des Places
+    // calcul du multiplicateur avec les etoiles
     for (auto* h : hexas) {
         if (h->getType() == Type::Place && h->getTypeAssocie() == type) {
             multiplicateur += h->getEtoiles();
@@ -62,8 +60,8 @@ int Score::calculerScoreType(TypeQuartier type) {
     }
 
     if (multiplicateur == 0) return 0;
-
-    // scoring : cas par cas
+    
+    //calcul selon les types
     for (auto* h : hexas) {
 
         switch (type) {
