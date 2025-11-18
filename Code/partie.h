@@ -21,7 +21,7 @@ private:
 
 public:
     Partie(int id_, Mode m, Pile* pile);
-    bool ajouterJoueur(Joueur* j);
+    bool ajouterJoueur(Joueur* j);//vrmt utile ??
     int getId() const;
     Mode getMode() const;
     int getNbJoueurs() const;
