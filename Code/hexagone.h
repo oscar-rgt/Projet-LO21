@@ -21,17 +21,17 @@ class Hexagone {
 private:
 	friend class Tuile;
 	unsigned int niveau, etoiles;
-	Tuile* t;
+	Tuile* tuile;
 	Type type;
 	bool recouvert, place;
 	void recouvrir(bool r);
-	Hexagone(Type t, unsigned int n = 1, Tuile* tuile = nullptr, unsigned int e = 0, bool p = false, bool r = false ): type(t), niveau(n), t(tuile), etoiles(e), place(p), recouvert(r) {}
+	Hexagone(Type t, unsigned int n = 1, Tuile* tu = nullptr, unsigned int e = 0, bool p = false, bool r = false ): type(t), niveau(n), tuile(tu), etoiles(e), place(p), recouvert(r) {}
 	~Hexagone() {}
 	Hexagone() = default;
 	Hexagone(const Hexagone& h) = default;
 	Hexagone& operator=(const Hexagone& h) = default;
 public:
-	Tuile* getTuile() const { return t; }
+	Tuile* getTuile() const { return tuile; }
 	Type getType() const { return type; }
 	int getNiveau() const { return niveau; }
 	bool est_recouvert() const { return recouvert; }

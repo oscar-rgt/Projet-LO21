@@ -32,14 +32,21 @@ int randomPlaceValue() {
 Tuile::Tuile(unsigned int i, unsigned int p, unsigned int n) : id(i), orientation(N), prix(p), niveau(n) {
     for (int i = 0; i < 3; i++) {
         int t = randomIndexAkropolis();
-        bool place = randomPlaceValue();
-        if (place == true) {
-            int etoiles = randomStarValue();
-            hexagones[i] = Hexagone(Type(t), n, this, etoiles, place);
+        if (Type(t) == Carriere) {
+            hexagones[i] = Hexagone(Type(t), n, this);
         }
         else {
-            hexagones[i] = Hexagone(Type(t),n, this);
+            bool place = randomPlaceValue();
+            if (place == true) {
+                int etoiles = randomStarValue();
+                hexagones[i] = Hexagone(Type(t), n, this, etoiles, place);
+            }
+            else {
+                hexagones[i] = Hexagone(Type(t), n, this);
+            }
+
         }
+        
     }
 }
 
