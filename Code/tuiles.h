@@ -29,3 +29,4 @@ public:
 
 int randomIndexAkropolis();
 int randomPlaceValue();
+int randomStarValue();

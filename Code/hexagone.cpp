@@ -17,27 +17,29 @@ void Hexagone::recouvrir(bool r) {
 string Hexagone::affiche() {
 	// Habitation, Marche, Caserne, Temple, Jardin, Place
 	string niv = to_string(getNiveau());
+	string res;
+	if (place) {
+		res += to_string(getEtoiles());
+	}
 	switch (type) {
 	case Habitation:
-		return " H" + niv;
+		res += " H" + niv;
 		break;
 	case Marche:
-		return " M"+niv;
+		res += " M"+niv;
 		break;
 	case Caserne:
-		return " C" + niv;
+		res += " C" + niv;
 		break;
 	case Temple:
-		return " T" + niv;
+		res += " T" + niv;
 		break;
 	case Jardin:
-		return " J" + niv;
-		break;
-	case Place:
-		return to_string(getEtoiles()) + "P" + niv;
+		res += " J" + niv;
 		break;
 	case Carriere:
-		return " X" + niv;
+		res += " X" + niv;
 		break;
 	}
+	return res;
 }

@@ -10,14 +10,21 @@ using namespace std;
 int randomIndexAkropolis() {
     static random_device rd;
     static mt19937 gen(rd());
-    static discrete_distribution<> dist({12, 10, 10, 8, 10, 5, 15});
+    static discrete_distribution<> dist({12, 10, 10, 8, 10, 15});
+    return dist(gen);
+}
+
+int randomStarValue() {
+    static random_device rd;
+    static mt19937 gen(rd());
+    static uniform_int_distribution<> dist(1, 3);
     return dist(gen);
 }
 
 int randomPlaceValue() {
     static random_device rd;
     static mt19937 gen(rd());
-    static uniform_int_distribution<> dist(1, 3);
+    static discrete_distribution<> dist({80,20});
     return dist(gen);
 }
 
@@ -25,9 +32,10 @@ int randomPlaceValue() {
 Tuile::Tuile(unsigned int i, unsigned int p, unsigned int n) : id(i), orientation(N), prix(p), niveau(n) {
     for (int i = 0; i < 3; i++) {
         int t = randomIndexAkropolis();
-        if (Type(t) == Place) {
-            int etoiles = randomPlaceValue();
-            hexagones[i] = Hexagone(Type(t), n, this, etoiles);
+        bool place = randomPlaceValue();
+        if (place == true) {
+            int etoiles = randomStarValue();
+            hexagones[i] = Hexagone(Type(t), n, this, etoiles, place);
         }
         else {
             hexagones[i] = Hexagone(Type(t),n, this);

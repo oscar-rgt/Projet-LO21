@@ -14,7 +14,7 @@ public:
 };
 
 
-typedef enum { Habitation, Marche, Caserne, Temple, Jardin, Place, Carriere} Type;
+typedef enum { Habitation, Marche, Caserne, Temple, Jardin, Carriere} Type;
 
 
 class Hexagone {
@@ -23,9 +23,9 @@ private:
 	unsigned int niveau, etoiles;
 	Tuile* t;
 	Type type;
-	bool recouvert;
+	bool recouvert, place;
 	void recouvrir(bool r);
-	Hexagone(Type t, unsigned int n = 1, Tuile* tuile = nullptr, unsigned int e = 0, bool r = false ): type(t), niveau(n), t(tuile), etoiles(e), recouvert(r) {}
+	Hexagone(Type t, unsigned int n = 1, Tuile* tuile = nullptr, unsigned int e = 0, bool p = false, bool r = false ): type(t), niveau(n), t(tuile), etoiles(e), place(p), recouvert(r) {}
 	~Hexagone() {}
 	Hexagone() = default;
 	Hexagone(const Hexagone& h) = default;
