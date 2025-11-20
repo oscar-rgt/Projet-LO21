@@ -5,11 +5,7 @@
 using namespace std;
 
 
-Hexagone::Hexagone(Type t, int n, bool r, int e) : type(t), niveau(n), recouvert(r), etoiles(0) {
-	if (t == Place) {
-		etoiles = e;
-	}
-}
+
 
 void Hexagone::recouvrir(bool r) {
 	if (est_recouvert()) {
@@ -38,6 +34,9 @@ char Hexagone::affiche() {
 		break;
 	case Place:
 		return '0' + getEtoiles();
+		break;
+	case Carriere:
+		return 'X';
 		break;
 	}
 }

@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include <cstdio>
+#include"tuiles.h"
 #ifndef HEXAGONE_H
 #define HEXAGONE_H
 using namespace std;
@@ -14,28 +15,27 @@ public:
 };
 
 
-typedef enum { Habitation, Marche, Caserne, Temple, Jardin, Place } Type;
+typedef enum { Habitation, Marche, Caserne, Temple, Jardin, Place, Carriere} Type;
 
 
 class Hexagone {
 private:
-	friend class Tuiles;
-	int niveau, etoiles;
+	friend class Tuile;
+	unsigned int niveau, etoiles;
+	Tuile* t;
 	Type type;
 	bool recouvert;
 	void recouvrir(bool r);
-
-public:
+	Hexagone(Type t, unsigned int n = 1, Tuile* tuile = nullptr, unsigned int e = 0, bool r = false ): type(t), niveau(n), t(tuile), etoiles(e), recouvert(r)   {}
+	~Hexagone() {}
+	Hexagone() = default;
 	Hexagone(const Hexagone& h) = default;
+	Hexagone& operator=(const Hexagone& h) = default;
+public:
 	Type getType() const { return type; }
 	int getNiveau() const { return niveau; }
 	bool est_recouvert() const { return recouvert; }
 	int getEtoiles() const { return etoiles; }
-	Hexagone() = default;
-	Hexagone(Type t, int n = 1, bool r = false, int e = 0);
-	Hexagone& operator=(const Hexagone& h) = default;// à voir pour mettre en private ?
-	~Hexagone() {}
-
     char affiche();
 };
 
