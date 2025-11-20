@@ -1,4 +1,3 @@
-
 #include <iostream>
 #include <string>
 #include <cstdio>
@@ -26,17 +25,18 @@ private:
 	Type type;
 	bool recouvert;
 	void recouvrir(bool r);
-	Hexagone(Type t, unsigned int n = 1, Tuile* tuile = nullptr, unsigned int e = 0, bool r = false ): type(t), niveau(n), t(tuile), etoiles(e), recouvert(r)   {}
+	Hexagone(Type t, unsigned int n = 1, Tuile* tuile = nullptr, unsigned int e = 0, bool r = false ): type(t), niveau(n), t(tuile), etoiles(e), recouvert(r) {}
 	~Hexagone() {}
 	Hexagone() = default;
 	Hexagone(const Hexagone& h) = default;
 	Hexagone& operator=(const Hexagone& h) = default;
 public:
+	Tuile* getTuile() const { return t; }
 	Type getType() const { return type; }
 	int getNiveau() const { return niveau; }
 	bool est_recouvert() const { return recouvert; }
 	int getEtoiles() const { return etoiles; }
-    char affiche();
+    string affiche();
 };
 
 #endif // HEXAGONE_H

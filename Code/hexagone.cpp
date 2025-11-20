@@ -14,29 +14,30 @@ void Hexagone::recouvrir(bool r) {
 	recouvert = r;
 }
 
-char Hexagone::affiche() {
+string Hexagone::affiche() {
 	// Habitation, Marche, Caserne, Temple, Jardin, Place
+	string niv = to_string(getNiveau());
 	switch (type) {
 	case Habitation:
-		return 'H';
+		return " H" + niv;
 		break;
 	case Marche:
-		return 'M';
+		return " M"+niv;
 		break;
 	case Caserne:
-		return 'C';
+		return " C" + niv;
 		break;
 	case Temple:
-		return 'T';
+		return " T" + niv;
 		break;
 	case Jardin:
-		return 'J';
+		return " J" + niv;
 		break;
 	case Place:
-		return '0' + getEtoiles();
+		return to_string(getEtoiles()) + "P" + niv;
 		break;
 	case Carriere:
-		return 'X';
+		return " X" + niv;
 		break;
 	}
 }

@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <cstring>
 #include "tuiles.h"
 #include "hexagone.h"
@@ -92,12 +93,12 @@ string remplirQuadrillage(string old, int ligne[3], int colonne[3], Tuile& t, in
 			int j = 0;
 			j += 117 * (ligne[i]+1) * 2;
 			if ((ligne[i]+1) % 2 == 0) {
-				j += 4 + 14 * colonne[i];
+				j += 3 + 14 * colonne[i];
 			}
 			else {
-				j += 11 + 14 * colonne[i];
+				j += 10 + 14 * colonne[i];
 			}
-			old[j] = t.getHexagone(i).affiche();
+			old.replace(j, 3, t.getHexagone(i).affiche());
 			emplacement[ligne[i]][colonne[i]] = 1;
 		}
 	}
