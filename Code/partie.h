@@ -12,22 +12,27 @@ class Partie {
 public:
     enum Mode { solo, multi };
 
-private:
-    int id;
-    Mode mode;
-    array<Joueur*, 4> joueurs;
-    int nbJoueurs;
-    Pile* pileTuiles;
+    static Partie& getInstance(int id_, Mode m, Pile* pile);
 
-public:
-    Partie(int id_, Mode m, Pile* pile);
-    bool ajouterJoueur(Joueur* j);//vrmt utile ??
+    Partie(const Partie&) = delete;
+    Partie& operator=(const Partie&) = delete;
+
+    bool ajouterJoueur(Joueur* j);
     int getId() const;
     Mode getMode() const;
     int getNbJoueurs() const;
     Joueur* getJoueur(int index) const;
     Pile* getPile() const;
     void jouerTours();
+
+private:
+    Partie(int id_, Mode m, Pile* pile);
+
+    int id;
+    Mode mode;
+    array<Joueur*, 4> joueurs;
+    int nbJoueurs;
+    Pile* pileTuiles;
 };
 
 #endif
