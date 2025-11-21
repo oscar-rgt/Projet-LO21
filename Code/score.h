@@ -22,14 +22,14 @@ private:
     int total;
 
 public:
-    Score(Joueur* j, Cite* c);
+    Score(Joueur* j, Cite* c); //à modifier dcp
 
     void calculerScore();
     int calculerScoreType(TypeQuartier type);
 
     int getTotal() const;
     int getScoreType(TypeQuartier type) const;
-    const Joueur* getJoueur() const;
+    const Joueur* getJoueur() const; //a modif aussi
 };
 
 #endif
