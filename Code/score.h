@@ -17,9 +17,7 @@ enum class TypeQuartier {
 };
 
 class Score {
-private:
-    Joueur* joueur;                        
-    Cite*   cite;                          
+private:                         
     map<TypeQuartier, int> pointsParType; 
     int total;
 
