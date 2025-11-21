@@ -2,48 +2,27 @@
 #include "placement.h"
 #include "tuiles.h"
 using namespace std;
-vector<Coord> voisinsTuile(Coord c) {
-    return {
-        // Voisins de TOUTE une tuile selon le système even-r
-        {c.x - 1, c.y - 1, c.z}, {c.x, c.y - 1, c.z},
-        {c.x + 1, c.y, c.z},
-        {c.x + 1, c.y + 1, c.z}, {c.x + 1, c.y + 2, c.z},
-        {c.x, c.y + 2, c.z}, {c.x - 1, c.y + 2, c.z},
-        {c.x - 2, c.y + 1, c.z}, {c.x - 1, c.y, c.z}
-    };
+
+const bool Cite::toucheCite(Coord c) const { 
+    """L'hexagone aux coos c touche-t-il la cité ?""";
+    return (!estLibre({ c.x - 1, c.y - 1, c.z }) || !estLibre({ c.x, c.y - 1, c.z }) || !estLibre({ c.x + 1, c.y - 1, c.z })
+        || !estLibre({ c.x - 1, c.y, c.z }) || !estLibre({ c.x, c.y + 1, c.z }) || !estLibre({ c.x + 1, c.y, c.z }));
 }
+
 void Cite::placer(Tuile* t, Coord c){
-	if (!estLibre(c)||!estLibre(c.sudEst())||!estLibre(c.sudOuest())) { return; }
-	carte[c] = &(t->getHexagone(0));
-	carte[c.sudEst()] = &(t->getHexagone(1));
-	carte[c.sudOuest()] = &(t->getHexagone(2));
+    Coord c2 = c.sudEst(), c3 = c.sudOuest();
+    if (!estLibre(c) || !estLibre(c2) || !estLibre(c3))
+        throw CiteException("Placement impossible : Une des cases n'est pas libre.");
+
 	
-	if(c.z == 0) {
-    bool toucheCite = false;
-    vector<Coord> voisins = voisinsTuile(c);
-    
-    for (const auto& voisin : voisins) {
-        if (!estLibre(voisin)) {
-            toucheCite = true;
-            break;
-        }
-    }
-    
-    if (!toucheCite) { 
-        printf("Placement impossible\n");
-        return; 
-    }
-}
+    if (c.z == 0) if (!toucheCite(c) && !toucheCite(c2) && !toucheCite(c3)) throw CiteException("Placement impossible : L'emplacement ne touche pas la cité.");
     else {
     // Vérifier que chaque hexagone de la tuile est soutenu par un hexagone en dessous
     Coord dessous_c = {c.x, c.y, c.z - 1};
-    Coord dessous_sudEst = {c.x, c.y + 1, c.z - 1};
-    Coord dessous_sudOuest = {c.x + 1, c.y + 1, c.z - 1};
+    Coord dessous_sudEst = {c2.x, c2.y, c2.z - 1};
+    Coord dessous_sudOuest = {c3.x, c3.y, c3.z - 1};
     
-    if (estLibre(dessous_c) || estLibre(dessous_sudEst) || estLibre(dessous_sudOuest)) {
-        printf("Placement impossible ");
-        return;
-    }
+    if (estLibre(dessous_c) || estLibre(dessous_sudEst) || estLibre(dessous_sudOuest)) throw CiteException("Placement impossible : Les cases inférieures sont vides.");
     // A revoir : un hexagone ne sait pas à quelle tuile il appartient => Pas de getTuile
     ////////////////////////////////////////////////////////////////////////////////
     // Vérifier qu'elle est à cheval sur au moins 2 tuiles différentes
@@ -60,10 +39,12 @@ void Cite::placer(Tuile* t, Coord c){
                                   (tuile_dessous_c != tuile_dessous_sudOuest) || 
                                   (tuile_dessous_sudEst != tuile_dessous_sudOuest);
     
-    if (!deuxTuilesDifferentes) {
-        printf("Placement impossible ");
-        return;
+    if (!deuxTuilesDifferentes) 
+        throw CiteException("...");
     }*/
+    carte[c] = &(t->getHexagone(0));
+    carte[c2] = &(t->getHexagone(1));
+    carte[c3] = &(t->getHexagone(2));
 }
 	
 }

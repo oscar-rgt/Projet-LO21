@@ -41,16 +41,16 @@ void Score::calculerScore() {
 int Score::calculerScoreType(TypeQuartier type) {
     int score = 0;
     int multiplicateur = 0;
-    //const vector<Hexagone*>& hexas = cite->getHexagones();
+    //const vector<Hexagone*>& hexas = cite->getHexagones(); //pas de getHexagones : for (auto it = carte.begin(); it != carte.end(); ++it)
 
     //calculer les étoiles
-    /*for (auto* h : hexas) {
+    /*for (auto* h : hexas) { //changer avec (auto it = carte.begin(); it != carte.end(); ++it)
         if (h->getType() == Type::Place) multiplicateur += h->getEtoiles();
     }*/
 
     if (multiplicateur == 0) return 0;
 
-    /*for (auto* h : hexas) {
+    /*for (auto* h : hexas) { //changer avec (auto it = carte.begin(); it != carte.end(); ++it)
         switch (type) {
             case TypeQuartier::Habitation:
                 if (h->getType() == Type::Habitation) score += 1;
