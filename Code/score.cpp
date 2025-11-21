@@ -2,7 +2,7 @@
 #include <iostream>
 using namespace std;
 
-Score::Score(Joueur* j, Cite* c)
+Score::Score(Joueur* j, Cite* c) //modif
 {
     for (auto type : {TypeQuartier::Habitation, TypeQuartier::Marche,
                       TypeQuartier::Caserne, TypeQuartier::Temple,
@@ -20,7 +20,7 @@ int Score::getScoreType(TypeQuartier type) const {
     return (it != pointsParType.end()) ? it->second : 0;
 }
 
-const Joueur* Score::getJoueur() const {
+const Joueur* Score::getJoueur() const { //a modif aussi
     return joueur;
 }
 
