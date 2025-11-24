@@ -22,7 +22,7 @@ public:
 	Orientation getOrientation() const { return orientation; }
 	Hexagone& getHexagone(int i) { return hexagones[i]; }
 	unsigned int getPrix() const { return prix; }
-	Tuile(unsigned int i, unsigned int p, unsigned int n);
+	Tuile(unsigned int i, unsigned int p=0, unsigned int n=1);
 	~Tuile() {}
 };
 

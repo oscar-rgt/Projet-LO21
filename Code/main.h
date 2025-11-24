@@ -1,8 +1,3 @@
 #include "tuiles.h"
 #include "hexagone.h"
 #include "quadrillage.h"
-#include "score.h"
-#include "placement.h"
-#include "pile.h"
-#include "partie.h"
-#include "joueur.h"

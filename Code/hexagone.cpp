@@ -21,24 +21,27 @@ string Hexagone::affiche() {
 	if (place) {
 		res += to_string(getEtoiles());
 	}
+	else {
+		res += " ";
+	}
 	switch (type) {
 	case Habitation:
-		res += " H" + niv;
+		res += "H" + niv;
 		break;
 	case Marche:
-		res += " M"+niv;
+		res += "M"+niv;
 		break;
 	case Caserne:
-		res += " C" + niv;
+		res += "C" + niv;
 		break;
 	case Temple:
-		res += " T" + niv;
+		res += "T" + niv;
 		break;
 	case Jardin:
-		res += " J" + niv;
+		res += "J" + niv;
 		break;
 	case Carriere:
-		res += " X" + niv;
+		res += "X" + niv;
 		break;
 	}
 	return res;

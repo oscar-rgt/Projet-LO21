@@ -24,9 +24,9 @@ using namespace std;
 
 
 void Quadrillage() {
-	cout << "         _____         _____         _____         _____         _____         _____         _____                  \n";
-	cout << "        /     \\       /     \\       /     \\       /     \\       /     \\       /     \\       /     \\          \n";
-	cout << "  _____/       \\_____/       \\_____/       \\_____/       \\_____/       \\_____/       \\_____/       \\_____    \n"; //ligne 2 sur quadri, ligne 1 en para
+	cout << "         _____         _____         _____         _____         _____         _____         _____          \n";
+	cout << "        /     \\       /     \\       /     \\       /     \\       /     \\       /     \\       /     \\         \n";
+	cout << "  _____/       \\_____/       \\_____/       \\_____/       \\_____/       \\_____/       \\_____/       \\_____   \n"; //ligne 2 sur quadri, ligne 1 en para
 	cout << " /     \\       /     \\       /     \\       /     \\       /     \\       /     \\       /     \\       /     \\  \n";
 	cout << "/       \\_____/       \\_____/       \\_____/       \\_____/       \\_____/       \\_____/       \\_____/       \\ \n"; //ligne 4 sur quadri, ligne 2 en para
 	cout << "\\       /     \\       /     \\       /     \\       /     \\       /     \\       /     \\       /     \\       / \n";
@@ -74,7 +74,7 @@ bool adjacent(int l1, int l2, int c1, int c2) {
 }
 
 bool estBienPlace(int l[3], int c[3]) {
-	if (adjacent(l[0],l[1],c[0],c[1]) && adjacent(l[0], l[2], c[0], c[2]) && adjacent(l[1], l[2], c[1], c[2])) {
+	if (adjacent(l[0], l[1], c[0], c[1]) && adjacent(l[0], l[2], c[0], c[2]) && adjacent(l[1], l[2], c[1], c[2])) {
 		return true;
 	}
 	return false;
@@ -84,22 +84,22 @@ string remplirQuadrillage(string old, int ligne[3], int colonne[3], Tuile& t, in
 	int i = 0, passage = 0;
 	bool possible = true;
 	for (int i = 0; i < 3; i++) {
-		if (!est_libre(ligne[i], colonne[i], emplacement)) {
+		if (!est_libre(ligne[i] - 1, colonne[i] - 1, emplacement)) {
 			return "Emplacement deja pris";
 		}
 	}
 	if (possible && estBienPlace(ligne, colonne)) {
 		for (int i = 0; i < 3; i++) {
 			int j = 0;
-			j += 117 * (ligne[i]+1) * 2;
-			if ((ligne[i]+1) % 2 == 0) {
-				j += 3 + 14 * colonne[i];
+			j += 109 * ligne[i] * 2;
+			if (ligne[i] % 2 == 0) {
+				j += 3 + 14 * (colonne[i] - 1);
 			}
 			else {
-				j += 10 + 14 * colonne[i];
+				j += 10 + 14 * (colonne[i] - 1);
 			}
 			old.replace(j, 3, t.getHexagone(i).affiche());
-			emplacement[ligne[i]][colonne[i]] = 1;
+			emplacement[ligne[i] - 1][colonne[i] - 1] = 1;
 		}
 	}
 	return old;
