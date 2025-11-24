@@ -50,4 +50,36 @@ void Cite::placer(Tuile* t, Coord c){
 }
 
 
+void Cite::afficher() {
+    cout << quadrillage;
+}
+
+string Cite::remplirQuadrillage(string quadri, Coord c, Tuile& t) {
+    for (int i = 0; i < 3; i++) {
+        int j = 0;
+        Coord h;
+        // bonnes coordonnees selon l'hexa
+        if (i == 1) {
+            h = c.sudOuest();
+        }
+        else if (i == 2) {
+            h = c.sudEst();
+        }
+        else {
+            h = c;
+        }
+        // placement
+        j += 109 * (h.x+1) * 2;
+        if ((h.x+1) % 2 == 0) {
+            j += 3 + 14 * h.y;
+        }
+        else {
+            j += 10 + 14 * h.y;
+        }
+        quadri.replace(j, 3, t.getHexagone(i).affiche());
+    }
+    quadrillage =  quadri;
+}
+
+
 

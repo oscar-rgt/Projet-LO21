@@ -21,7 +21,6 @@ private :
 		Coord sudEst() { return { x + 1 ,y + 1,z }; }// A changer en odd-q + symétrie axiale "haut/bas"
 		bool operator==(const Coord& other) const noexcept { return x == other.x && y == other.y && z == other.z; }
 	};
-
 	struct CoordHash {
 		size_t operator()(const Coord& c) const noexcept {
 			size_t hx = hash<int>()(c.x);
@@ -35,10 +34,12 @@ private :
 	//  carte[{0, 0, 0}] = tuile0;
 	//vector<Coord> voisinsTuile(Coord c); // Bloque la compilation : pk un vector ? fct à définir
 	const bool toucheCite(Coord c) const;
-
+	string quadrillage;
 public :
 	void placer(Tuile* t, Coord c);
 	const bool estLibre(Coord c) const { return (carte.find(c) == carte.end()); }
 	bool estRecouvert(Coord c) { return (!estLibre({ c.x, c.y, c.z + 1 })); }
+	void afficher();
+	void remplirQuadrillage(string quadri, Coord c, Tuile& t);
 
 };

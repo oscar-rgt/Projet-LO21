@@ -23,7 +23,7 @@ using namespace std;
 
 
 
-void Quadrillage() {
+void Quadrillage::StringQuadri() {
 	cout << "         _____         _____         _____         _____         _____         _____         _____          \n";
 	cout << "        /     \\       /     \\       /     \\       /     \\       /     \\       /     \\       /     \\         \n";
 	cout << "  _____/       \\_____/       \\_____/       \\_____/       \\_____/       \\_____/       \\_____/       \\_____   \n"; //ligne 2 sur quadri, ligne 1 en para
@@ -59,28 +59,28 @@ void Quadrillage() {
 
 
 
-bool est_libre(int l, int c, int emp[6][4]) {
+bool Quadrillage::est_libre(int l, int c, int emp[6][4]) {
 	if (emp[l][c] == 0) {
 		return true;
 	}
 	return false;
 }
 
-bool adjacent(int l1, int l2, int c1, int c2) {
+bool Quadrillage::adjacent(int l1, int l2, int c1, int c2) {
 	if (abs(l1 - l2) <= 2 && abs(c1 - c2) <= 1) {
 		return true;
 	}
 	return false;
 }
 
-bool estBienPlace(int l[3], int c[3]) {
+bool Quadrillage::estBienPlace(int l[3], int c[3]) {
 	if (adjacent(l[0], l[1], c[0], c[1]) && adjacent(l[0], l[2], c[0], c[2]) && adjacent(l[1], l[2], c[1], c[2])) {
 		return true;
 	}
 	return false;
 }
 
-string remplirQuadrillage(string old, int ligne[3], int colonne[3], Tuile& t, int emplacement[6][4]) {
+string Quadrillage::remplirQuadrillage(string old, int ligne[3], int colonne[3], Tuile& t, int emplacement[6][4]) {
 	int i = 0, passage = 0;
 	bool possible = true;
 	for (int i = 0; i < 3; i++) {
