@@ -6,8 +6,6 @@ Partie& Partie::getInstance(int id_, Mode m, Pile* pile, array<bool, 5> variante
 {
     static bool dejaCree = false;
     static Partie instance(id_, m, pile, variantes);
-
-    // Si quelqu’un essaie de redonner des paramètres → prévenir
     if (dejaCree) {
         cerr << " getInstance() a déjà été appelé. ";
     }
