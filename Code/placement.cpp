@@ -85,7 +85,6 @@ Cite::Coord Cite::Coord::cote(bool inversion) {
 }
 
 void tournerHoraire(Coord& c, Coord& sud, Coord& cote) {
-    // Sauvegarde temporaire
     Coord temp_nord = nord;
     Coord temp_sud = sud;
     Coord temp_cote = cote;
