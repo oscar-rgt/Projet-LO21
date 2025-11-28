@@ -14,7 +14,7 @@ private :
 	unsigned int niveau;
 	Orientation orientation;
 	Hexagone hexagones[3]; // faire une méthode qui tourne la tuile pour que l'hexagone au nord soit tjrs le 0, on tourne dans le sens des aiguilles d'une montre (SE = 1, SO =2)
-	unsigned int prix;
+	unsigned int prix; // faire une méthode inverser qui symétrise la tuile
 	Tuile(const Tuile& t) = delete;
 	Tuile& operator=(const Tuile& t) = delete;
 public:

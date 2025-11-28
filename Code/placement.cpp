@@ -9,8 +9,8 @@ const bool Cite::toucheCite(Coord c) const {
         || !estLibre({ c.x - 1, c.y, c.z }) || !estLibre({ c.x, c.y + 1, c.z }) || !estLibre({ c.x + 1, c.y, c.z }));
 }
 
-void Cite::placer(Tuile* t, Coord c){
-    Coord c2 = c.sudEst(), c3 = c.sudOuest();
+void Cite::placer(Tuile* t, Coord c){ // Il faut tourner la tuile avant de la placer
+    Coord c2 = c.sud(), c3 = c.cote(t->getInversion()); 
     if (!estLibre(c) || !estLibre(c2) || !estLibre(c3))
         throw CiteException("Placement impossible : Une des cases n'est pas libre.");
 
@@ -60,10 +60,10 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
         Coord h;
         // bonnes coordonnees selon l'hexa
         if (i == 1) {
-            h = c.sudOuest();
+            h = c.cote(t.getInversion());
         }
         else if (i == 2) {
-            h = c.sudEst();
+            h = c.sud();
         }
         else {
             h = c;
@@ -80,5 +80,8 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
     }
 }
 
-
+Cite::Coord Cite::Coord::cote(bool inversion) {
+    if (inversion) return { x - 1, y,z };
+    else return { x + 1, y,z };
+}
 
