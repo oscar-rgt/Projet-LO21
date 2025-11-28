@@ -17,8 +17,8 @@ class Cite {
 private :
 	struct Coord { //Tuple de coordonnées 
 		int x, y, z;
-		Coord sudOuest() { return { x,y + 1,z }; }
-		Coord sudEst() { return { x + 1 ,y + 1,z }; }// A changer en odd-q + symétrie axiale "haut/bas"
+		Coord sud() { return { x,y - 1,z }; }
+		Coord cote(bool inversion);// A changer en odd-q + symétrie axiale "haut/bas"
 		bool operator==(const Coord& other) const noexcept { return x == other.x && y == other.y && z == other.z; }
 	};
 	struct CoordHash {
@@ -38,7 +38,7 @@ private :
 public :
 	void placer(Tuile* t, Coord c);
 	const bool estLibre(Coord c) const { return (carte.find(c) == carte.end()); }
-	bool estRecouvert(Coord c) { return (!estLibre({ c.x, c.y, c.z + 1 })); }
+	const bool estRecouvert(Coord c) const { return (!estLibre({ c.x, c.y, c.z + 1 })); }
 	void afficher();
 	void remplirQuadrillage(Coord c, Tuile& t);
 

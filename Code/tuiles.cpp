@@ -29,7 +29,7 @@ int randomPlaceValue() {
 }
 
 
-Tuile::Tuile(unsigned int i, unsigned int p, unsigned int n) : id(i), orientation(N), prix(p), niveau(n) {
+Tuile::Tuile(unsigned int i, unsigned int p, unsigned int n) : id(i), inversion(0), prix(p), niveau(n) {
     for (int i = 0; i < 3; i++) {
         int t = randomIndexAkropolis();
         if (Type(t) == Carriere) {
