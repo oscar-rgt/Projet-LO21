@@ -30,6 +30,7 @@ public:
 
 private:
     Partie(int id_, Mode m, Pile* pile, array<bool,5> variantes_);
+
     array<bool, 5> variantes;
     int id;
     Mode mode;
