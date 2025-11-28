@@ -54,7 +54,7 @@ void Cite::afficher() {
     cout << quadrillage;
 }
 
-string Cite::remplirQuadrillage(string quadri, Coord c, Tuile& t) {
+void Cite::remplirQuadrillage(Coord c, Tuile& t) {
     for (int i = 0; i < 3; i++) {
         int j = 0;
         Coord h;
@@ -76,9 +76,8 @@ string Cite::remplirQuadrillage(string quadri, Coord c, Tuile& t) {
         else {
             j += 10 + 14 * h.y;
         }
-        quadri.replace(j, 3, t.getHexagone(i).affiche());
+        quadrillage.replace(j, 3, t.getHexagone(i).affiche());
     }
-    quadrillage =  quadri;
 }
 
 

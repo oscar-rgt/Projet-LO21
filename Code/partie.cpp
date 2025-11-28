@@ -2,13 +2,13 @@
 
 using namespace std;
 
-Partie& Partie::getInstance(int id_, Mode m, Pile* pile) {
-    static Partie instance(id_, m, pile);
+Partie& Partie::getInstance(int id_, Mode m, Pile* pile, array<bool, 5> variantes) {
+    static Partie instance(id_, m, pile, variantes);
     return instance;
 }
 
-Partie::Partie(int id_, Mode m, Pile* pile)
-    : id(id_), mode(m), nbJoueurs(0), pileTuiles(pile)
+Partie::Partie(int id_, Mode m, Pile* pile, array<bool, 5> variantes_)
+    : id(id_), mode(m), nbJoueurs(0), pileTuiles(pile), variantes(variantes_)
 {
     joueurs.fill(nullptr);
 }

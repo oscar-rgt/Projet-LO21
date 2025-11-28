@@ -40,6 +40,6 @@ public :
 	const bool estLibre(Coord c) const { return (carte.find(c) == carte.end()); }
 	bool estRecouvert(Coord c) { return (!estLibre({ c.x, c.y, c.z + 1 })); }
 	void afficher();
-	void remplirQuadrillage(string quadri, Coord c, Tuile& t);
+	void remplirQuadrillage(Coord c, Tuile& t);
 
 };
