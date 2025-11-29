@@ -29,7 +29,19 @@ int randomPlaceValue() {
 }
 
 
-Tuile::Tuile(unsigned int i, unsigned int p, unsigned int n) : id(i), inversion(0), prix(p), niveau(n) {
+Tuile::Tuile(unsigned int i, unsigned int p, unsigned int n) : id(i), inversion(0), prix(p), niveau(n) 
+{
+    design =
+        "         _____     \n" // Ligne 0
+        "        /     \\    \n" // Ligne 1
+        "  _____/       \\   \n" // Ligne 2
+        " /     \\       /   \n" // Ligne 3
+        "/       \\_____/    \n" // Ligne 4
+        "\\       /     \\    \n" // Ligne 5
+        " \\_____/       \\   \n" // Ligne 6
+        "       \\       /   \n" // Ligne 7
+        "        \\_____/    \n";
+    int positions[3] = { 50, 83, 130 };
     for (int i = 0; i < 3; i++) {
         int t = randomIndexAkropolis();
         if (Type(t) == Carriere) {
@@ -46,7 +58,7 @@ Tuile::Tuile(unsigned int i, unsigned int p, unsigned int n) : id(i), inversion(
             }
 
         }
-        
+        design.replace(positions[i], 3, hexagones[i].affiche());
     }
 }
 void Tuile::setPrix(unsigned int p) {
@@ -65,6 +77,5 @@ void Tuile::tourner() {
     hexagones[1] = temp;
     hexagones[2] = temp1;
 }
-
 
 

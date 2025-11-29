@@ -2,6 +2,7 @@
 #define PILE_H
 #include"tuiles.h"
 
+
 class PileException {
     string info;
 public:
@@ -17,7 +18,9 @@ public:
     unsigned int getId() const { return id; }
     Tuile getTuile(unsigned int id_) const;
     void decalagePrix();
+    void affiche();
     ~Pile();
+    bool estVide() { return nbTuiles == 0; }
 private:
     unsigned int id;
     unsigned int nbTuiles;

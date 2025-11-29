@@ -1,6 +1,7 @@
 #include "pile.h"
 #include <iostream>
-
+#include <string>
+#include<vector>
 Pile::Pile(unsigned int id_, unsigned int nb): id(id_), nbTuiles(nb)
 {
     tuiles = new Tuile[nb];
@@ -14,7 +15,7 @@ Pile::~Pile() {
 }
 
 void Pile::retirerTuile(unsigned int id_) {
-    if (nbTuiles == 0) {
+    if (estVide()) {
         throw PileException("La pile est vide !");
     }
     unsigned int index = nbTuiles;
@@ -59,5 +60,25 @@ void Pile::decalagePrix() {
                 tuiles[i].setPrix(tuiles[i].getPrix() - 1);
             }
         }
+    }
+}
+
+
+void Pile::affiche() {
+    vector<string> lignes(9, "");
+    const int hauteur = 9;
+    const int largeur_reelle = 20;
+    const int largeur_visuelle = 19;
+
+    for (unsigned int i = 0; i < nbTuiles; i++) {
+        string designTuile = tuiles[i].getDesign();
+        for (int j = 0; j < hauteur; j++) {
+            string segment = designTuile.substr(j * largeur_reelle, largeur_visuelle);
+            lignes[j] += segment;
+            lignes[j] += "         ";
+        }
+    }
+    for (int j = 0; j < hauteur; j++) {
+        cout << lignes[j] << endl;
     }
 }

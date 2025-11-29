@@ -20,7 +20,8 @@ using namespace std;
 
 */
 
-
+//une tuile: 
+// "         _____   \n        /     \\ \n  _____/       \\\n /     \\       /\n/       \\_____/ \n\\       /     \\\n \\_____/       \\\n       \\       /\n        \\_____/\n"
 
 
 void Quadrillage::StringQuadri() {

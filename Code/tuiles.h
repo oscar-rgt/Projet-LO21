@@ -18,12 +18,13 @@ private:
 	unsigned int id;
 	unsigned int niveau;
 	bool inversion;
+	string design;
 	Hexagone hexagones[3]; // faire une méthode qui tourne la tuile pour que l'hexagone au nord soit tjrs le 0, on tourne dans le sens des aiguilles d'une montre (SE = 1, SO =2)
 	unsigned int prix; // faire une méthode inverser qui symétrise la tuile
 	Tuile(const Tuile& t) = default;
 	Tuile& operator=(const Tuile& t) = default;
-	Tuile(unsigned int i, unsigned int p = 0, unsigned int n = 1);
 	Tuile() = default;
+	Tuile(unsigned int i, unsigned int p = 0, unsigned int n = 1);
 	~Tuile() {}
 public:
 	unsigned int getId() const { return id; }
@@ -33,8 +34,7 @@ public:
 	unsigned int getPrix() const { return prix; }
 	void tourner();
 	void setPrix(unsigned int p);
-	Tuile(unsigned int i, unsigned int p=0, unsigned int n=1);
-	~Tuile() {}
+	string& getDesign() { return design; }
 };
 
 
