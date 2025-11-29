@@ -28,7 +28,7 @@ bool JeuConsole::saisieOuiNon(const string& prompt) {
         if (reponse == "o") return true;
         if (reponse == "n") return false;
 
-        cout << "Répondre par 'o' ou 'n' : ";
+        cout << "Repondre par 'o' ou 'n' : ";
     }
 }
 
@@ -49,7 +49,7 @@ void JeuConsole::demanderConfiguration() {
         nomsJoueurs.push_back(nom);
     }
 
-    // 3. Difficulté IA (Si solo)
+    // 3. Difficulte A (Si solo)
     unsigned int niveauIC = 0;
     if (nbJoueurs == 1) {
         niveauIC = saisieNombre("Niveau IA (1-3)", 1, 3);
@@ -81,20 +81,19 @@ void JeuConsole::afficherEtatJeu() {
     if (!joueur) return;
 
     cout << "\n------------------------------------------" << endl;
-    cout << "TOUR DE : " << "NOM DU JOUEUR (à implémenter)" << endl;
-    // Utiliser joueur->getNom() quand la classe Joueur est linkée
+    cout << "TOUR DE : " << joueur->getNom() << endl;
     cout << "------------------------------------------" << endl;
 
-    // ICI : Afficher le plateau du joueur
-    // joueur->getCite()->afficherConsole();
+
+    joueur->getCite()->afficher();
 }
 
 void JeuConsole::jouerTour() {
     afficherEtatJeu();
 
-    // Simulation d'un tour
+
     cout << "1. Choisir une tuile" << endl;
-    int indexTuile = saisieNombre("Quel index de tuile ?", 0, 2);
+    int indexTuile = saisieNombre("Quel index de tuile ?", 1, 3);
 
     cout << "2. Placer la tuile" << endl;
     int x = saisieNombre("X", -10, 10);
@@ -110,7 +109,7 @@ void JeuConsole::jouerTour() {
     bool succes = Partie::getInstance().actionPlacerTuile(indexTuile, x, y, z, rotation);
 
     if (succes) {
-        cout << ">> Succès ! Tuile posée." << endl;
+        cout << ">> Succes ! Tuile posee." << endl;
         Partie::getInstance().passerAuJoueurSuivant();
     }
     else {
@@ -123,10 +122,10 @@ void JeuConsole::lancer() {
     cout << "          AKROPOLIS (MODE CONSOLE)        " << endl;
     cout << "==========================================" << endl;
 
-    // Étape 1 : Configuration et Initialisation du Moteur
+    // ï¿½tape 1 : Configuration et Initialisation du Moteur
     demanderConfiguration();
 
-    // Étape 2 : Boucle de jeu principale
+    // ï¿½tape 2 : Boucle de jeu principale
     while (!Partie::getInstance().estFinDePartie()) {
         jouerTour();
     }

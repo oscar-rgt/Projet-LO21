@@ -52,13 +52,22 @@ void Partie::initialiserPiles() {
     int nbPiles = 0;
 
     
-    if (modeTuileCite == TuileCite::STANDARD) nbPiles = 11;
-    else nbPiles = 19;
+    if (modeTuileCite == TuileCite::STANDARD) {
+        nbPiles = 11;
+    }
+    else {
+        nbPiles = 19;
+    }
 
     piles.reserve(nbPiles);
     for (int i = 0; i < nbPiles; ++i) {
         piles.emplace_back(i, 3); // Taille 3 par défaut 
     }
+    pileActuelle = 0;
+    tuileActuelle = 0;
+    ajouterTuileChantier(piles[pileActuelle].getTuile(tuileActuelle));
+    ajouterTuileChantier(piles[pileActuelle].getTuile(++tuileActuelle));
+    ajouterTuileChantier(piles[pileActuelle].getTuile(++tuileActuelle));
 }
 
 void Partie::designerArchitecteChef() {
@@ -75,10 +84,15 @@ bool Partie::actionPlacerTuile(int indexTuileChoisie, int x, int y, int z, int r
     Joueur* joueur = getJoueurActuel();
     if (!joueur) return false;
     
-    //Tuile& tuile = piles[...].getTuile(indexTuileChoisie);
-    
+    Tuile& tuile = chantier[indexTuileChoisie]; 
+    retirerTuileChantier(tuile);
+    if (tuileActuelle == 2) {
+        tuileActuelle = 0;
+        pileActuelle++;
+    }
+    ajouterTuileChantier(piles[pileActuelle].getTuile(tuileActuelle++));
     if (joueur->getCite()->estLibre({ x, y, z })) {
-        //joueur->getCite()->placer(tuile, { x, y, z });
+        joueur->getCite()->placer(tuile, { x, y, z });
         return true;
     }
 
@@ -90,8 +104,7 @@ void Partie::passerAuJoueurSuivant() {
 }
 
 bool Partie::estFinDePartie() const {
-    // TODO: Vérifier si toutes les piles sont vides
-    return false;
+    return piles.empty();
 }
 
 Joueur* Partie::getJoueurActuel() const {
