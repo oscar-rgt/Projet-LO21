@@ -53,7 +53,7 @@ bool Partie::menu() {
         for (unsigned int i = 0; i < nbJoueurs; i++) {
             cout << "Nom du joueur " << i + 1 << " : ";
             cin >> nom;
-            ajouterJoueur(&Joueur(nom));
+            joueurs[i] = &Joueur(nom);
         }
                 //choix du niveau de difficulté de l'Illustre Constructeur si mode solo;
         if (nbJoueurs == 1) {

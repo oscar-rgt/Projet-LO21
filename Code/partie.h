@@ -19,13 +19,6 @@ public:
     Partie(const Partie&) = delete;
     Partie& operator=(const Partie&) = delete;
 
-    bool ajouterJoueur(Joueur* j);
-    int getId() const;
-    int getNbJoueurs() const;
-    Joueur* getJoueur(int index) const;
-    Pile* getPile() const;
-    void jouerTours();
-    bool aVariante(Var v) const { return variantes[v]; }
 
     bool menu();
     void initPartie(bool reprise);
