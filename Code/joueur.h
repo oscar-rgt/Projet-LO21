@@ -16,15 +16,18 @@ private:
 public:
     Joueur(const string& n);
     const string& getNom() const;
+
     int getPoints() const;
-    int getPierres() const;
-    Cite* getcite() const;
-    void setCite(Cite* c);
     void setPoints(int p);
     void ajouterPoints(int delta);
+
+    int getPierres() const;
     void ajouterPierres(int n = 1);
     bool utiliserPierres(int n = 1);
     void ajouterPierresRecouvrement(int nbRecouverts);
+
+    Cite* getCite() const;   // CORRIGÉ : bon nom
+    void setCite(Cite* c);
 };
 
 #endif
