@@ -8,14 +8,15 @@
 
 class JeuConsole {
 public:
-    // Point d'entrée principal du mode console
+    // Point d'entrï¿½e principal du mode console
     void lancer();
 
 private:
-    // Méthodes internes d'affichage et de saisie
+    // Mï¿½thodes internes d'affichage et de saisie
     void demanderConfiguration();
     void afficherEtatJeu();
     void jouerTour();
+    void afficherScore();
 
     // Utilitaires de saisie robustes
     int saisieNombre(const std::string& prompt, int min, int max);

@@ -95,15 +95,16 @@ void JeuConsole::jouerTour() {
     cout << "1. Choisir une tuile" << endl;
     int indexTuile = saisieNombre("Quel index de tuile ?", 1, 3);
 
+    int rotation = 0;
+    if (saisieOuiNon("Tourner la tuile ?")) {
+        rotation = saisieNombre("Combien de rotations (1-3) ?", 1, 3);
+    }
+
     cout << "2. Placer la tuile" << endl;
     int x = saisieNombre("X", -10, 10);
     int y = saisieNombre("Y", -10, 10);
     int z = saisieNombre("Z (Etage)", 0, 5);
 
-    int rotation = 0;
-    if (saisieOuiNon("Tourner la tuile ?")) {
-        rotation = saisieNombre("Combien de rotations (1-3) ?", 1, 3);
-    }
 
     // APPEL AU MOTEUR
     bool succes = Partie::getInstance().actionPlacerTuile(indexTuile, x, y, z, rotation);
@@ -114,7 +115,21 @@ void JeuConsole::jouerTour() {
     }
     else {
         cout << ">> Erreur ! Placement invalide." << endl;
+        jouerTour();
     }
+    afficherScore();
+}
+
+void JeuConsole::afficherScore() {
+    Partie& partie = Partie::getInstance();
+    Joueur* joueur = partie.getJoueurActuel();
+
+    if (!joueur) return;
+
+    cout << "\n------------------------------------------" << endl;
+    cout << "SCORE : " << joueur->getScore() << endl;
+    cout << "------------------------------------------" << endl;
+
 }
 
 void JeuConsole::lancer() {
@@ -122,10 +137,10 @@ void JeuConsole::lancer() {
     cout << "          AKROPOLIS (MODE CONSOLE)        " << endl;
     cout << "==========================================" << endl;
 
-    // �tape 1 : Configuration et Initialisation du Moteur
+    // etape 1 : Configuration et Initialisation du Moteur
     demanderConfiguration();
 
-    // �tape 2 : Boucle de jeu principale
+    // etape 2 : Boucle de jeu principale
     while (!Partie::getInstance().estFinDePartie()) {
         jouerTour();
     }
