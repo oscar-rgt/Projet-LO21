@@ -23,6 +23,7 @@ public:
 	unsigned int getPrix() const { return prix; }
 	Tuile(unsigned int i, unsigned int p=0, unsigned int n=1);
 	~Tuile() {}
+	void tourner();
 };
 
 

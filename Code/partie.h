@@ -7,12 +7,13 @@
 #include "pile.h"
 
 using namespace std;
-
-typedef enum {V1, V2, V3, V4, V5} Var;
+ 
 
 class Partie {
 public:
     enum Mode { solo, multi };
+    enum Var { V1, V2, V3, V4, V5 };
+    enum tuileCite { standard, augmente };
 
     static Partie& getInstance(int id_, Mode m, Pile* pile, array<bool, 5> variantes);
 
@@ -28,6 +29,10 @@ public:
     void jouerTours();
     bool aVariante(Var v) const { return variantes[v]; }
 
+    bool menu();
+    void initPartie(bool reprise);
+    void bouclePartieMulti();
+
 private:
     Partie(int id_, Mode m, Pile* pile, array<bool,5> variantes_);
 
@@ -37,6 +42,9 @@ private:
     array<Joueur*, 4> joueurs;
     int nbJoueurs;
     Pile* pileTuiles;
+    unsigned int niveauIllustreConstructeur;
+    tuileCite modeTuileCite;
+    
 };
 
 #endif

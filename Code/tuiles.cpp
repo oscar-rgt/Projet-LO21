@@ -50,6 +50,14 @@ Tuile::Tuile(unsigned int i, unsigned int p, unsigned int n) : id(i), inversion(
     }
 }
 
+void Tuile::tourner() {
+    Hexagone temp = hexagones[0];
+    Hexagone temp1 = hexagones[1];
+    hexagones[0] = hexagones[2];
+    hexagones[1] = temp;
+    hexagones[2] = temp1;
+}
+
 
 
 

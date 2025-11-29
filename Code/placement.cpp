@@ -84,12 +84,4 @@ Cite::Coord Cite::Coord::cote(bool inversion) {
     else return { x + 1, y,z };
 }
 
-void tournerHoraire(Coord& c, Coord& sud, Coord& cote) {
-    Coord temp_nord = nord;
-    Coord temp_sud = sud;
-    Coord temp_cote = cote;
-    
-    nord = temp_sud;
-    sud = temp_cote;
-    cote = temp_nord;
-}
+
