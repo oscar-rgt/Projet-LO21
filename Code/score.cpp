@@ -21,10 +21,9 @@ int Score::getScoreType(TypeQuartier type) const {
     return (it != pointsParType.end()) ? it->second : 0;
 }
 
-const Joueur* Score::getJoueur() const {
+Joueur* Score::getJoueur() const {  
     return joueur;
 }
-
 
 //score total
 void Score::calculerScore() {
@@ -42,94 +41,66 @@ void Score::calculerScore() {
     joueur->setPoints(total);
 }
 
-
-// score par type
+//score selon type
 int Score::calculerScoreType(TypeQuartier type) {
-
     int score = 0;
     int multiplicateur = 0;
 
-    const auto& carte = cite->getCarte();
-
-
-    // ---------------- ÉTOILES DES PLACES ----------------
-    for (auto it = carte.begin(); it != carte.end(); ++it) {
+    // calcul des étoiles des Places
+    for (auto it = cite->carte.begin(); it != cite->carte.end(); ++it) {
         Hexagone* h = it->second;
-
         if (h->getType() == Type::Place)
             multiplicateur += h->getEtoiles();
     }
 
-    if (multiplicateur == 0)
-        return 0;
+    if (multiplicateur == 0) return 0;
 
-
-    // ---------------- SCORE PAR TYPE ----------------------
-    for (auto it = carte.begin(); it != carte.end(); ++it) {
-
+    //deuxième boucle : calcul du score selon le type
+    for (auto it = cite->carte.begin(); it != cite->carte.end(); ++it) {
         Hexagone* h = it->second;
 
         switch (type) {
+        case TypeQuartier::Habitation:
+            if (h->getType() == Type::Habitation)
+                score += 1;
+            break;
 
-            case TypeQuartier::Habitation:
-                if (h->getType() == Type::Habitation)
-                    score += 1;
-                break;
+        case TypeQuartier::Marche:
+            if (h->getType() == Type::Marche) {
+                int ptsAdj = 0;
+                for (auto* v : cite->getAdjacents(h)) {
+                    if (v->getType() != Type::Marche && v->getType() != Type::Place)
+                        ptsAdj++;
+                }
+                score += ptsAdj;
+            }
+            break;
 
-
-            case TypeQuartier::Marche:
-                if (h->getType() == Type::Marche) {
-
-                    int ptsAdj = 0;
-
-                    // adjacents : Cite::getAdjacents(Coord)
-                    const auto& adj = cite->getAdjacents(it->first);
-
-                    for (Hexagone* v : adj) {
-                        if (v->getType() != Type::Marche &&
-                            v->getType() != Type::Place)
-                            ptsAdj++;
+        case TypeQuartier::Caserne:
+            if (h->getType() == Type::Caserne) {
+                bool isIsolee = true;
+                for (auto* v : cite->getAdjacents(h)) {
+                    if (v->getType() == Type::Caserne) {
+                        isIsolee = false;
+                        break;
                     }
-
-                    score += ptsAdj;
                 }
-                break;
-
-
-            case TypeQuartier::Caserne:
-                if (h->getType() == Type::Caserne) {
-
-                    bool isIsolee = true;
-                    const auto& adj = cite->getAdjacents(it->first);
-
-                    for (Hexagone* v : adj) {
-                        if (v->getType() == Type::Caserne) {
-                            isIsolee = false;
-                            break;
-                        }
-                    }
-
-                    if (isIsolee)
-                        score += 1;
-                }
-                break;
-
-
-            case TypeQuartier::Temple:
-                if (h->getType() == Type::Temple) {
-
-                    const auto& adj = cite->getAdjacents(it->first);
-
-                    if (adj.size() == 6)
-                        score += 2;
-                }
-                break;
-
-
-            case TypeQuartier::Jardin:
-                if (h->getType() == Type::Jardin)
+                if (isIsolee)
                     score += 1;
-                break;
+            }
+            break;
+
+        case TypeQuartier::Temple:
+            if (h->getType() == Type::Temple) {
+                if (cite->getAdjacents(h).size() == 6)
+                    score += 2;
+            }
+            break;
+
+        case TypeQuartier::Jardin:
+            if (h->getType() == Type::Jardin)
+                score += 1;
+            break;
         }
     }
 
