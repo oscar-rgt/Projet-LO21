@@ -1,24 +1,44 @@
 #include "pile.h"
 #include <iostream>
 
-Pile::Pile(unsigned int id_): id(id_), nbTuiles(3)
+Pile::Pile(unsigned int id_, unsigned int nb): id(id_), nbTuiles(nb)
 {
-    for (unsigned int i = 0; i < 3; i++) {
+    tuiles = new Tuile[nb];
+    for (unsigned int i = 0; i < nb; i++) {
         tuiles[i] = Tuile(id * 10 + i, i + 1);
     }
 }
 
+Pile::~Pile() {
+    delete[] tuiles; 
+}
+
 void Pile::retirerTuile(unsigned int id_) {
-    if(nbTuiles > 0) {
-        for (unsigned int i = 0; i < nbTuiles; i++) {
-            if (tuiles[i].getId() == id_) {
-                tuiles[i] = NULL;
-                nbTuiles--;
-            }
-        }
-    } 
-    else {
+    if (nbTuiles == 0) {
         throw PileException("La pile est vide !");
+    }
+    unsigned int index = nbTuiles;
+    for (unsigned int i = 0; i < nbTuiles; i++) {
+        if (tuiles[i].getId() == id_) {
+            index= i;
+            break;
+        }
+    }
+    nbTuiles--;
+    if (nbTuiles== 0) {
+        delete[] tuiles;
+        tuiles = nullptr;
+    }
+    else {
+        Tuile* nouv = new Tuile[nbTuiles];
+        for (unsigned int i = 0; i < index; i++) {
+            nouv[i] = tuiles[i];
+        }
+        for (unsigned int i = index; i < nbTuiles; ++i) {
+            nouv[i] = tuiles[i];
+        }
+        delete[] tuiles;
+        tuiles = nouv;
     }
 }
 

@@ -11,16 +11,17 @@ public:
 
 class Pile {
 public:
-    Pile(unsigned int id_);
+    Pile(unsigned int id_, unsigned int nb=3);
     void retirerTuile(unsigned int id_);
     unsigned int getNbTuiles() const { return nbTuiles; }
     unsigned int getId() const { return id; }
     Tuile getTuile(unsigned int id_) const;
     void decalagePrix();
+    ~Pile();
 private:
     unsigned int id;
     unsigned int nbTuiles;
-    Tuile tuiles[3];
+    Tuile* tuiles;
 };
 
 #endif
