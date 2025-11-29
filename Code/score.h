@@ -22,7 +22,7 @@ private:
     int total;
 
 public:
-    Score(Joueur* j); //à modifier dcp
+    Score(Joueur* j);
 
     void calculerScore();
     int calculerScoreType(TypeQuartier type);
