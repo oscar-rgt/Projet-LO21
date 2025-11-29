@@ -21,7 +21,7 @@ int Score::getScoreType(TypeQuartier type) const {
     return (it != pointsParType.end()) ? it->second : 0;
 }
 
-Joueur* Score::getJoueur() const {  
+const Joueur* Score::getJoueur() const {  
     return joueur;
 }
 
