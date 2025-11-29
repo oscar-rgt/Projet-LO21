@@ -50,6 +50,13 @@ Tuile::Tuile(unsigned int i, unsigned int p, unsigned int n) : id(i), inversion(
     }
 }
 
-
+void Tuile::setPrix(unsigned int p) {
+    if (p >= 0 && p <= 3) {
+        prix = p;
+    }
+    else {
+        throw TuileException("Le prix n'est pas correct");
+    }
+}
 
 
