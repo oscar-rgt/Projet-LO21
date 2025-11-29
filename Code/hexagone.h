@@ -23,8 +23,7 @@ private:
 	unsigned int niveau, etoiles;
 	Tuile* tuile;
 	Type type;
-	bool recouvert, place;
-	void recouvrir(bool r);
+	bool place;
 	Hexagone(Type t, unsigned int n = 1, Tuile* tu = nullptr, unsigned int e = 0, bool p = false, bool r = false ): type(t), niveau(n), tuile(tu), etoiles(e), place(p), recouvert(r) {}
 	~Hexagone() {}
 	Hexagone() = default;
@@ -34,7 +33,6 @@ public:
 	Tuile* getTuile() const { return tuile; }
 	Type getType() const { return type; }
 	int getNiveau() const { return niveau; }
-	bool est_recouvert() const { return recouvert; }
 	int getEtoiles() const { return etoiles; }
     string affiche();
 };

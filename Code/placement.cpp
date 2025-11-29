@@ -23,17 +23,9 @@ void Cite::placer(Tuile* t, Coord c){ // Il faut tourner la tuile avant de la pl
     Coord dessous_c3 = {c3.x, c3.y, c3.z - 1};
     
     if (estLibre(dessous_c) || estLibre(dessous_c2) || estLibre(dessous_c3)) throw CiteException("Placement impossible : Les cases inférieures sont vides.");
-    // A revoir : un hexagone ne sait pas à quelle tuile il appartient => Pas de getTuile
-    ////////////////////////////////////////////////////////////////////////////////
-    // Vérifier qu'elle est à cheval sur au moins 2 tuiles différentes
         Tuile* tuile_dessous_c = carte[dessous_c]->getTuile();
         Tuile* tuile_dessous_c2 = carte[dessous_c2]->getTuile();
         Tuile* tuile_dessous_c3 = carte[dessous_c3]->getTuile();
-    ////////////////////////////////////////////////////////////////////////////////
-    
-
-
-    //Plus rien ne fonctionne ici dcp
     
     bool deuxTuilesDifferentes = (tuile_dessous_c != tuile_dessous_c2) || 
                                   (tuile_dessous_c != tuile_dessous_c3) || 
@@ -84,4 +76,13 @@ Cite::Coord Cite::Coord::cote(bool inversion) {
     else return { x + 1, y,z };
 }
 
-
+vector<Hexagone*> Cite::getAdjacents(Coord c){
+    if (!toucheCite(c)) throw CiteException("Cet hexagone ne touche pas la cité.");
+    vector<Coord> coo = { {c.x - 1, c.y - 1, c.z},  { c.x, c.y - 1, c.z }, { c.x + 1, c.y - 1, c.z },
+        { c.x - 1, c.y, c.z }, { c.x, c.y + 1, c.z }, { c.x + 1, c.y, c.z } };
+    vector<Hexagone*> ret;
+    for (Coord c : coo) {
+        if (!estLibre(c)) ret.push_back(carte[c]);
+    }
+    return ret;
+}

@@ -1,6 +1,7 @@
 #pragma once
 #include "tuiles.h"
 #include "hexagone.h"
+#include <vector>
 #include <unordered_map>
 
 using namespace std;
@@ -18,7 +19,7 @@ private :
 	struct Coord { //Tuple de coordonnées 
 		int x, y, z;
 		Coord sud() { return { x,y - 1,z }; }
-		Coord cote(bool inversion);// A changer en odd-q + symétrie axiale "haut/bas"
+		Coord cote(bool inversion);
 		bool operator==(const Coord& other) const noexcept { return x == other.x && y == other.y && z == other.z; }
 	};
 	struct CoordHash {
@@ -30,9 +31,8 @@ private :
 			return hx ^ (hy << 1) ^ (hz << 2);
 		}
 	};
-	unordered_map<Coord, Hexagone*, CoordHash> carte; // Espace 3D de références d'hexagones 
+	unordered_map<Coord, Hexagone*, CoordHash> carte; // Espace 3D de pointeurs d'hexagones 
 	//  carte[{0, 0, 0}] = tuile0;
-	//vector<Coord> voisinsTuile(Coord c); // Bloque la compilation : pk un vector ? fct à définir
 	const bool toucheCite(Coord c) const;
 	string quadrillage;
 public :
@@ -41,5 +41,5 @@ public :
 	const bool estRecouvert(Coord c) const { return (!estLibre({ c.x, c.y, c.z + 1 })); }
 	void afficher();
 	void remplirQuadrillage(Coord c, Tuile& t);
-
+	vector<Hexagone*> getAdjacents(Coord c);
 };
