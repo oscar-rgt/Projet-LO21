@@ -20,9 +20,9 @@ const string& Joueur::getNom() const {
 Cite* Joueur::getCite() const { return cite; }
 void Joueur::setCite(Cite* c) { cite = c; }
 
-Score* Joueur::getScore() const { return score; }
+Score* Joueur::getScore() const { return score; } //lire les points
 
-void Joueur::calculerScore() {
+void Joueur::calculerScore() { //mettre à jour le score
     if (score)
         score->calculerScore();
 }
