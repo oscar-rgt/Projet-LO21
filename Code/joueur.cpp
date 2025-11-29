@@ -1,9 +1,9 @@
 #include "joueur.h"
 
-using namespace std; 
+using namespace std;
 
 Joueur::Joueur(const string& n)
-    : nom(n), points(0), pierres(0) {}
+    : nom(n), points(0), pierres(0), cite(nullptr) {}
 
 const string& Joueur::getNom() const {
     return nom;
@@ -13,10 +13,6 @@ int Joueur::getPoints() const {
     return points;
 }
 
-int Joueur::getPierres() const {
-    return pierres;
-}
-
 void Joueur::setPoints(int p) {
     points = (p >= 0) ? p : 0;
 }
@@ -24,6 +20,10 @@ void Joueur::setPoints(int p) {
 void Joueur::ajouterPoints(int delta) {
     points += delta;
     if (points < 0) points = 0;
+}
+
+int Joueur::getPierres() const {
+    return pierres;
 }
 
 void Joueur::ajouterPierres(int n) {
@@ -43,4 +43,12 @@ void Joueur::ajouterPierresRecouvrement(int nbRecouverts) {
     if (nbRecouverts > 0) {
         ajouterPierres(nbRecouverts);
     }
+}
+
+Cite* Joueur::getCite() const {
+    return cite;
+}
+
+void Joueur::setCite(Cite* c) {
+    cite = c;
 }
