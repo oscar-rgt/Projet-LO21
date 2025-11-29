@@ -1,108 +1,100 @@
 #include "partie.h"
-#include <iostream>
 #include <random>
+#include <algorithm>
+#include <iostream> 
+#include "joueur.h" 
+#include "pile.h" 
+#include "tuiles.h"
 
 using namespace std;
 
-Partie& Partie::getInstance(int id_, Mode m, Pile* pile, array<bool, 5> variantes)
-{
-    static bool dejaCree = false;
-    static Partie instance(id_, m, pile, variantes);
-    if (dejaCree) {
-        cerr << " getInstance() a déjà été appelé. ";
-    }
-
-    dejaCree = true;
+Partie& Partie::getInstance() {
+    static Partie instance;
     return instance;
 }
 
-Partie::Partie(int id_, Mode m, Pile* pile, array<bool, 5> variantes_)
-    : id(id_), mode(m), nbJoueurs(0), pileTuiles(pile), variantes(variantes_)
+Partie::Partie() : indexJoueurActuel(0), nbJoueurs(0), modeTuileCite(TuileCite::STANDARD), niveauIllustreConstructeur(0) {}
+
+Partie::~Partie() {
+    // Nettoyage de la mémoire (car on utilise new Joueur)
+    for (Joueur* j : joueurs) {
+        delete j;
+    }
+    joueurs.clear();
+}
+
+void Partie::initialiser(int nb, const vector<string>& nomsJoueurs,
+    TuileCite mode, const array<bool, 5>& variantesActives,
+    unsigned int niveauIC)
 {
-    bool reprise;
-    reprise = menu();
-    initPartie(reprise);
+    // 1. Reset de la partie précédente
+    for (Joueur* j : joueurs) delete j;
+    joueurs.clear();
+    piles.clear();
 
-}
+    // 2. Configuration
+    nbJoueurs = nb;
+    modeTuileCite = mode;
+    variantes = variantesActives;
+    niveauIllustreConstructeur = niveauIC;
 
-
-bool Partie::menu() {
-    string reponse = "";
-    string nom;
-    unsigned int reponseNombre = 0;
-    bool reprise;
-    bool variante;
-
-    //reprise ou abandon d'une eventuelle partie en cours
-    //if(partieEnCours)
-    cout << "Voulez vous reprendre la partie déjà commencée ou en recommencer une nouvelle ? (o/n)\n";
-    do {
-        cin >> reponse;
-    } while (reponse != "o" && reponse != "n");
-    reprise = reponse == "o" ? true : false;
-
-    if (reprise == false) {
-        cout << "Combien de joueurs ?\n";
-        do {
-            cin >> reponseNombre;
-        } while (reponseNombre < 0 && reponseNombre > 4);
-        nbJoueurs = reponseNombre;
-        for (unsigned int i = 0; i < nbJoueurs; i++) {
-            cout << "Nom du joueur " << i + 1 << " : ";
-            cin >> nom;
-            ajouterJoueur(&Joueur(nom));
-        }
-                //choix du niveau de difficulté de l'Illustre Constructeur si mode solo;
-        if (nbJoueurs == 1) {
-            cout << "Quel niveau de difficulté pour l'Illustre Constructeur ? (1 2 3)\n";
-            do {
-                cin >> reponseNombre;
-            } while (reponseNombre < 0 && reponseNombre > 3);
-            niveauIllustreConstructeur = reponseNombre;
-        }
-                //nombre de tuiles cité(standard ou augmenté);
-        cout << "Nombre de tuiles cité : (standard / augmente)\n";
-        do {
-            cin >> reponse;
-        } while (reponse != "standard" && reponse != "augmente");
-         modeTuileCite = reponse=="standard"?standard:augmente;
-                //activation d'une ou plusieurs variantes.
-         cout << "Activation de variantes ? (o/n)\n";
-         do {
-             cin >> reponse;
-         } while (reponse != "o" && reponse != "n");
-         variante = reponse == "o" ? true : false;
-         if (variante) {
-             for (unsigned int i = 0; i < 5; i++) {
-                 cout << "Voulez-vous activer la variante " << i << " ?\n";
-                 do {
-                     cin >> reponse;
-                 } while (reponse != "o" && reponse != "n");
-                 variantes[i] = reponse == "o" ? true : false;
-             }
-         }
+    // 3. Création des joueurs
+    for (const string& nom : nomsJoueurs) {
+        joueurs.push_back(new Joueur(nom)); 
     }
-    return reprise;
+
+    // 4. Initialisation du plateau et des piles
+    initialiserPiles();
+    designerArchitecteChef();
 }
 
-void Partie::bouclePartieMulti() {
-    for (unsigned int i = 0; i < nbJoueurs; i++) {
+void Partie::initialiserPiles() {
+    int nbPiles = 0;
 
+    
+    if (modeTuileCite == TuileCite::STANDARD) nbPiles = 11;
+    else nbPiles = 19;
+
+    piles.reserve(nbPiles);
+    for (int i = 0; i < nbPiles; ++i) {
+        piles.emplace_back(i, 3); // Taille 3 par défaut 
     }
 }
 
-void Partie::initPartie(bool reprise) {
-    //if(reprise){remettre comme état sauvegardé}
+void Partie::designerArchitecteChef() {
+    if (joueurs.empty()) return;
 
-    //désignation aléatoire de l'architecte en chef au début de partie
-    static random_device rd;
-    static mt19937 gen(rd());
-    static uniform_int_distribution<> dist(1, nbJoueurs);
-    Joueur* temp = joueurs[dist(gen)];
-    joueurs[dist(gen)] = joueurs[0];
-    joueurs[0] = temp;
+    random_device rd;
+    mt19937 gen(rd());
+    shuffle(joueurs.begin(), joueurs.end(), gen);
+    indexJoueurActuel = 0;
+}
 
-    if (nbJoueurs > 1) bouclePartieMulti();
-    //else bouclePartieIA();
+bool Partie::actionPlacerTuile(int indexTuileChoisie, int x, int y, int z, int rotation) {
 
+    Joueur* joueur = getJoueurActuel();
+    if (!joueur) return false;
+    
+    //Tuile& tuile = piles[...].getTuile(indexTuileChoisie);
+    
+    if (joueur->getCite()->estLibre({ x, y, z })) {
+        //joueur->getCite()->placer(tuile, { x, y, z });
+        return true;
+    }
+
+    return true;
+}
+
+void Partie::passerAuJoueurSuivant() {
+    indexJoueurActuel = (indexJoueurActuel + 1) % nbJoueurs;
+}
+
+bool Partie::estFinDePartie() const {
+    // TODO: Vérifier si toutes les piles sont vides
+    return false;
+}
+
+Joueur* Partie::getJoueurActuel() const {
+    if (joueurs.empty()) return nullptr;
+    return joueurs[indexJoueurActuel];
 }
