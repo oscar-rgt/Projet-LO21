@@ -25,7 +25,9 @@ Partie::Partie(int id_)
 
     initPartie(reprise);
 
-    
+    for (unsigned int i = 0; i < nbJoueurs; i++) {
+        delete joueurs[i];
+    }
 }
 
 
@@ -53,7 +55,7 @@ bool Partie::menu() {
         for (unsigned int i = 0; i < nbJoueurs; i++) {
             cout << "Nom du joueur " << i + 1 << " : ";
             cin >> nom;
-            joueurs[i] = &Joueur(nom);
+            joueurs[i] = new Joueur(nom);
         }
                 //choix du niveau de difficulté de l'Illustre Constructeur si mode solo;
         if (nbJoueurs == 1) {
@@ -137,7 +139,8 @@ void Partie::initPartie(bool reprise) {
 
 
     //Creation des piles de la partie
-    if (modeTuileCite == standard) {
+    if (modeTuileCite == standard) {    
+        piles = (Pile*)malloc(11*sizeof(Pile));
         for (unsigned int i = 0; i < 11; i++) {
             switch (nbJoueurs) {
             case 2:
@@ -155,16 +158,19 @@ void Partie::initPartie(bool reprise) {
     else {
         switch (nbJoueurs) {
         case 2:
+            piles = (Pile*)malloc(19 * sizeof(Pile));
             for (unsigned int i = 0; i < 19; i++) {
                 piles[i] = Pile(i, 3);
             }
             break;
         case 3:
+            piles = (Pile*)malloc(15 * sizeof(Pile));
             for (unsigned int i = 0; i < 15; i++) {
                 piles[i] = Pile(i, 4);
             }
             break;
         case 4:
+            piles = (Pile*)malloc(11 * sizeof(Pile));
             for (unsigned int i = 0; i < 11; i++) {
                 piles[i] = Pile(i, 5);
             }
