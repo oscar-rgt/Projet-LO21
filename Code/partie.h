@@ -11,18 +11,16 @@ using namespace std;
 
 class Partie {
 public:
-    enum Mode { solo, multi };
     enum Var { V1, V2, V3, V4, V5 };
     enum tuileCite { standard, augmente };
 
-    static Partie& getInstance(int id_, Mode m, Pile* pile, array<bool, 5> variantes);
+    static Partie& getInstance(int id_, Pile* pile, array<bool, 5> variantes);
 
     Partie(const Partie&) = delete;
     Partie& operator=(const Partie&) = delete;
 
     bool ajouterJoueur(Joueur* j);
     int getId() const;
-    Mode getMode() const;
     int getNbJoueurs() const;
     Joueur* getJoueur(int index) const;
     Pile* getPile() const;
@@ -34,14 +32,13 @@ public:
     void bouclePartieMulti();
 
 private:
-    Partie(int id_, Mode m, Pile* pile, array<bool,5> variantes_);
+    Partie(int id_);
 
     array<bool, 5> variantes;
     int id;
-    Mode mode;
     array<Joueur*, 4> joueurs;
     int nbJoueurs;
-    Pile* pileTuiles;
+    Pile* piles;
     unsigned int niveauIllustreConstructeur;
     tuileCite modeTuileCite;
     
