@@ -29,7 +29,7 @@ public:
 
     int getTotal() const;
     int getScoreType(TypeQuartier type) const;
-    const Joueur* getJoueur() const; //a modif aussi
+    const Joueur* getJoueur() const;
 };
 
 #endif
