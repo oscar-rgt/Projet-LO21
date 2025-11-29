@@ -2,7 +2,6 @@
 #define JOUEUR_H
 
 #include <string>
-#include "cite.h"
 #include "score.h"
 
 using namespace std;
