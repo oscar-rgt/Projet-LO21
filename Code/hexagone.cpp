@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include "hexagone.h"
+#include "tuiles.h"
 
 using namespace std;
 
