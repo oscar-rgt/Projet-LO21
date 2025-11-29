@@ -30,6 +30,7 @@ public:
     void ajouterPierres(int n = 1);
     bool utiliserPierres(int n = 1);
     void ajouterPierresRecouvrement(int nbRecouverts);
+
 };
 
 #endif
