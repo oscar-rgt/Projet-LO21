@@ -1,10 +1,11 @@
 #include <iostream>
 #include <string>
 #include <cstdio>
-#include"tuiles.h"
 #ifndef HEXAGONE_H
 #define HEXAGONE_H
 using namespace std;
+
+class Tuile;
 
 class HexaException {
 	string info;
