@@ -46,7 +46,7 @@ int Score::calculerScoreType(TypeQuartier type) {
     int score = 0;
     int multiplicateur = 0;
 
-    // calcul des étoiles des Places
+    // calcul des étoiles des places
     for (auto it = cite->carte.begin(); it != cite->carte.end(); ++it) {
         Hexagone* h = it->second;
         if (h->getType() == Type::Place)
@@ -55,7 +55,7 @@ int Score::calculerScoreType(TypeQuartier type) {
 
     if (multiplicateur == 0) return 0;
 
-    //deuxième boucle : calcul du score selon le type
+    //calcul du score selon type
     for (auto it = cite->carte.begin(); it != cite->carte.end(); ++it) {
         Hexagone* h = it->second;
 
