@@ -35,9 +35,9 @@ void Cite::placer(Tuile* t, Coord c){ // Il faut tourner la tuile avant de la pl
     if (!deuxTuilesDifferentes) 
         throw CiteException("Placement impossible : Les cases inférieures sont dans la même tuile.");
     }
-    carte[c] = &(t->getHexagone(0));
-    carte[c2] = &(t->getHexagone(1));
-    carte[c3] = &(t->getHexagone(2));
+    carte[c] = t->getHexagone(0);
+    carte[c2] = t->getHexagone(1);
+    carte[c3] = t->getHexagone(2);
     remplirQuadrillage(c, *t);
 }
 
@@ -53,10 +53,10 @@ void Cite::placerTuileDepart() {
     Coord c2 = { -1, 0, 0 };
     Coord c3 = { 1, -1, 0 };
 
-    carte[c0] = &(t->getHexagone(0));
-    carte[c1] = &(t->getHexagone(1));
-    carte[c2] = &(t->getHexagone(2));
-    carte[c3] = &(t->getHexagone(3));
+    carte[c0] = t->getHexagone(0);
+    carte[c1] = t->getHexagone(1);
+    carte[c2] = t->getHexagone(2);
+    carte[c3] = t->getHexagone(3);
 }
 	
 
@@ -87,7 +87,7 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
         else {
             j += 10 + 14 * h.y;
         }
-        quadrillage.replace(j, 3, t.getHexagone(i).affiche());
+        quadrillage.replace(j, 3, t.getHexagone(i)->affiche());
     }
 }
 

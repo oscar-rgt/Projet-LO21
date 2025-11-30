@@ -99,7 +99,7 @@ string Quadrillage::remplirQuadrillage(string old, int ligne[3], int colonne[3],
 			else {
 				j += 10 + 14 * (colonne[i] - 1);
 			}
-			old.replace(j, 3, t.getHexagone(i).affiche());
+			old.replace(j, 3, t.getHexagone(i)->affiche());
 			emplacement[ligne[i] - 1][colonne[i] - 1] = 1;
 		}
 	}

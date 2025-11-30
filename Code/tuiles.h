@@ -22,18 +22,18 @@ protected: // Changed to protected for inheritance
 	unsigned int niveau;
 	bool inversion;
 	string design;
-	vector<Hexagone> hexagones; 
+	vector<Hexagone*> hexagones; 
 	unsigned int prix; 
 	Tuile(const Tuile& t);
 	Tuile& operator=(const Tuile& t);
 	Tuile() = default;
 	Tuile(unsigned int i, unsigned int p = 0, unsigned int n = 1);
-	virtual ~Tuile() {} 
+	virtual ~Tuile();
 public:
 	unsigned int getId() const { return id; }
 	bool getInversion() const { return inversion; }
 	void inverser() { inversion = !inversion; }
-	Hexagone& getHexagone(int i) { return hexagones[i]; }
+	Hexagone* getHexagone(int i) { return hexagones[i]; }
     size_t getNbHexagones() const { return hexagones.size(); } 
 	unsigned int getPrix() const { return prix; }
 	void tourner();
