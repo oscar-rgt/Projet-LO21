@@ -1,33 +1,31 @@
+
 #include "joueur.h"
 
 using namespace std;
 
 Joueur::Joueur(const string& n)
-    : nom(n), pierres(0), points(0), cite(nullptr)
-{
-    score = new Score(this);
-}
-
-Joueur::~Joueur() {
-    delete score;
-}
-
+    : nom(n), points(0), pierres(0) {}
 
 const string& Joueur::getNom() const {
     return nom;
 }
 
-Cite* Joueur::getCite() const { return cite; }
-void Joueur::setCite(Cite* c) { cite = c; }
-
-Score* Joueur::getScore() const { return score; } //lire les points
-
-void Joueur::calculerScore() { //mettre à jour le score
-    if (score)
-        score->calculerScore();
+int Joueur::getPoints() const {
+    return points;
 }
 
-int Joueur::getPierres() const { return pierres; }
+int Joueur::getPierres() const {
+    return pierres;
+}
+
+void Joueur::setPoints(int p) {
+    points = (p >= 0) ? p : 0;
+}
+
+void Joueur::ajouterPoints(int delta) {
+    points += delta;
+    if (points < 0) points = 0;
+}
 
 void Joueur::ajouterPierres(int n) {
     pierres += n;
@@ -43,6 +41,9 @@ bool Joueur::utiliserPierres(int n) {
 }
 
 void Joueur::ajouterPierresRecouvrement(int nbRecouverts) {
-    if (nbRecouverts > 0)
+    if (nbRecouverts > 0) {
         ajouterPierres(nbRecouverts);
+    }
 }
+
+
