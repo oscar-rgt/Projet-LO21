@@ -1,7 +1,7 @@
 #ifndef PILE_H
 #define PILE_H
 #include"tuiles.h"
-
+#include<vector>
 
 class PileException {
     string info;
@@ -13,19 +13,14 @@ public:
 class Pile {
 public:
     Pile(unsigned int id_, unsigned int nb=3);
-    void retirerTuile(unsigned int id_);
-    unsigned int getNbTuiles() const { return nbTuiles; }
     unsigned int getId() const { return id; }
-    Tuile getTuile(unsigned int id_) const;
+    Tuile* getTuile(unsigned int id_);
     void decalagePrix();
     void affiche();
-    ~Pile();
-    bool estVide() { return nbTuiles == 0; }
-    Tuile* piocher();
+    bool estVide() { return tuiles.empty(); }
 private:
     unsigned int id;
-    unsigned int nbTuiles;
-    Tuile* tuiles;
+    vector<Tuile> tuiles;
 };
 
 #endif

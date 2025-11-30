@@ -24,8 +24,8 @@ private:
 	string design;
 	Hexagone hexagones[3]; // faire une m�thode qui tourne la tuile pour que l'hexagone au nord soit tjrs le 0, on tourne dans le sens des aiguilles d'une montre (SE = 1, SO =2)
 	unsigned int prix; // faire une m�thode inverser qui sym�trise la tuile
-	Tuile(const Tuile& t) = default;
-	Tuile& operator=(const Tuile& t) = default;
+	Tuile(const Tuile& t);
+	Tuile& operator=(const Tuile& t);
 	Tuile() = default;
 	Tuile(unsigned int i, unsigned int p = 0, unsigned int n = 1);
 	~Tuile() {}
