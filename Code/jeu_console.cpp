@@ -90,16 +90,13 @@ void JeuConsole::jouerTour() {
     int y = saisieNombre("Coord Y", -10, 10);
     int z = saisieNombre("Coord Z (Niveau)", 0, 10);
 
-    bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, rotation);
-
-    if (succes) {
-        cout << ">> Succes ! Tuile placee." << endl;
-        Partie::getInstance().passerAuJoueurSuivant();
-    } else {
-        cout << ">> ECHEC : Placement impossible ou pas assez de pierres." << endl;
-        // On ne passe PAS au joueur suivant, on relance le tour
+    try {
+        Partie::getInstance().actionPlacerTuile(index, x, y, z, rotation);
+    } catch (CiteException &e) {
+        cout << " ECHEC : " << e.getInfos() << endl;
         jouerTour();
-    }
+	}
+    
 }
 
 void JeuConsole::lancer() {

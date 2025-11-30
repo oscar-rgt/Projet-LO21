@@ -13,7 +13,7 @@ const bool Cite::toucheCite(Coord c) const {
 void Cite::placer(Tuile* t, Coord c){ // Il faut tourner la tuile avant de la placer
     Coord c2 = c.sud(), c3 = c.cote(t->getInversion()); 
     if (!estLibre(c) || !estLibre(c2) || !estLibre(c3))
-        throw CiteException("Placement impossible : Une des cases n'est pas libre.");
+        throw CiteException("Une des cases n'est pas libre.");
 
 	
     if (c.z == 0) if (!toucheCite(c) && !toucheCite(c2) && !toucheCite(c3)) throw CiteException("Placement impossible : L'emplacement ne touche pas la cité.");
@@ -33,7 +33,7 @@ void Cite::placer(Tuile* t, Coord c){ // Il faut tourner la tuile avant de la pl
                                   (tuile_dessous_c2!= tuile_dessous_c3);
     
     if (!deuxTuilesDifferentes) 
-        throw CiteException("Placement impossible : Les cases inférieures sont dans la même tuile.");
+        throw CiteException("Les cases inférieures sont dans la même tuile.");
     }
     carte[c] = t->getHexagone(0);
     carte[c2] = t->getHexagone(1);
