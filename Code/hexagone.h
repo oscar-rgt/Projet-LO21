@@ -25,6 +25,7 @@ private:
 	Tuile* tuile;
 	Type type;
 	bool place;
+	bool recouvert;
 	Hexagone(Type t, unsigned int n = 1, Tuile* tu = nullptr, unsigned int e = 0, bool p = false, bool r = false ): type(t), niveau(n), tuile(tu), etoiles(e), place(p), recouvert(r) {}
 	~Hexagone() {}
 	Hexagone() = default;

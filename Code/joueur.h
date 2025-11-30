@@ -3,6 +3,9 @@
 
 #include <string>
 #include "score.h"
+#include "tuiles.h"
+
+class Cite;
 
 using namespace std;
 

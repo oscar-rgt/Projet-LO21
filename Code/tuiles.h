@@ -5,6 +5,8 @@
 #include "hexagone.h"
 using namespace std;
 
+class Pile;
+
 class TuileException {
 	string info;
 public:
@@ -19,8 +21,8 @@ private:
 	unsigned int niveau;
 	bool inversion;
 	string design;
-	Hexagone hexagones[3]; // faire une méthode qui tourne la tuile pour que l'hexagone au nord soit tjrs le 0, on tourne dans le sens des aiguilles d'une montre (SE = 1, SO =2)
-	unsigned int prix; // faire une méthode inverser qui symétrise la tuile
+	Hexagone hexagones[3]; // faire une mï¿½thode qui tourne la tuile pour que l'hexagone au nord soit tjrs le 0, on tourne dans le sens des aiguilles d'une montre (SE = 1, SO =2)
+	unsigned int prix; // faire une mï¿½thode inverser qui symï¿½trise la tuile
 	Tuile(const Tuile& t) = default;
 	Tuile& operator=(const Tuile& t) = default;
 	Tuile() = default;

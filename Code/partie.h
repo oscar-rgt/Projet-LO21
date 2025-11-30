@@ -4,74 +4,67 @@
 #include <vector>
 #include <string>
 #include <array>
-#include <memory>
-
-// Forward declarations (pour �viter d'inclure les headers ici)
 
 class Joueur;
 class Pile;
+class Tuile; 
+
+class PartieException {
+    string info;
+public:
+    PartieException(const string& s) :info(s) {}
+    const string& getInfo() const { return info; }
+};
 
 class Partie {
 public:
     enum class TuileCite { STANDARD, AUGMENTE };
-
-    // --- Singleton : Acc�s unique � l'instance ---
     static Partie& getInstance();
 
-    // Suppression des constructeurs par copie/d�placement
-    Partie(const Partie&) = delete;
-    Partie& operator=(const Partie&) = delete;
-
-    // --- Configuration (Initialisation des param�tres) ---
-    // Cette m�thode est appel�e par le contr�leur (Console ou Qt) pour d�marrer
+    // Configuration
     void initialiser(int nbJoueurs, const std::vector<std::string>& nomsJoueurs,
         TuileCite mode, const std::array<bool, 5>& variantesActives,
         unsigned int niveauIC = 0);
 
-    // --- Actions de Jeu (API du Moteur) ---
+    // ACTION PRINCIPALE
+    // return true si succès, false si erreur (ressources, placement, index)
+    bool actionPlacerTuile(int indexTuileChantier, int x, int y, int z, int rotation);
 
-    // Le c�ur du jeu : Tente de placer une tuile pour le joueur actuel
-    // Renvoie true si l'action est valide et effectu�e, false sinon.
-    bool actionPlacerTuile(int indexTuileChoisie, int x, int y, int z, int rotation);
-
-    // Passe au joueur suivant
     void passerAuJoueurSuivant();
-
-    // V�rifie si la partie est termin�e
     bool estFinDePartie() const;
 
-    // --- Getters (Pour l'affichage) ---
     int getNbJoueurs() const { return nbJoueurs; }
     Joueur* getJoueurActuel() const;
-    int getIndexJoueurActuel() const { return indexJoueurActuel; }
-
-    // Acc�s aux piles (const pour lecture seule par l'interface)
-    const std::vector<Pile>& getPiles() const { return piles; }
-    void ajouterTuileChantier(Tuile& tuile) { chantier.push_back(tuile); }
-    void retirerTuileChantier(Tuile& tuile) { chantier.remove(tuile); }
+    
+    // Accès au chantier pour l'affichage 
+    const std::vector<Tuile*>& getChantier() const { return chantier; }
+    // Accès aux pierres posées sur les tuiles du chantier
+    const std::vector<int>& getPierresChantier() const { return pierresChantier; }
 
 private:
-    // Constructeur priv� pour le Singleton
     Partie();
     ~Partie();
+    Partie(const Partie&) = delete;
+    Partie& operator=(const Partie&) = delete;
 
     void initialiserPiles();
     void designerArchitecteChef();
+    void remplirChantier(); // Pour compléter le chantier à la fin du tour
 
-    // Donn�es de la partie
     std::array<bool, 5> variantes;
     int indexJoueurActuel;
     int nbJoueurs;
-    unsigned int pileActuelle;
-    unsigned int tuileActuelle;
+    int indexPileActuelle; // Pour savoir quelle pile on utilise
 
-    // Conteneurs
     std::vector<Joueur*> joueurs;
     std::vector<Pile> piles;
-    std::vector<Tuile> chantier;
+    
+    std::vector<Tuile*> chantier;
+    // Nombre de pierres sur chaque tuile du chantier 
+    std::vector<int> pierresChantier;
 
     TuileCite modeTuileCite;
     unsigned int niveauIllustreConstructeur;
 };
 
-#endif // PARTIE_H
+#endif
