@@ -1,5 +1,6 @@
 #include "score.h"
 #include <iostream>
+
 using namespace std;
 
 Score::Score(Joueur* j)
@@ -21,11 +22,10 @@ int Score::getScoreType(TypeQuartier type) const {
     return (it != pointsParType.end()) ? it->second : 0;
 }
 
-const Joueur* Score::getJoueur() const {  
+const Joueur* Score::getJoueur() const {
     return joueur;
 }
 
-//score total
 void Score::calculerScore() {
     total = 0;
 
@@ -41,25 +41,24 @@ void Score::calculerScore() {
     joueur->setPoints(total);
 }
 
-//score selon type
 int Score::calculerScoreType(TypeQuartier type) {
     int score = 0;
     int multiplicateur = 0;
 
-    // calcul des étoiles des places
-    for (auto it = cite->carte.begin(); it != cite->carte.end(); ++it) {
-        Hexagone* h = it->second;
+    for (const auto& it : cite->getCarte()) {
+        Hexagone* h = it.second;
         if (h->getType() == Type::Place)
             multiplicateur += h->getEtoiles();
     }
 
-    if (multiplicateur == 0) return 0;
+    if (multiplicateur == 0)
+        return 0;
 
-    //calcul du score selon type
-    for (auto it = cite->carte.begin(); it != cite->carte.end(); ++it) {
-        Hexagone* h = it->second;
+    for (const auto& it : cite->getCarte()) {
+        Hexagone* h = it.second;
 
         switch (type) {
+
         case TypeQuartier::Habitation:
             if (h->getType() == Type::Habitation)
                 score += 1;
@@ -69,7 +68,8 @@ int Score::calculerScoreType(TypeQuartier type) {
             if (h->getType() == Type::Marche) {
                 int ptsAdj = 0;
                 for (auto* v : cite->getAdjacents(h)) {
-                    if (v->getType() != Type::Marche && v->getType() != Type::Place)
+                    if (v->getType() != Type::Marche &&
+                        v->getType() != Type::Place)
                         ptsAdj++;
                 }
                 score += ptsAdj;
