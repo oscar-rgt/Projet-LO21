@@ -24,7 +24,7 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
     joueurs.clear();
     chantier.vider();
     piles.clear();
-
+    
     nbJoueurs = nb;
     modeTuileCite = mode;
     variantes = vars;

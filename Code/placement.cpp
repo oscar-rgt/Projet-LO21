@@ -40,6 +40,24 @@ void Cite::placer(Tuile* t, Coord c){ // Il faut tourner la tuile avant de la pl
     carte[c3] = &(t->getHexagone(2));
     remplirQuadrillage(c, *t);
 }
+
+void Cite::placerTuileDepart() {
+    if (t->getNbHexagones() != 4) throw CiteException("La tuile de départ doit avoir 4 hexagones.");
+    
+    // Centre (Habitation) en (0,0,0)
+    Coord c0 = { 0, 0, 0 };
+    
+    
+    // placer autour de (0,0,0)    
+    Coord c1 = { 0, 1, 0 };
+    Coord c2 = { -1, 0, 0 };
+    Coord c3 = { 1, -1, 0 };
+
+    carte[c0] = &(t->getHexagone(0));
+    carte[c1] = &(t->getHexagone(1));
+    carte[c2] = &(t->getHexagone(2));
+    carte[c3] = &(t->getHexagone(3));
+}
 	
 
 

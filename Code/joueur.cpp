@@ -7,6 +7,7 @@ using namespace std;
 Joueur::Joueur(const string& n)
     : nom(n), points(0), pierres(2) {
     cite = new Cite();
+    cite->placerTuileDepart();
 }
 
 const string& Joueur::getNom() const {
