@@ -95,10 +95,10 @@ Cite::Cite() : quadrillage("         _____         _____         _____         _
     Hexagone* ouest = new Hexagone(TypeQuartier::Place);
     
 
-    carte[{2, 2, 0}] = centre;  
-    carte[{2, 1, 0}] = nord;      
-    carte[{1, 3, 0}] = est;    
-    carte[{3, 3, 0}] = ouest;      
+    carte[{0, 0, 0}] = centre;  
+    carte[{0, -1, 0}] = nord;      
+    carte[{-1, 1, 0}] = est;    
+    carte[{1, 1, 0}] = ouest;      
     
 
 }
