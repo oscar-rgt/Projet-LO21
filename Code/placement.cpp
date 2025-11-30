@@ -87,3 +87,31 @@ vector<Hexagone*> Cite::getAdjacents(Coord c){
     }
     return ret;
 }
+
+void Cite::Cite(){
+	 Tuile* tuileDepart = new Tuile(/* paramètres pour tuile spéciale 4 hexagones */);
+    
+    // Placer l'hexagone central à (2, 2, 0)
+    Coord centre = {2, 2, 0};
+    
+    // Placer les 4 hexagones de la tuile de départ
+    // Configuration de la tuile de départ (forme en croix) :
+    //       hex3
+    //        |
+    // hex2-centre-hex1
+    //        |
+    //      (sud)
+    
+    carte[centre] = &(tuileDepart->getHexagone(0));                    // Centre (2,2,0)
+    carte[centre.cote(false)] = &(tuileDepart->getHexagone(1));       // Est (3,2,0)
+    carte[centre.cote(true)] = &(tuileDepart->getHexagone(2));        // Ouest (1,2,0)
+    
+    // Pour le 4ème hexagone, il faut une nouvelle méthode Coord
+    // Si la tuile de départ a une forme spécifique, ajuster selon le layout
+    Coord nord = {centre.x, centre.y - 1, centre.z};                  // Nord (2,1,0)
+    carte[nord] = &(tuileDepart->getHexagone(3));
+    
+    // Optionnel : Mettre à jour le quadrillage pour l'affichage
+    remplirQuadrillage(centre, *tuileDepart);
+}
+}
