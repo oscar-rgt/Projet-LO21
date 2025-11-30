@@ -1,6 +1,7 @@
 #pragma once
 #include "tuiles.h"
 #include "hexagone.h"
+#include "score.h"
 #include <vector>
 #include <unordered_map>
 
