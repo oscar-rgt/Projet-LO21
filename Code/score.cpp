@@ -1,10 +1,8 @@
 #include "score.h"
-#include <iostream>
+#include <stdexcept>
 
-using namespace std;
-
-Score::Score(Joueur* j)
-    : joueur(j), cite(j->getCite()), total(0)
+Score::Score(const Joueur* j)
+    : joueur(j), cite(j ? j->getCite() : nullptr), total(0)
 {
     for (auto t : {TypeQuartier::Habitation, TypeQuartier::Marche,
                    TypeQuartier::Caserne, TypeQuartier::Temple,
@@ -27,50 +25,68 @@ const Joueur* Score::getJoueur() const {
 }
 
 void Score::calculerScore() {
-    total = 0;
+    if (!cite) {
+        total = 0;
+        return;
+    }
 
+    total = 0;
     for (auto type : {TypeQuartier::Habitation, TypeQuartier::Marche,
                       TypeQuartier::Caserne, TypeQuartier::Temple,
                       TypeQuartier::Jardin}) {
-
         int pts = calculerScoreType(type);
         pointsParType[type] = pts;
         total += pts;
     }
 
-    joueur->setPoints(total);
+    if (joueur) {
+        const_cast<Joueur*>(joueur)->setPoints(total);
+    }
 }
 
-int Score::calculerScoreType(TypeQuartier type) {
+int Score::calculerScoreType(TypeQuartier type) const {
+    if (!cite) return 0;
+
     int score = 0;
     int multiplicateur = 0;
 
+    // Calcul du multiplicateur (places)
     for (const auto& it : cite->getCarte()) {
-        Hexagone* h = it.second;
-        if (h->getType() == Type::Place)
+        const Hexagone* h = it.second;
+        if (!h) continue;
+        if (h->getType() == Type::Place) {
             multiplicateur += h->getEtoiles();
+        }
     }
 
-    if (multiplicateur == 0)
-        return 0;
+    if (multiplicateur == 0) return 0;
 
+    // Calcul du score par type
     for (const auto& it : cite->getCarte()) {
-        Hexagone* h = it.second;
+        const Hexagone* h = it.second;
+        if (!h) continue;
 
         switch (type) {
-
         case TypeQuartier::Habitation:
-            if (h->getType() == Type::Habitation)
+            if (h->getType() == Type::Habitation) {
                 score += 1;
+            }
             break;
 
         case TypeQuartier::Marche:
             if (h->getType() == Type::Marche) {
                 int ptsAdj = 0;
-                for (auto* v : cite->getAdjacents(h)) {
-                    if (v->getType() != Type::Marche &&
-                        v->getType() != Type::Place)
-                        ptsAdj++;
+                try {
+                    std::vector<Hexagone*> adjacents = cite->getAdjacents(it.first);
+                    for (Hexagone* v : adjacents) {
+                        if (!v) continue;
+                        if (v->getType() != Type::Marche && v->getType() != Type::Place) {
+                            ptsAdj++;
+                        }
+                    }
+                } catch (const CiteException&) {
+                    // Si getAdjacents lève une exception, on ignore cet hexagone
+                    continue;
                 }
                 score += ptsAdj;
             }
@@ -79,31 +95,44 @@ int Score::calculerScoreType(TypeQuartier type) {
         case TypeQuartier::Caserne:
             if (h->getType() == Type::Caserne) {
                 bool isIsolee = true;
-                for (auto* v : cite->getAdjacents(h)) {
-                    if (v->getType() == Type::Caserne) {
-                        isIsolee = false;
-                        break;
+                try {
+                    std::vector<Hexagone*> adjacents = cite->getAdjacents(it.first);
+                    for (Hexagone* v : adjacents) {
+                        if (!v) continue;
+                        if (v->getType() == Type::Caserne) {
+                            isIsolee = false;
+                            break;
+                        }
                     }
+                } catch (const CiteException&) {
+                    continue;
                 }
-                if (isIsolee)
+                if (isIsolee) {
                     score += 1;
+                }
             }
             break;
 
         case TypeQuartier::Temple:
             if (h->getType() == Type::Temple) {
-                if (cite->getAdjacents(h).size() == 6)
-                    score += 2;
+                try {
+                    std::vector<Hexagone*> adjacents = cite->getAdjacents(it.first);
+                    if (adjacents.size() == 6) {
+                        score += 2;
+                    }
+                } catch (const CiteException&) {
+                    continue;
+                }
             }
             break;
 
         case TypeQuartier::Jardin:
-            if (h->getType() == Type::Jardin)
+            if (h->getType() == Type::Jardin) {
                 score += 1;
+            }
             break;
         }
     }
 
-    score *= multiplicateur;
-    return score;
+    return score * multiplicateur;
 }
