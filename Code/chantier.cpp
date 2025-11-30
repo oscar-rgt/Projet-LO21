@@ -1,4 +1,5 @@
 #include "chantier.h"
+#include"pile.h"
 
 Chantier::Chantier() {}
 
@@ -7,9 +8,6 @@ Chantier::~Chantier() {
 }
 
 void Chantier::vider() {
-    for (auto t : tuiles) {
-        delete t;
-    }
     tuiles.clear();
     pierres.clear();
 }
@@ -22,7 +20,8 @@ void Chantier::ajouterPile(Pile& p) {
                 tuiles.push_back(t);
                 pierres.push_back(0); // Initialiser avec 0 pierre
             }
-        } catch (PileException& e) {
+        } catch (const PileException& e) {
+            cout << "erreur ; " << e.getInfo();
             break;
         }
     }

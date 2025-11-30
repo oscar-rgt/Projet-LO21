@@ -16,7 +16,6 @@ private:
     void demanderConfiguration();
     void afficherEtatJeu();
     void jouerTour();
-    void afficherScore();
     void afficherChantier();
 
     // Utilitaires de saisie robustes

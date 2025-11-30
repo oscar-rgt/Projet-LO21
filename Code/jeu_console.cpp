@@ -33,16 +33,28 @@ bool JeuConsole::saisieOuiNon(const string& prompt) {
 
 void JeuConsole::afficherChantier() {
     const auto& chantier = Partie::getInstance().getChantier();
-
-    cout << "\n=== CHANTIER (Tuiles Disponibles) ===" << endl;
-    for (size_t i = 0; i < chantier.getNbTuiles(); ++i) {
-        cout << "Choix " << i << " (Cout: " << i << " pierres) : " << endl;
-        int pierres = chantier.getPierres(i);
-        if (pierres > 0) cout << "  [Contient " << pierres << " pierres bonus !]" << endl;
-        
-        // Affichage ASCII de la tuile
+    vector<string> lignes(9, "");
+    const int hauteur = 9;
+    const int largeur_reelle = 20;
+    const int largeur_visuelle = 19;
+    cout << "\n=== CHANTIER ===" << endl;
+    for (int i = 0; i < chantier.getNbTuiles(); ++i) {
         Tuile* t = chantier.getTuile(i);
-        if(t) t->getDesign();
+        string designTuile = t->getDesign();
+        for (int j = 0; j < hauteur; j++) {
+            string segment = designTuile.substr(j * largeur_reelle, largeur_visuelle);
+            lignes[j] += segment;
+            lignes[j] += "         ";
+        }
+    }
+    for (int j = 0; j < hauteur; j++) {
+        cout << lignes[j] << endl;
+    }
+    cout << "\n\n";
+    for (size_t i = 0; i < chantier.getNbTuiles(); ++i) {
+        int pierres = chantier.getPierres(i);
+        cout << pierres << " pierres";
+        cout << "                ";
     }
 }
 
@@ -136,8 +148,7 @@ void JeuConsole::demanderConfiguration() {
 
     bool modeTuileCite = saisieOuiNon("Mode tuile cite ?");
     Partie::TuileCite mode = modeTuileCite ? Partie::TuileCite::AUGMENTE : Partie::TuileCite::STANDARD;
-    
-    vector<bool> variantesActives(5, false);
+
     variantesActives[0] = saisieOuiNon("Variante habitations active ?");
     variantesActives[1] = saisieOuiNon("Variante marchés active ?");
     variantesActives[2] = saisieOuiNon("Variante casernes active ?");
