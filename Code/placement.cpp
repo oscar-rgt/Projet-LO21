@@ -88,4 +88,17 @@ vector<Hexagone*> Cite::getAdjacents(Coord c){
     return ret;
 }
 
-s
+Cite::Cite() : quadrillage("...la grande chaîne ASCII...") {
+    Hexagone* centre = new Hexagone(TypeQuartier::Place);
+    Hexagone* nord = new Hexagone(TypeQuartier::Place);
+    Hexagone* est = new Hexagone(TypeQuartier::Place);
+    Hexagone* ouest = new Hexagone(TypeQuartier::Place);
+    
+
+    carte[{2, 2, 0}] = centre;  
+    carte[{2, 1, 0}] = nord;      
+    carte[{1, 3, 0}] = est;    
+    carte[{3, 3, 0}] = ouest;      
+    
+
+}
