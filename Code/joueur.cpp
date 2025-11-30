@@ -1,10 +1,13 @@
 
 #include "joueur.h"
+#include "placement.h"
 
 using namespace std;
 
 Joueur::Joueur(const string& n)
-    : nom(n), points(0), pierres(0) {}
+    : nom(n), points(0), pierres(2) {
+    cite = new Cite();
+}
 
 const string& Joueur::getNom() const {
     return nom;
@@ -44,6 +47,10 @@ void Joueur::ajouterPierresRecouvrement(int nbRecouverts) {
     if (nbRecouverts > 0) {
         ajouterPierres(nbRecouverts);
     }
+}
+
+Joueur::~Joueur() {
+    delete cite;
 }
 
 

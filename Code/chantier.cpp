@@ -15,11 +15,11 @@ void Chantier::vider() {
 void Chantier::ajouterPile(Pile& p) {
     for (int j = 0; j < p.getNbTuiles(); j++) {
         try {
-            for(int i=0; i<p.getNbTuiles(); i++) {
-                Tuile* t = p.getTuile(p.getId()*10+i);
+//            for(int i=0; i<p.getNbTuiles(); i++) {
+                Tuile* t = p.getTuile(p.getId()*10+j);
                 tuiles.push_back(t);
                 pierres.push_back(0); // Initialiser avec 0 pierre
-            }
+//            }
         } catch (const PileException& e) {
             cout << "erreur ; " << e.getInfo();
             break;

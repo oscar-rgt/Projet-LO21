@@ -37,12 +37,13 @@ void Cite::placer(Tuile* t, Coord c){ // Il faut tourner la tuile avant de la pl
     carte[c] = &(t->getHexagone(0));
     carte[c2] = &(t->getHexagone(1));
     carte[c3] = &(t->getHexagone(2));
+    remplirQuadrillage(c, *t);
 }
 	
 
 
 void Cite::afficher() {
-    cout << quadrillage;
+    cout << quadrillage << endl;
 }
 
 void Cite::remplirQuadrillage(Coord c, Tuile& t) {

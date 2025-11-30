@@ -90,7 +90,6 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
     // Coût = index (0 pour la 1ère, 1 pour la 2ème, etc.)
     int coutPierre = index;
     if (j->getPierres() < coutPierre) {
-        cout << "Pas assez de pierres !" << endl;
         return false;
     }
 
