@@ -3,7 +3,7 @@
 using namespace std;
 
 Joueur::Joueur(const string& n)
-    : nom(n), pierres(0), cite(nullptr)
+    : nom(n), pierres(0), points(0), cite(nullptr)
 {
     score = new Score(this);
 }
