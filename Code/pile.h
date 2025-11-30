@@ -1,6 +1,7 @@
 #ifndef PILE_H
 #define PILE_H
 #include"tuiles.h"
+#include"partie.h"
 #include<vector>
 
 class PileException {
@@ -12,15 +13,18 @@ public:
 
 class Pile {
 public:
-    Pile(unsigned int id_, unsigned int nb=3);
     unsigned int getId() const { return id; }
     Tuile* getTuile(unsigned int id_);
     size_t getNbTuiles() const { return tuiles.size(); }
     void decalagePrix();
     bool estVide() { return tuiles.empty(); }
+    
 private:
+    friend class Partie;
+    ~Pile();
+    Pile(unsigned int id_, unsigned int nb = 3);
     unsigned int id;
-    vector<Tuile> tuiles;
+    vector<Tuile*> tuiles;
 };
 
 #endif
