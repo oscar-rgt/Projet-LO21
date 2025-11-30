@@ -52,7 +52,7 @@ int Score::calculerScoreType(TypeQuartier type) {
 
     // Calcul du multiplicateur (places)
     for (const auto& it : cite->getCarte()) {
-        const Hexagone* h = it.second;
+        Hexagone* h = it.second;
         if (!h) continue;
         if (h->getType() == Type::Place) {
             multiplicateur += h->getEtoiles();
@@ -63,7 +63,7 @@ int Score::calculerScoreType(TypeQuartier type) {
 
     // Calcul du score par type
     for (const auto& it : cite->getCarte()) {
-        const Hexagone* h = it.second;
+        Hexagone* h = it.second;
         if (!h) continue;
 
         switch (type) {
