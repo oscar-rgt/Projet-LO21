@@ -109,6 +109,7 @@ void JeuConsole::lancer() {
     int maxPoints = 0;
     int gagnant = 0;
     for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
+        Partie::getInstance().joueurActuel = i;
         if (Partie::getInstance().getJoueurActuel()->getPoints() > maxPoints) {
             maxPoints = Partie::getInstance().getJoueurActuel()->getPoints();
             gagnant = i;

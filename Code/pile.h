@@ -21,6 +21,7 @@ public:
     void affiche();
     ~Pile();
     bool estVide() { return nbTuiles == 0; }
+    Tuile* piocher();
 private:
     unsigned int id;
     unsigned int nbTuiles;

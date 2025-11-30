@@ -67,7 +67,7 @@ void Partie::remplirChantier() {
     int tailleCible = nbJoueurs + 2;
     
     while (chantier.size() < tailleCible) {
-        if (indexPileActuelle >= piles.size()) break //plus de pile
+        if (indexPileActuelle >= piles.size()) break; //plus de pile
 
         Pile& p = piles[indexPileActuelle];
         if (p.estVide()) {
@@ -77,16 +77,11 @@ void Partie::remplirChantier() {
 
         // On récupère une tuile de la pile
         try {
-            /* A remplacer par une méthode pioche de pile
-
-            unsigned int idTuile = p.getId() * 10 + (p.getNbTuiles() - 1); // On prend la dernière
-            Tuile t = p.getTuile(idTuile);
-            */
-            p.retirerTuile(idTuile); // On l'enlève de la pile
+			Tuile t = *(p.piocher());
             
             chantier.push_back(new Tuile(t)); // Copie sur le tas
             pierresChantier.push_back(0); // 0 pierre dessus au début
-        } catch (...) {
+        } catch (PileException& e) {
             indexPileActuelle++; // Pile vide ou erreur
         }
     }
@@ -107,8 +102,8 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
 
     // 1. Coût en pierres
     // Coût = index (0 pour la 1ère, 1 pour la 2ème, etc.)
-    int cout = index;
-    if (j->getPierres() < cout) {
+    int coutPierre = index;
+    if (j->getPierres() < coutPierre) {
         cout << "Pas assez de pierres !" << endl;
         return false;
     }
@@ -124,7 +119,7 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
         
         
         // 3. Paiement des pierres
-        j->utiliserPierres(cout);
+        j->utiliserPierres(coutPierre);
         // On dépose 1 pierre sur chaque tuile qu'on a sauté (indices 0 à index-1)
         for(int i=0; i<index; ++i) {
             pierresChantier[i]++;
@@ -133,9 +128,6 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
         // 4. Récupération des pierres sur la tuile choisie
         int pierresGagnees = pierresChantier[index];
         j->ajouterPierres(pierresGagnees);
-
-        // 5. Transfert de propriété
-        //j->acquerirTuile(t);
 
         // 6. Mise à jour du chantier
         chantier.erase(chantier.begin() + index);

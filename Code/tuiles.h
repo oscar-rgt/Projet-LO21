@@ -17,6 +17,7 @@ public:
 class Tuile{
 private:
 	friend class Pile;
+	friend class Partie;
 	unsigned int id;
 	unsigned int niveau;
 	bool inversion;

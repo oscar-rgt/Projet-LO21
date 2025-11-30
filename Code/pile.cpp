@@ -82,3 +82,24 @@ void Pile::affiche() {
         cout << lignes[j] << endl;
     }
 }
+
+Tuile* Pile::piocher() {
+    if (estVide()) {
+        throw PileException("La pile est vide !");
+    }
+    Tuile* t = new Tuile(tuiles[nbTuiles - 1]);
+    nbTuiles--;
+    if (nbTuiles == 0) {
+        delete[] tuiles;
+        tuiles = nullptr;
+    }
+    else {
+        Tuile* nouv = new Tuile[nbTuiles];
+        for (unsigned int i = 0; i < nbTuiles; i++) {
+            nouv[i] = tuiles[i];
+        }
+        delete[] tuiles;
+        tuiles = nouv;
+    }
+    return t;
+}

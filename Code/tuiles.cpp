@@ -83,7 +83,7 @@ Tuile::Tuile(const Tuile& t)
     : id(t.id), niveau(t.niveau), inversion(t.inversion), design(t.design), prix(t.prix) 
 {
     for(int i=0; i<3; ++i) {
-        hexagones[i] = t.hexagones[i];*
+        hexagones[i] = t.hexagones[i];
         // Comme Tuile est friend de Hexagone, on peut accéder au pointeur privé 'tuile' de l'hexagone
         hexagones[i].tuile = this; 
     }
