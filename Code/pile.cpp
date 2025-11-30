@@ -28,14 +28,5 @@ Tuile* Pile::getTuile(unsigned int id_) {
     throw PileException("La tuile n'existe pas");
 }
 
-void Pile::decalagePrix() {
-    if (!tuiles.empty()) {
-        for (size_t i = 0; i < tuiles.size(); i++) {
-            if (tuiles[i]->getPrix() != 0) {
-                tuiles[i]->setPrix(tuiles[i]->getPrix() - 1);
-            }
-        }
-    }
-}
 
 

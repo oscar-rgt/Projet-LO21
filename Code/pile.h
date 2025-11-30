@@ -17,7 +17,6 @@ public:
     unsigned int getId() const { return id; }
     Tuile* getTuile(unsigned int id_);
     size_t getNbTuiles() const { return tuiles.size(); }
-    void decalagePrix();
     bool estVide() { return tuiles.empty(); }
     
 private:
