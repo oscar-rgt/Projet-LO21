@@ -42,4 +42,5 @@ public :
 	void afficher();
 	void remplirQuadrillage(Coord c, Tuile& t);
 	vector<Hexagone*> getAdjacents(Coord c);
+	const unordered_map<Coord, Hexagone*, CoordHash>& getCarte() const { return carte; }
 };
