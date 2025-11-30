@@ -3,6 +3,7 @@
 #include "tuiles.h"
 #include "hexagone.h"
 #include <random>
+#include <vector> 
 
 using namespace std;
 
@@ -23,9 +24,6 @@ int randomStarValue() {
 
 int randomPlaceValue() {
     static random_device rd;
-    static mt19937 gen(rd());
-    static discrete_distribution<> dist({80,20});
-    return dist(gen);
 }
 
 
@@ -41,6 +39,9 @@ Tuile::Tuile(unsigned int i, unsigned int p, unsigned int n) : id(i), inversion(
         " \\_____/       \\   \n" // Ligne 6
         "       \\       /   \n" // Ligne 7
         "        \\_____/    \n";
+    
+    hexagones.resize(3); // Initialize vector with 3 elements
+    
     int positions[3] = { 50, 83, 130 };
     for (int i = 0; i < 3; i++) {
         int t = randomIndexAkropolis();
@@ -61,6 +62,24 @@ Tuile::Tuile(unsigned int i, unsigned int p, unsigned int n) : id(i), inversion(
         design.replace(positions[i], 3, hexagones[i].affiche());
     }
 }
+
+TuileDepart::TuileDepart() : Tuile() {
+    id = 0; // ID specifique pour la tuile de depart
+    niveau = 0;
+    inversion = false;
+    prix = 0;
+
+    hexagones.resize(4);
+    
+    // 0: Habitation (Bleu) avec 1 étoile (Centre)
+    hexagones[0] = Hexagone(Habitation, 1, this, 1, true); 
+    
+    // 1, 2, 3: Carrières (Autour)
+    hexagones[1] = Hexagone(Carriere, 1, this);
+    hexagones[2] = Hexagone(Carriere, 1, this);
+    hexagones[3] = Hexagone(Carriere, 1, this);
+}
+
 void Tuile::setPrix(unsigned int p) {
     if (p >= 0 && p <= 3) {
         prix = p;
@@ -71,6 +90,7 @@ void Tuile::setPrix(unsigned int p) {
 }
 
 void Tuile::tourner() {
+    if (hexagones.size() != 3) return; // Rotation interdite à la tuile de départ
     Hexagone temp = hexagones[0];
     Hexagone temp1 = hexagones[1];
     hexagones[0] = hexagones[2];
@@ -82,8 +102,8 @@ void Tuile::tourner() {
 Tuile::Tuile(const Tuile& t) 
     : id(t.id), niveau(t.niveau), inversion(t.inversion), design(t.design), prix(t.prix) 
 {
-    for(int i=0; i<3; ++i) {
-        hexagones[i] = t.hexagones[i];
+    hexagones = t.hexagones; 
+    for(size_t i=0; i<hexagones.size(); ++i) {
         // Comme Tuile est friend de Hexagone, on peut accéder au pointeur privé 'tuile' de l'hexagone
         hexagones[i].tuile = this; 
     }
@@ -96,8 +116,8 @@ Tuile& Tuile::operator=(const Tuile& t) {
         inversion = t.inversion;
         design = t.design;
         prix = t.prix;
-        for(int i=0; i<3; ++i) {
-            hexagones[i] = t.hexagones[i];
+        hexagones = t.hexagones; // Vector copy
+        for(size_t i=0; i<hexagones.size(); ++i) {
             hexagones[i].tuile = this;
         }
     }

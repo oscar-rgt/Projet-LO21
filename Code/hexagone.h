@@ -21,6 +21,7 @@ typedef enum { Habitation, Marche, Caserne, Temple, Jardin, Carriere, Place} Typ
 class Hexagone {
 private:
 	friend class Tuile;
+	friend class TuileDepart;
 	unsigned int niveau, etoiles;
 	Tuile* tuile;
 	Type type;

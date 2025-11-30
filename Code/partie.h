@@ -70,6 +70,8 @@ private:
 
     TuileCite modeTuileCite;
     unsigned int niveauIllustreConstructeur;
+    
+    vector<Tuile*> tuilesDepart; // Pour gérer la mémoire des tuiles de départ
 };
 
 #endif
