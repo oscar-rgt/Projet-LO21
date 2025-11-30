@@ -17,15 +17,15 @@ enum class TypeQuartier {
 
 class Score {
 private:
-    const Joueur* joueur;
-    const Cite* cite;
+    Joueur* joueur;
+    Cite* cite;
     std::map<TypeQuartier, int> pointsParType;
     int total;
 
 public:
-    Score(const Joueur* j);
+    Score(Joueur* j);
     void calculerScore();
-    int calculerScoreType(TypeQuartier type) const;
+    int calculerScoreType(TypeQuartier type);
     int getTotal() const;
     int getScoreType(TypeQuartier type) const;
     const Joueur* getJoueur() const;
