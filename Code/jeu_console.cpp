@@ -97,7 +97,24 @@ void JeuConsole::lancer() {
     }
     
     cout << "=== FIN DE PARTIE ===" << endl;
-    //afficher le classement final
+
+    //Classement final
+    cout << "\n--- CLASSEMENT ---" << endl;
+    for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
+        Partie::getInstance().joueurActuel = i;
+        cout << i + 1 << ". " << Partie::getInstance().getJoueurActuel()->getNom() << " : " << Partie::getInstance().getJoueurActuel()->getPoints() << " points" << endl;
+    }
+    cout << "\n--- GAGNANT ---" << endl;
+    Partie::getInstance().joueurActuel = 0;
+    int maxPoints = 0;
+    int gagnant = 0;
+    for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
+        if (Partie::getInstance().getJoueurActuel()->getPoints() > maxPoints) {
+            maxPoints = Partie::getInstance().getJoueurActuel()->getPoints();
+            gagnant = i;
+        }
+    }
+    cout << Partie::getInstance().getJoueurActuel()->getNom() << " a remporte la partie avec " << Partie::getInstance().getJoueurActuel()->getPoints() << " points !" << endl;
 }
 
 void JeuConsole::demanderConfiguration() {
@@ -110,7 +127,21 @@ void JeuConsole::demanderConfiguration() {
         cin >> nom;
         nomsJoueurs.push_back(nom);
     }
+    int niveauIllustreConstructeur = 0;
+    if(nbJoueurs == 1){
+        cout << "Mode solo activé" << endl;
+        niveauIllustreConstructeur = saisieNombre("Niveau Illustre Constructeur", 1, 3);
+    }
+
+    bool modeTuileCite = saisieOuiNon("Mode tuile cite ?");
+    Partie::TuileCite mode = modeTuileCite ? Partie::TuileCite::AUGMENTE : Partie::TuileCite::STANDARD;
     
-    Partie::TuileCite mode = Partie::TuileCite::STANDARD;
-    Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, {false});
+    vector<bool> variantesActives(5, false);
+    variantesActives[0] = saisieOuiNon("Variante habitations active ?");
+    variantesActives[1] = saisieOuiNon("Variante marchés active ?");
+    variantesActives[2] = saisieOuiNon("Variante casernes active ?");
+    variantesActives[3] = saisieOuiNon("Variante temples active ?");
+    variantesActives[4] = saisieOuiNon("Variante jardins active ?");
+    
+    Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIllustreConstructeur);
 }

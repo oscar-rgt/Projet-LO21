@@ -47,9 +47,15 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
 void Partie::initialiserPiles() {
     // Création des piles selon les règles
     int nbPiles = 11; // Standard
+    if (modeTuileCite == TuileCite::AUGMENTE) {
+        if (nbJoueurs == 2) nbPiles = 19;
+        else if (nbJoueurs == 3) nbPiles = 15;
+        else if (nbJoueurs == 4) nbPiles = 11;
+    }
+
     piles.reserve(nbPiles);
     for (int i = 0; i < nbPiles; ++i) {
-        piles.emplace_back(i, nbJoueurs + 2); // Chaque pile contient assez de tuiles
+        piles.emplace_back(i, nbJoueurs + 1); 
     }
     indexPileActuelle = 0;
     

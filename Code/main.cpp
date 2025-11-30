@@ -22,6 +22,7 @@ int main() {
 		int tab4[3] = { 1,1,1 };
 		old = remplirQuadrillage(old, tab3, tab4, t2, emplacement);
 		cout << old;*/
+		jeuConsole.lancer();
 	}
 	catch (const HexaException& e) {
 		cout << "erreur ; " << e.getInfo();
