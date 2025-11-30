@@ -37,6 +37,8 @@ public:
     // ACTION PRINCIPALE
     // return true si succès, false si erreur (ressources, placement, index)
     bool actionPlacerTuile(int indexTuileChantier, int x, int y, int z, int rotation);
+    
+    void jouerTourIA();
 
     void passerAuJoueurSuivant();
     bool estFinDePartie() const;

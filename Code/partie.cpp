@@ -2,6 +2,7 @@
 #include <random>
 #include <iostream>
 #include "partie.h"
+#include "ia.h"
 
 using namespace std;
 
@@ -32,8 +33,30 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
 
     for (const auto& nom : noms) joueurs.push_back(new Joueur(nom));
 
+    // Si mode solo, on ajoute l'IA
+    if (nbJoueurs == 1) {
+        // L'IA est toujours le 2ème "joueur" dans la liste
+        joueurs.push_back(new IA("Illustre Architecte", niveauIllustreConstructeur));
+        nbJoueurs = 2; // On considère qu'il y a 2 joueurs pour la logique de tour
+        
+        // Configuration initiale spécifique Solo
+        // Joueur : 1 tuile départ, 1 pierre, Pion Architecte
+        // IA : 1 tuile départ, 2 pierres
+        
+        // Le joueur humain est à l'index 0
+        joueurs[0]->utiliserPierres(1); // Il commence avec 2 par défaut, on en enlève 1 -> reste 1
+        
+        // L'IA (index 1) a déjà 2 pierres par défaut.
+    }
+
     initialiserPiles();
-    designerArchitecteChef();
+    
+    if (niveauIllustreConstructeur > 0) {
+        // En mode solo, le joueur humain est toujours premier joueur
+        indexJoueurActuel = 0;
+    } else {
+        designerArchitecteChef();
+    }
 }
 
 void Partie::initialiserPiles() {
@@ -109,9 +132,23 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
         
         // 3. Paiement des pierres
         j->utiliserPierres(coutPierre);
-        // On dépose 1 pierre sur chaque tuile qu'on a sauté (indices 0 à index-1)
-        for(int i=0; i<index; i++) {
-            chantier.getTuile(i)->setPrix(chantier.getTuile(i)->getPrix() + 1);
+        
+        // Gestion spécifique Solo : Si humain paie, pierres vont à l'IA
+        if (niveauIllustreConstructeur > 0 && dynamic_cast<IA*>(j) == nullptr) {
+             // Trouver l'IA (c'est l'autre joueur)
+             for(auto* joueur : joueurs) {
+                 if (dynamic_cast<IA*>(joueur)) {
+                     joueur->ajouterPierres(coutPierre);
+                     break;
+                 }
+             }
+        } else {
+            // Mode normal ou tour de l'IA 
+            
+            // On dépose 1 pierre sur chaque tuile qu'on a sauté (indices 0 à index-1)
+            for(int i=0; i<index; i++) {
+                chantier.getTuile(i)->setPrix(chantier.getTuile(i)->getPrix() + 1);
+            }
         }
 
         // 4. Récupération des pierres sur la tuile choisie
@@ -132,6 +169,37 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
         cout << "Erreur placement : " << e.getInfos() << endl;
         return false;
     }
+}
+
+void Partie::jouerTourIA() {
+    Joueur* j = getJoueurActuel();
+    IA* ia = dynamic_cast<IA*>(j);
+    if (!ia) return;
+
+    cout << "\n--- TOUR DE L'IA ---" << endl;
+    
+    int indexChoisi = ia->choisirTuile(chantier);
+    Tuile* t = chantier.getTuile(indexChoisi);
+    
+    cout << "L'IA choisit la tuile " << indexChoisi << endl;
+    
+
+    if (indexChoisi > 0) {
+        ia->utiliserPierres(indexChoisi);
+        for(int i=0; i<indexChoisi; i++) {
+            chantier.getTuile(i)->setPrix(chantier.getTuile(i)->getPrix() + 1);
+        }
+    }
+    
+    // Récupération des pierres sur la tuile choisie
+    int pierresGagnees = t->getPrix();
+    ia->ajouterPierres(pierresGagnees);
+    
+    ia->ajouterTuile(t);
+    chantier.retirerTuile(indexChoisi);
+    
+    remplirChantier();
+    passerAuJoueurSuivant();
 }
 
 void Partie::passerAuJoueurSuivant() {

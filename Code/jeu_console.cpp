@@ -1,5 +1,6 @@
 #include "jeu_console.h"
-#include "joueur.h"  
+#include "joueur.h"
+#include "ia.h"  
 #include "tuiles.h" 
 #include "placement.h" 
 #include <iostream>
@@ -68,12 +69,25 @@ void JeuConsole::afficherEtatJeu() {
     cout << "##########################################" << endl;
 
     cout << "\n--- VOTRE CITE ---" << endl;
-    j->getCite()->afficher();
+    
+    if (dynamic_cast<IA*>(j)) {
+        cout << "(Cité de l'IA - Gestion virtuelle)" << endl;
+    } else {
+        j->getCite()->afficher();
+    }
     
     afficherChantier();
 }
 
 void JeuConsole::jouerTour() {
+    Joueur* j = Partie::getInstance().getJoueurActuel();
+    
+    // Si c'est l'IA, on joue automatiquement
+    if (dynamic_cast<IA*>(j)) {
+        Partie::getInstance().jouerTourIA();
+        return;
+    }
+
     afficherEtatJeu();
 
     int maxChoix = Partie::getInstance().getChantier().getNbTuiles() - 1;
@@ -113,6 +127,13 @@ void JeuConsole::lancer() {
     cout << "\n--- CLASSEMENT ---" << endl;
     for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
         Joueur* j = Partie::getInstance().getJoueur(i);
+        
+        // Calcul du score IA si nécessaire
+        IA* ia = dynamic_cast<IA*>(j);
+        if (ia) {
+            j->setPoints(ia->calculerScoreIA());
+        }
+        
         cout << i + 1 << ". " << j->getNom() << " : " << j->getPoints() << " points" << endl;
     }
     cout << "\n--- GAGNANT ---" << endl;
