@@ -51,8 +51,8 @@ void JeuConsole::afficherChantier() {
         cout << lignes[j] << endl;
     }
     cout << "\n\n";
-    for (int i = 0; i < chantier.getNbTuiles(); ++i) {
-        int pierres = chantier.getPierres(i);
+    for (int i = 0; i < chantier.getNbTuiles(); i++) {
+        int pierres = chantier.getTuile(i)->getPrix();
         cout << "    ";
         cout << pierres << " pierres";
         cout << "               ";
@@ -83,7 +83,7 @@ void JeuConsole::jouerTour() {
 
     int rotation = 0;
     if (saisieOuiNon("Tourner la tuile ?")) {
-        rotation = saisieNombre("Combien de rotations (1-3) ?", 1, 3);
+        rotation = saisieNombre("Combien de rotations ?", 1, 3);
     }
 
     int x = saisieNombre("Coord X", -10, 10);
@@ -150,11 +150,15 @@ void JeuConsole::demanderConfiguration() {
     bool modeTuileCite = saisieOuiNon("Mode tuile cite standard ?");
     Partie::TuileCite mode = modeTuileCite ? Partie::TuileCite::AUGMENTE : Partie::TuileCite::STANDARD;
 
-    variantesActives[0] = saisieOuiNon("Variante habitations active ?");
-    variantesActives[1] = saisieOuiNon("Variante marches active ?");
-    variantesActives[2] = saisieOuiNon("Variante casernes active ?");
-    variantesActives[3] = saisieOuiNon("Variante temples active ?");
-    variantesActives[4] = saisieOuiNon("Variante jardins active ?");
+    if(saisieOuiNon("Activer les variantes ?")){
+        cout << "Selection des variantes :\n" << endl;
+        variantesActives[0] = saisieOuiNon("Variante habitations active ?");
+        variantesActives[1] = saisieOuiNon("Variante marches active ?");
+        variantesActives[2] = saisieOuiNon("Variante casernes active ?");
+        variantesActives[3] = saisieOuiNon("Variante temples active ?");
+        variantesActives[4] = saisieOuiNon("Variante jardins active ?");
+	}
+    
     
     Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIllustreConstructeur);
 }

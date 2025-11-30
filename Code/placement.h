@@ -44,7 +44,7 @@ public :
     void placerTuileDepart();
 	const bool estLibre(Coord c) const { return (carte.find(c) == carte.end()); }
 	const bool estRecouvert(Coord c) const { return (!estLibre({ c.x, c.y, c.z + 1 })); }
-	void afficher();
+	void afficher() const;
 	void remplirQuadrillage(Coord c, Tuile& t);
 	vector<Hexagone*> getAdjacents(Coord c);
 	const unordered_map<Coord, Hexagone*, CoordHash>& getCarte() const { return carte; }
