@@ -51,7 +51,7 @@ void JeuConsole::afficherChantier() {
         cout << lignes[j] << endl;
     }
     cout << "\n\n";
-    for (size_t i = 0; i < chantier.getNbTuiles(); ++i) {
+    for (int i = 0; i < chantier.getNbTuiles(); ++i) {
         int pierres = chantier.getPierres(i);
         cout << pierres << " pierres";
         cout << "                ";
