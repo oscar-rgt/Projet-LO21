@@ -1,8 +1,9 @@
 #ifndef PILE_H
 #define PILE_H
 #include"tuiles.h"
-#include"partie.h"
 #include<vector>
+
+class Partie;
 
 class PileException {
     string info;

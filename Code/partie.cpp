@@ -1,11 +1,7 @@
-#include "partie.h"
-#include "joueur.h"
-#include "pile.h"
-#include "tuiles.h"
-#include "placement.h" // Pour CiteException
 #include <algorithm>
 #include <random>
 #include <iostream>
+#include "partie.h"
 
 using namespace std;
 
@@ -52,11 +48,11 @@ void Partie::initialiserPiles() {
     piles.reserve(nbPiles + 1); // +1 pour la pile de départ
 
     // Pile de départ : nbJoueurs + 2 tuiles
-    piles.emplace_back(0, nbJoueurs + 2);
+    piles.emplace_back(new Pile(0, nbJoueurs + 2));
 
     // Autres piles : nbJoueurs + 1 tuiles
     for (int i = 1; i <= nbPiles; ++i) {
-        piles.emplace_back(i, nbJoueurs + 1); 
+        piles.emplace_back(new Pile(i, nbJoueurs + 1)); 
     }
     indexPileActuelle = 0;
     
@@ -71,8 +67,8 @@ void Partie::remplirChantier() {
     if (chantier.estVide() || chantier.getNbTuiles() == 1) {
         if (indexPileActuelle >= piles.size()) return; // Plus de piles
 
-        Pile& p = piles[indexPileActuelle];
-        chantier.ajouterPile(p);
+        Pile* p = piles[indexPileActuelle];
+        chantier.ajouterPile(*p);
         indexPileActuelle++;
     }
 }

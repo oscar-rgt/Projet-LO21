@@ -1,5 +1,5 @@
 #include "chantier.h"
-#include"pile.h"
+
 
 Chantier::Chantier() {}
 
@@ -13,7 +13,7 @@ void Chantier::vider() {
 }
 
 void Chantier::ajouterPile(Pile& p) {
-    while (!p.estVide()) {
+    for (int j = 0; j < p.getNbTuiles(); j++) {
         try {
             for(int i=0; i<p.getNbTuiles(); i++) {
                 Tuile* t = p.getTuile(p.getId()*10+i);

@@ -5,6 +5,13 @@
 #include <string>
 #include <array>
 #include "chantier.h"
+#include "partie.h"
+#include "joueur.h"
+#include "pile.h"
+#include "tuiles.h"
+#include "placement.h"
+
+using namespace std;
 
 class Joueur;
 class Pile;
@@ -51,14 +58,14 @@ private:
     void designerArchitecteChef();
     void remplirChantier(); // Pour compléter le chantier à la fin du tour
 
-    std::array<bool, 5> variantes;
+    array<bool, 5> variantes;
     int indexJoueurActuel;
     int nbJoueurs;
     int indexPileActuelle; // Pour savoir quelle pile on utilise
 
-    std::vector<Joueur*> joueurs;
-    std::vector<Pile> piles;
-    
+    vector<Joueur*> joueurs;
+    vector<Pile*> piles;
+
     Chantier chantier;
 
     TuileCite modeTuileCite;
