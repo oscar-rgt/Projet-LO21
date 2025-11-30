@@ -71,6 +71,12 @@ void Partie::remplirChantier() {
         chantier.ajouterPile(*p);
         indexPileActuelle++;
     }
+
+    for (int i = 0; i < chantier.getNbTuiles(); i++) {
+        for (int j = 0; j < i; j++) {
+			chantier.getTuile(i)->setPrix(j);
+        }
+    }
 }
 
 void Partie::designerArchitecteChef() {
@@ -106,12 +112,12 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
         // 3. Paiement des pierres
         j->utiliserPierres(coutPierre);
         // On dépose 1 pierre sur chaque tuile qu'on a sauté (indices 0 à index-1)
-        for(int i=0; i<index; ++i) {
-            chantier.ajouterPierre(i);
+        for(int i=0; i<index; i++) {
+            chantier.getTuile(i)->setPrix(chantier.getTuile(i)->getPrix() + 1);
         }
 
         // 4. Récupération des pierres sur la tuile choisie
-        int pierresGagnees = chantier.ramasserPierres(index);
+        int pierresGagnees = chantier.getTuile(index)->getPrix();
         j->ajouterPierres(pierresGagnees);
 
         // 6. Mise à jour du chantier

@@ -61,7 +61,7 @@ void Cite::placerTuileDepart() {
 	
 
 
-void Cite::afficher() {
+void Cite::afficher() const{
     cout << quadrillage << endl;
 }
 
