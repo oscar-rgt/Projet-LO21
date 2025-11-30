@@ -88,18 +88,4 @@ vector<Hexagone*> Cite::getAdjacents(Coord c){
     return ret;
 }
 
-void Cite::Cite(){
-	 
-    Coord centre_dep={2,2,0};
-	Coord nord_dep={2,1,0};
-	Coord sud_est_dep={1,3,0};
-	Coord sud_ouest_dep={2,2,0};
-    
-
-    Coord nord = {centre.x, centre.y - 1, centre.z};                  // Nord (2,1,0)
-    carte[nord] = &(tuileDepart->getHexagone(3));
-    
-    // Optionnel : Mettre à jour le quadrillage pour l'affichage
-    remplirQuadrillage(centre, *tuileDepart);
-}
-}
+s
