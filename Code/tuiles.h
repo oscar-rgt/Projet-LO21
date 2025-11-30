@@ -19,7 +19,6 @@ class Tuile{
 protected: // Changed to protected for inheritance
 	friend class Pile;
 	unsigned int id;
-	unsigned int niveau;
 	bool inversion;
 	string design;
 	vector<Hexagone*> hexagones; 
@@ -27,7 +26,7 @@ protected: // Changed to protected for inheritance
 	Tuile(const Tuile& t);
 	Tuile& operator=(const Tuile& t);
 	Tuile() = default;
-	Tuile(unsigned int i, unsigned int p = 0, unsigned int n = 1);
+	Tuile(unsigned int i, unsigned int p = 0);
 	virtual ~Tuile();
 public:
 	unsigned int getId() const { return id; }

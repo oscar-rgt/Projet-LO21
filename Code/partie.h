@@ -49,6 +49,8 @@ public:
     
     // Accès au chantier pour l'affichage 
     const Chantier& getChantier() const { return chantier; }
+    size_t getNbPiles() const { return piles.size(); }
+    int getIndexPileActuelle() const { return indexPileActuelle; }
 
 private:
     Partie();

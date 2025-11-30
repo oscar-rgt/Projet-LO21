@@ -26,16 +26,16 @@ private:
 	Tuile* tuile;
 	Type type;
 	bool place;
-	Hexagone(Type t, unsigned int n = 1, Tuile* tu = nullptr, unsigned int e = 0, bool p = false): type(t), niveau(n), tuile(tu), etoiles(e), place(p) {}
+	Hexagone(Type t, unsigned int n=0, Tuile* tu = nullptr, unsigned int e = 0, bool p = false): type(t), niveau(n), tuile(tu), etoiles(e), place(p) {}
 	~Hexagone() {}
 	Hexagone() = default;
 	Hexagone(const Hexagone& h) = default;
 	Hexagone& operator=(const Hexagone& h) = default;
 public:
+	unsigned int getNiveau() const { return niveau; }
 	Tuile* getTuile() const { return tuile; }
 	Type getType() const { return type; }
-	int getNiveau() const { return niveau; }
-	int getEtoiles() const { return etoiles; }
+	unsigned int getEtoiles() const { return etoiles; }
     string affiche();
 };
 

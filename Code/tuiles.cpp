@@ -30,7 +30,7 @@ int randomPlaceValue() {
 }
 
 
-Tuile::Tuile(unsigned int i, unsigned int p, unsigned int n) : id(i), inversion(0), prix(p), niveau(n) 
+Tuile::Tuile(unsigned int i, unsigned int p) : id(i), prix(p), inversion(0)
 {
     design =
         "         _____     \n" // Ligne 0
@@ -49,16 +49,16 @@ Tuile::Tuile(unsigned int i, unsigned int p, unsigned int n) : id(i), inversion(
     for (int k = 0; k < 3; k++) {
         int t = randomIndexAkropolis();
         if (Type(t) == Carriere) {
-            hexagones[k] = new Hexagone(Type(t), n, this);
+            hexagones[k] = new Hexagone(Type(t),0, this);
         }
         else {
             bool place = randomPlaceValue();
             if (place == true) {
                 int etoiles = randomStarValue();
-                hexagones[k] = new Hexagone(Type(t), n, this, etoiles, place);
+                hexagones[k] = new Hexagone(Type(t),0, this, etoiles, place);
             }
             else {
-                hexagones[k] = new Hexagone(Type(t), n, this);
+                hexagones[k] = new Hexagone(Type(t),0, this);
             }
 
         }
@@ -68,19 +68,18 @@ Tuile::Tuile(unsigned int i, unsigned int p, unsigned int n) : id(i), inversion(
 
 TuileDepart::TuileDepart() : Tuile() {
     id = 0; // ID specifique pour la tuile de depart
-    niveau = 0;
     inversion = false;
     prix = 0;
 
     hexagones.resize(4);
     
     // 0: Habitation (Bleu) avec 1 étoile (Centre)
-    hexagones[0] = new Hexagone(Habitation, 1, this, 1, true); 
+    hexagones[0] = new Hexagone(Habitation, 0, this, 1, true);
     
     // 1, 2, 3: Carrières (Autour)
-    hexagones[1] = new Hexagone(Carriere, 1, this);
-    hexagones[2] = new Hexagone(Carriere, 1, this);
-    hexagones[3] = new Hexagone(Carriere, 1, this);
+    hexagones[1] = new Hexagone(Carriere,0, this);
+    hexagones[2] = new Hexagone(Carriere, 0, this);
+    hexagones[3] = new Hexagone(Carriere, 0, this);
 }
 
 void Tuile::setPrix(unsigned int p) {
@@ -103,7 +102,7 @@ void Tuile::tourner() {
 
 
 Tuile::Tuile(const Tuile& t)
-    : id(t.id), niveau(t.niveau), inversion(t.inversion), design(t.design), prix(t.prix)
+    : id(t.id), inversion(t.inversion), design(t.design), prix(t.prix)
 {
     // On ne fait PAS hexagones = t.hexagones (sinon deux tuiles pointent vers les mêmes hexagones -> crash au delete)
     hexagones.reserve(t.hexagones.size());
@@ -127,7 +126,6 @@ Tuile& Tuile::operator=(const Tuile& t) {
 
         // 2. Copier les données scalaires
         id = t.id;
-        niveau = t.niveau;
         inversion = t.inversion;
         design = t.design;
         prix = t.prix;

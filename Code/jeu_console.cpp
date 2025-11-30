@@ -38,7 +38,7 @@ void JeuConsole::afficherChantier() {
     const int hauteur = 9;
     const int largeur_reelle = 20;
     const int largeur_visuelle = 19;
-    cout << "\n=== CHANTIER ===" << endl;
+    cout << "\n=== CHANTIER === " << Partie::getInstance().getNbPiles() - Partie::getInstance().getIndexPileActuelle() << " pile(s) restante(s)" << endl;
     for (int i = 0; i < chantier.getNbTuiles(); ++i) {
         Tuile* t = chantier.getTuile(i);
         string designTuile = t->getDesign();
@@ -74,8 +74,9 @@ void JeuConsole::afficherEtatJeu() {
         cout << "(Cité de l'IA - Gestion virtuelle)" << endl;
     } else {
         j->getCite()->afficher();
+        j->getCite()->afficherMap();
     }
-    
+
     afficherChantier();
 }
 
@@ -128,7 +129,7 @@ void JeuConsole::lancer() {
     for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
         Joueur* j = Partie::getInstance().getJoueur(i);
         
-        // Calcul du score IA si nécessaire
+        // Calcul du score IA si n�cessaire
         IA* ia = dynamic_cast<IA*>(j);
         if (ia) {
             j->setPoints(ia->calculerScoreIA());

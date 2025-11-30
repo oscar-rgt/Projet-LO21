@@ -12,18 +12,19 @@ const bool Cite::toucheCite(Coord c) const {
 
 void Cite::placer(Tuile* t, Coord c){ // Il faut tourner la tuile avant de la placer
     Coord c2 = c.sud(), c3 = c.cote(t->getInversion()); 
-    if (!estLibre(c) || !estLibre(c2) || !estLibre(c3))
-        throw CiteException("Une des cases n'est pas libre.");
+    if (!estLibre(c) || !estLibre(c2) || !estLibre(c3)) throw CiteException("Une des cases n'est pas libre.");
 
 	
-    if (c.z == 0) if (!toucheCite(c) && !toucheCite(c2) && !toucheCite(c3)) throw CiteException("Placement impossible : L'emplacement ne touche pas la cité.");
+    if (c.z == 0) {
+        if (!toucheCite(c) && !toucheCite(c2) && !toucheCite(c3)) throw CiteException("Placement impossible : L'emplacement ne touche pas la cite.");
+    }
     else {
     // Vérifier que chaque hexagone de la tuile est soutenu par un hexagone en dessous
     Coord dessous_c = {c.x, c.y, c.z - 1};
     Coord dessous_c2 = {c2.x, c2.y, c2.z - 1};
     Coord dessous_c3 = {c3.x, c3.y, c3.z - 1};
     
-    if (estLibre(dessous_c) || estLibre(dessous_c2) || estLibre(dessous_c3)) throw CiteException("Placement impossible : Les cases inférieures sont vides.");
+    if (estLibre(dessous_c) || estLibre(dessous_c2) || estLibre(dessous_c3)) throw CiteException("Placement impossible : Les cases inferieures sont vides.");
         Tuile* tuile_dessous_c = carte[dessous_c]->getTuile();
         Tuile* tuile_dessous_c2 = carte[dessous_c2]->getTuile();
         Tuile* tuile_dessous_c3 = carte[dessous_c3]->getTuile();
@@ -32,8 +33,7 @@ void Cite::placer(Tuile* t, Coord c){ // Il faut tourner la tuile avant de la pl
                                   (tuile_dessous_c != tuile_dessous_c3) || 
                                   (tuile_dessous_c2!= tuile_dessous_c3);
     
-    if (!deuxTuilesDifferentes) 
-        throw CiteException("Les cases inférieures sont dans la même tuile.");
+    if (!deuxTuilesDifferentes) throw CiteException("Les cases inférieures sont dans la même tuile.");
     }
     carte[c] = t->getHexagone(0);
     carte[c2] = t->getHexagone(1);
@@ -49,9 +49,9 @@ void Cite::placerTuileDepart() {
     
     
     // placer autour de (0,0,0)    
-    Coord c1 = { 0, 1, 0 };
-    Coord c2 = { -1, 0, 0 };
-    Coord c3 = { 1, -1, 0 };
+    Coord c1 = { -1, -1, 0 }; //SUD
+    Coord c2 = { 1, -1, 0 };
+    Coord c3 = { 0, 2, 0 };
 
     carte[c0] = t->getHexagone(0);
     carte[c1] = t->getHexagone(1);
@@ -108,3 +108,12 @@ vector<Hexagone*> Cite::getAdjacents(Coord c){
 }
 
 
+void Cite::afficherMap() const {
+    // On parcourt toute la map
+    for (const auto& paire : carte) {
+        // paire.first contient la Coordonnée (la clé)
+        cout << "(" << paire.first.x << ", "
+            << paire.first.y << ", "
+            << paire.first.z << ")" << endl;
+    }
+}
