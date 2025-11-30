@@ -6,15 +6,6 @@
 using namespace std;
 
 
-
-
-void Hexagone::recouvrir(bool r) {
-	if (est_recouvert()) {
-		throw HexaException("Hexagone deja recouvert");
-	}
-	recouvert = r;
-}
-
 string Hexagone::affiche() {
 	// Habitation, Marche, Caserne, Temple, Jardin, Place
 	string niv = to_string(getNiveau());
