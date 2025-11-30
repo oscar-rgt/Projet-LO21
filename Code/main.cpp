@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include "main.h"
-
+#include "jeuConsole.h"
 
 using namespace std;
 
@@ -22,7 +22,8 @@ int main() {
 		int tab4[3] = { 1,1,1 };
 		old = remplirQuadrillage(old, tab3, tab4, t2, emplacement);
 		cout << old;*/
-		jeuConsole.lancer();
+		jeuConsole j;
+		j.lancer();
 	}
 	catch (const HexaException& e) {
 		cout << "erreur ; " << e.getInfo();

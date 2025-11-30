@@ -19,18 +19,14 @@ Partie::Partie() : indexJoueurActuel(0), nbJoueurs(0), indexPileActuelle(0) {}
 Partie::~Partie() {
     for (auto j : joueurs) delete j;
     joueurs.clear();
-    // Les tuiles dans piles sont gérées par Pile, mais celles du chantier doivent être nettoyées si la partie s'arrête brutalement
-    for (auto t : chantier) delete t; 
-    chantier.clear();
+    chantier.vider();
 }
 
 void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, const array<bool, 5>& vars, unsigned int nivIC) {
     // Reset
     for (auto j : joueurs) delete j;
     joueurs.clear();
-    for (auto t : chantier) delete t;
-    chantier.clear();
-    pierresChantier.clear();
+    chantier.vider();
     piles.clear();
 
     nbJoueurs = nb;
@@ -53,37 +49,31 @@ void Partie::initialiserPiles() {
         else if (nbJoueurs == 4) nbPiles = 11;
     }
 
-    piles.reserve(nbPiles);
-    for (int i = 0; i < nbPiles; ++i) {
+    piles.reserve(nbPiles + 1); // +1 pour la pile de départ
+
+    // Pile de départ : nbJoueurs + 2 tuiles
+    piles.emplace_back(0, nbJoueurs + 2);
+
+    // Autres piles : nbJoueurs + 1 tuiles
+    for (int i = 1; i <= nbPiles; ++i) {
         piles.emplace_back(i, nbJoueurs + 1); 
     }
     indexPileActuelle = 0;
     
-    // Remplissage initial du chantier
+    // Remplissage initial du chantier avec la première pile
     remplirChantier();
 }
 
 void Partie::remplirChantier() {
-    int tailleCible = nbJoueurs + 2;
+    // Règle : Le chantier est rempli avec une pile entière uniquement lorsqu'il ne reste plus qu'une tuile dedans.
+    // Exception : Au début, le chantier est vide, donc on le remplit.
     
-    while (chantier.size() < tailleCible) {
-        if (indexPileActuelle >= piles.size()) break; //plus de pile
+    if (chantier.estVide() || chantier.getNbTuiles() == 1) {
+        if (indexPileActuelle >= piles.size()) return; // Plus de piles
 
         Pile& p = piles[indexPileActuelle];
-        if (p.estVide()) {
-            indexPileActuelle++;
-            continue;
-        }
-
-        // On récupère une tuile de la pile
-        try {
-			Tuile t = *(p.piocher());
-            
-            chantier.push_back(new Tuile(t)); // Copie sur le tas
-            pierresChantier.push_back(0); // 0 pierre dessus au début
-        } catch (PileException& e) {
-            indexPileActuelle++; // Pile vide ou erreur
-        }
+        chantier.ajouterPile(p);
+        indexPileActuelle++;
     }
 }
 
@@ -96,7 +86,7 @@ void Partie::designerArchitecteChef() {
 }
 
 bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
-    if (index < 0 || index >= chantier.size()) return false;
+    if (index < 0 || index >= chantier.getNbTuiles()) return false;
     Joueur* j = getJoueurActuel();
     if (!j) return false;
 
@@ -109,7 +99,8 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
     }
 
     // 2. Vérifier le placement 
-    Tuile* t = chantier[index];
+    Tuile* t = chantier.getTuile(index);
+    if (!t) return false;
     
     // Appliquer la rotation sur la tuile du chantier (temporairement)
     for(int r=0; r<rotation; ++r) t->tourner();
@@ -117,23 +108,21 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
     try {
         j->getCite()->placer(t, {x, y, z}); 
         
-        
         // 3. Paiement des pierres
         j->utiliserPierres(coutPierre);
         // On dépose 1 pierre sur chaque tuile qu'on a sauté (indices 0 à index-1)
         for(int i=0; i<index; ++i) {
-            pierresChantier[i]++;
+            chantier.ajouterPierre(i);
         }
 
         // 4. Récupération des pierres sur la tuile choisie
-        int pierresGagnees = pierresChantier[index];
+        int pierresGagnees = chantier.ramasserPierres(index);
         j->ajouterPierres(pierresGagnees);
 
         // 6. Mise à jour du chantier
-        chantier.erase(chantier.begin() + index);
-        pierresChantier.erase(pierresChantier.begin() + index);
+        chantier.retirerTuile(index);
 
-        // 7. Remplir le chantier (glissement automatique + pioche)
+        // 7. Remplir le chantier (si nécessaire)
         remplirChantier();
 
         return true;
@@ -151,11 +140,16 @@ void Partie::passerAuJoueurSuivant() {
 }
 
 bool Partie::estFinDePartie() const {
-    // Fin si plus de piles et chantier vide (ou insuffisant)
-    return (indexPileActuelle >= piles.size() && chantier.empty());
+    // Lorsque le chantier est vide, la partie s'arrête.
+    return chantier.estVide();
 }
 
 Joueur* Partie::getJoueurActuel() const {
     if (joueurs.empty()) return nullptr;
     return joueurs[indexJoueurActuel];
+}
+
+Joueur* Partie::getJoueur(int index) const {
+    if (index < 0 || index >= joueurs.size()) return nullptr;
+    return joueurs[index];
 }

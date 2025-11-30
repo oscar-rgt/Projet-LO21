@@ -33,16 +33,16 @@ bool JeuConsole::saisieOuiNon(const string& prompt) {
 
 void JeuConsole::afficherChantier() {
     const auto& chantier = Partie::getInstance().getChantier();
-    const auto& pierres = Partie::getInstance().getPierresChantier();
 
     cout << "\n=== CHANTIER (Tuiles Disponibles) ===" << endl;
-    for (size_t i = 0; i < chantier.size(); ++i) {
+    for (size_t i = 0; i < chantier.getNbTuiles(); ++i) {
         cout << "Choix " << i << " (Cout: " << i << " pierres) : " << endl;
-        if (pierres[i] > 0) cout << "  [Contient " << pierres[i] << " pierres bonus !]" << endl;
+        int pierres = chantier.getPierres(i);
+        if (pierres > 0) cout << "  [Contient " << pierres << " pierres bonus !]" << endl;
         
         // Affichage ASCII de la tuile
-        Tuile* t = chantier[i];
-        chantier[i].getDesign();
+        Tuile* t = chantier.getTuile(i);
+        if(t) t->getDesign();
     }
 }
 
@@ -63,7 +63,7 @@ void JeuConsole::afficherEtatJeu() {
 void JeuConsole::jouerTour() {
     afficherEtatJeu();
 
-    int maxChoix = Partie::getInstance().getChantier().size() - 1;
+    int maxChoix = Partie::getInstance().getChantier().getNbTuiles() - 1;
     
     cout << "\n--- ACTION ---" << endl;
     int index = saisieNombre("Quelle tuile choisir ?", 0, maxChoix);
@@ -85,6 +85,7 @@ void JeuConsole::jouerTour() {
     } else {
         cout << ">> ECHEC : Placement impossible ou pas assez de pierres." << endl;
         // On ne passe PAS au joueur suivant, on relance le tour
+        jouerTour();
     }
 }
 
@@ -101,21 +102,20 @@ void JeuConsole::lancer() {
     //Classement final
     cout << "\n--- CLASSEMENT ---" << endl;
     for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
-        Partie::getInstance().joueurActuel = i;
-        cout << i + 1 << ". " << Partie::getInstance().getJoueurActuel()->getNom() << " : " << Partie::getInstance().getJoueurActuel()->getPoints() << " points" << endl;
+        Joueur* j = Partie::getInstance().getJoueur(i);
+        cout << i + 1 << ". " << j->getNom() << " : " << j->getPoints() << " points" << endl;
     }
     cout << "\n--- GAGNANT ---" << endl;
-    Partie::getInstance().joueurActuel = 0;
     int maxPoints = 0;
     int gagnant = 0;
     for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
-        Partie::getInstance().joueurActuel = i;
-        if (Partie::getInstance().getJoueurActuel()->getPoints() > maxPoints) {
-            maxPoints = Partie::getInstance().getJoueurActuel()->getPoints();
+        Joueur* j = Partie::getInstance().getJoueur(i);
+        if (j->getPoints() > maxPoints) {
+            maxPoints = j->getPoints();
             gagnant = i;
         }
     }
-    cout << Partie::getInstance().getJoueurActuel()->getNom() << " a remporte la partie avec " << Partie::getInstance().getJoueurActuel()->getPoints() << " points !" << endl;
+    cout << Partie::getInstance().getJoueur(gagnant)->getNom() << " a remporte la partie avec " << maxPoints << " points !" << endl;
 }
 
 void JeuConsole::demanderConfiguration() {

@@ -15,6 +15,7 @@ public:
     Pile(unsigned int id_, unsigned int nb=3);
     unsigned int getId() const { return id; }
     Tuile* getTuile(unsigned int id_);
+    unsigned int getNbTuiles() const { return tuiles.size(); }
     void decalagePrix();
     void affiche();
     bool estVide() { return tuiles.empty(); }

@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <array>
+#include "chantier.h"
 
 class Joueur;
 class Pile;
@@ -35,11 +36,10 @@ public:
 
     int getNbJoueurs() const { return nbJoueurs; }
     Joueur* getJoueurActuel() const;
+    Joueur* getJoueur(int index) const;
     
     // Accès au chantier pour l'affichage 
-    const std::vector<Tuile*>& getChantier() const { return chantier; }
-    // Accès aux pierres posées sur les tuiles du chantier
-    const std::vector<int>& getPierresChantier() const { return pierresChantier; }
+    const Chantier& getChantier() const { return chantier; }
 
 private:
     Partie();
@@ -59,9 +59,7 @@ private:
     std::vector<Joueur*> joueurs;
     std::vector<Pile> piles;
     
-    std::vector<Tuile*> chantier;
-    // Nombre de pierres sur chaque tuile du chantier 
-    std::vector<int> pierresChantier;
+    Chantier chantier;
 
     TuileCite modeTuileCite;
     unsigned int niveauIllustreConstructeur;

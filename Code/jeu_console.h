@@ -8,11 +8,11 @@
 
 class JeuConsole {
 public:
-    // Point d'entr�e principal du mode console
+    // Point d'entree principal du mode console
     void lancer();
 
 private:
-    // M�thodes internes d'affichage et de saisie
+    // Methodes internes d'affichage et de saisie
     void demanderConfiguration();
     void afficherEtatJeu();
     void jouerTour();
