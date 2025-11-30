@@ -2,11 +2,10 @@
 #define SCORE_H
 
 #include <map>
+#include <vector>
 #include "joueur.h"
 #include "hexagone.h"
 #include "placement.h"
-
-using namespace std;
 
 enum class TypeQuartier {
     Habitation,
@@ -17,18 +16,16 @@ enum class TypeQuartier {
 };
 
 class Score {
-private: 
-    Joueur* joueur;
-    Cite* cite;
-    map<TypeQuartier, int> pointsParType; 
+private:
+    const Joueur* joueur;
+    const Cite* cite;
+    std::map<TypeQuartier, int> pointsParType;
     int total;
 
 public:
-    Score(Joueur* j);
-
+    Score(const Joueur* j);
     void calculerScore();
-    int calculerScoreType(TypeQuartier type);
-
+    int calculerScoreType(TypeQuartier type) const;
     int getTotal() const;
     int getScoreType(TypeQuartier type) const;
     const Joueur* getJoueur() const;
