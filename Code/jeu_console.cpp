@@ -37,7 +37,7 @@ void JeuConsole::afficherChantier() {
     const int hauteur = 9;
     const int largeur_reelle = 20;
     const int largeur_visuelle = 19;
-    cout << "\n=== CHANTIER ===" << endl;
+    cout << "\n=== CHANTIER === " << Partie::getInstance().getNbPiles() - Partie::getInstance().getIndexPileActuelle() << " pile(s) restante(s)" << endl;
     for (int i = 0; i < chantier.getNbTuiles(); ++i) {
         Tuile* t = chantier.getTuile(i);
         string designTuile = t->getDesign();
@@ -69,7 +69,7 @@ void JeuConsole::afficherEtatJeu() {
 
     cout << "\n--- VOTRE CITE ---" << endl;
     j->getCite()->afficher();
-    
+    j->getCite()->afficherMap();
     afficherChantier();
 }
 

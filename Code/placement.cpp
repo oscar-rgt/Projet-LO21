@@ -49,9 +49,9 @@ void Cite::placerTuileDepart() {
     
     
     // placer autour de (0,0,0)    
-    Coord c1 = { 0, 1, 0 };
-    Coord c2 = { -1, 0, 0 };
-    Coord c3 = { 1, -1, 0 };
+    Coord c1 = { 0, -1, 0 }; //NORD
+    Coord c2 = { -1, 1, 0 };
+    Coord c3 = { 1, 1, 0 };
 
     carte[c0] = t->getHexagone(0);
     carte[c1] = t->getHexagone(1);
@@ -108,3 +108,12 @@ vector<Hexagone*> Cite::getAdjacents(Coord c){
 }
 
 
+void Cite::afficherMap() const {
+    // On parcourt toute la map
+    for (const auto& paire : carte) {
+        // paire.first contient la Coordonnée (la clé)
+        cout << "(" << paire.first.x << ", "
+            << paire.first.y << ", "
+            << paire.first.z << ")" << endl;
+    }
+}
