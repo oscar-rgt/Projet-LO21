@@ -1,7 +1,7 @@
 #include "score.h"
 #include <stdexcept>
 
-Score::Score(const Joueur* j)
+Score::Score(Joueur* j)
     : joueur(j), cite(j ? j->getCite() : nullptr), total(0)
 {
     for (auto t : {TypeQuartier::Habitation, TypeQuartier::Marche,
@@ -44,7 +44,7 @@ void Score::calculerScore() {
     }
 }
 
-int Score::calculerScoreType(TypeQuartier type) const {
+int Score::calculerScoreType(TypeQuartier type) {
     if (!cite) return 0;
 
     int score = 0;
