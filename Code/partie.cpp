@@ -73,9 +73,7 @@ void Partie::remplirChantier() {
     }
 
     for (int i = 0; i < chantier.getNbTuiles(); i++) {
-        for (int j = 0; j < i; j++) {
-			chantier.getTuile(i)->setPrix(j);
-        }
+		chantier.getTuile(i)->setPrix(i);
     }
 }
 
