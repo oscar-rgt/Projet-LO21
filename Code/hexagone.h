@@ -15,7 +15,7 @@ public:
 };
 
 
-typedef enum { Habitation, Marche, Caserne, Temple, Jardin, Carriere} Type;
+typedef enum { Habitation, Marche, Caserne, Temple, Jardin, Carriere, Place} Type;
 
 
 class Hexagone {
