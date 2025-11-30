@@ -142,15 +142,15 @@ void JeuConsole::demanderConfiguration() {
     }
     int niveauIllustreConstructeur = 0;
     if(nbJoueurs == 1){
-        cout << "Mode solo activé" << endl;
+        cout << "Mode solo active" << endl;
         niveauIllustreConstructeur = saisieNombre("Niveau Illustre Constructeur", 1, 3);
     }
 
-    bool modeTuileCite = saisieOuiNon("Mode tuile cite ?");
+    bool modeTuileCite = saisieOuiNon("Mode tuile cite standard ?");
     Partie::TuileCite mode = modeTuileCite ? Partie::TuileCite::AUGMENTE : Partie::TuileCite::STANDARD;
 
     variantesActives[0] = saisieOuiNon("Variante habitations active ?");
-    variantesActives[1] = saisieOuiNon("Variante marchés active ?");
+    variantesActives[1] = saisieOuiNon("Variante marches active ?");
     variantesActives[2] = saisieOuiNon("Variante casernes active ?");
     variantesActives[3] = saisieOuiNon("Variante temples active ?");
     variantesActives[4] = saisieOuiNon("Variante jardins active ?");
