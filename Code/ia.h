@@ -11,7 +11,7 @@ private:
     std::vector<Tuile*> tuilesAcquises;
 
 public:
-    IA(const std::string& nom, int difficulte);
+    IA(const string& nom, int diff) : Joueur(nom), difficulte(diff) {}
     virtual ~IA();
 
     // Méthode pour choisir une tuile dans le chantier

@@ -5,12 +5,7 @@
 
 using namespace std;
 
-IA::IA(const string& nom, int diff) : Joueur(nom), difficulte(diff) {
-    // On supprime la cité créée par défaut par Joueur car l'IA n'en a pas besoin
-    // Mais pour éviter des segfaults si on appelle getCite(), on peut la laisser vide ou la supprimer.
-    // On va laisser le pointeur cite du parent, mais on ne l'utilisera pas.
-    cite = new Cite();
-}
+
 
 IA::~IA() {
     for (auto t : tuilesAcquises) {
