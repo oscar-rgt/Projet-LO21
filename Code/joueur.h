@@ -13,6 +13,7 @@ class Joueur {
 private:
     string nom;
     int pierres;
+    int points;
     Cite* cite;
     Score* score;
 
@@ -33,6 +34,9 @@ public:
     void ajouterPierres(int n = 1);
     bool utiliserPierres(int n = 1);
     void ajouterPierresRecouvrement(int nbRecouverts);
+
+    void setPoints(int p) { points = p; }
+    int getPoints() const { return points; }
 
 };
 
