@@ -42,7 +42,7 @@ Tuile::Tuile(unsigned int i, unsigned int p) : id(i), prix(p), inversion(0)
         " \\_____/       \\   \n" // Ligne 6
         "       \\       /   \n" // Ligne 7
         "        \\_____/    \n";
-    
+
     hexagones.resize(3); // Initialize vector with 3 elements
     
     int positions[3] = { 50, 83, 130 };

@@ -52,6 +52,9 @@ public:
     size_t getNbPiles() const { return piles.size(); }
     int getIndexPileActuelle() const { return indexPileActuelle; }
 
+    const std::array<bool,5>& getVariantes() const { return variantes; }//getter public pour les variantes
+
+
 private:
     Partie();
     ~Partie();
