@@ -180,7 +180,7 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
         
         int l = h.y*-4 + 14;
         int c = h.x*8 + 55;
-        j = c + l*110;
+        j = c + l*110 + 1;
         if ((h.x % 2)) j += 220;
         quadrillage.replace(j, 3, t.getHexagone(i)->affiche());
     }
