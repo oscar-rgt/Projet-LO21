@@ -212,7 +212,7 @@ bool Partie::estFinDePartie() const {
 }
 
 Joueur* Partie::getJoueurActuel() const {
-    if (joueurs.empty()) return nullptr;
+    if (joueurs.empty() || !joueurs[indexJoueurActuel]) throw PartieException("Joueur inexistant.");
     return joueurs[indexJoueurActuel];
 }
 
