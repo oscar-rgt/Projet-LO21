@@ -12,11 +12,11 @@ using namespace std;
 
 // On garde une vérification large (8 voisins) pour être sûr de détecter
 // les contacts quelle que soit la topologie de la grille.
-vector<Cite::Coord> Cite::getVecteursVoisins() { //marche pas (il faut 6 voisins)
+vector<Cite::Coord> Cite::getVecteursVoisins() { 
     return {
         {0, -1, 0}, {0, 1, 0},   // Vertical
         {-1, 0, 0}, {1, 0, 0},   // Horizontal bas
-        {-1, 1, 0}, {1, 1, 0},   // Horizontal haut
+        {-1, 1, 0}, {1, 1, 0}  // Horizontal haut
     };
 }
 
@@ -156,7 +156,7 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
         }
         
         int l = h.y*-4 + 14;
-        int c = h.x*8 + 55;
+        int c = h.x*7 + 56;
         j = c + l*110 + 1;
         if ((h.x % 2)) j += 220;
         quadrillage.replace(j, 3, t.getHexagone(i)->affiche());
