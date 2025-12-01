@@ -45,7 +45,7 @@ Tuile::Tuile(unsigned int i, unsigned int p) : id(i), prix(p), inversion(0)
 
     hexagones.resize(3); // Initialize vector with 3 elements
     
-    int positions[3] = { 50, 83, 130 };
+    int positions[3] = { 50, 130, 83 };
     for (int k = 0; k < 3; k++) {
         int t = randomIndexAkropolis();
         if (Type(t) == Carriere) {
