@@ -34,16 +34,16 @@ int IA::choisirTuile(const Chantier& chantier) {
     // l’Illustre Architecte prend la 1ère tuile Cité du Chantier.
 
     int meilleurIndex = -1;
-    
+
     for (int i = 0; i < chantier.getNbTuiles(); ++i) {
         Tuile* t = chantier.getTuile(i);
-        int coutTuile = t->getPrix(); 
+        int coutTuile = t->getPrix();
 
         if (tuileContientPlace(t)) {
             // C'est une tuile avec Place
             // Comme on parcourt par index croissant (donc prix croissant),
             // la première qu'on trouve est forcément la moins chère.
-            
+
             if (getPierres() >= coutTuile) {
                 meilleurIndex = i;
                 break; // On a trouvé la moins chère abordable
@@ -59,14 +59,13 @@ int IA::choisirTuile(const Chantier& chantier) {
     }
 }
 
-   
-int IA::calculerScoreIA(const std::array<bool, 5>& variantesActives) const {
+
+//BONNE VERSION SCORE IA
+int IA::calculerScoreIA() const {
 
     //niveau 1 : quartiers : 1pt / carriere : 0pt
     //niveau 2 : quartiers : 1pt / carriere : 2pt
-    //niveau 3 : quartiers : *2 (points doublés) / carriere : 0pt 
-
-    
+    //niveau 3 : quartiers : *2 (points doublés) / carriere : 0pt
     int totalScore = 0;
 
     int multiplicateurNiveau = (difficulte == 3) ? 2 : 1;
@@ -77,41 +76,31 @@ int IA::calculerScoreIA(const std::array<bool, 5>& variantesActives) const {
             Type type = h->getType();
 
             if (type == Carriere) {
-                if (difficulte == 2) totalScore += 2;
+                if (difficulte == 2) {
+                    totalScore += 2; // bonus Carriere niveau 2
+                }
                 continue;
             }
 
-            int pts = 1; 
-
-            //avec les variantes
+            int pts = 0;
             switch (type) {
                 case Habitation:
-                    if (variantesActives[0]) { 
-                        pts *= 2; 
-                    }
+                    pts = 1; // on considère le placement correct
                     break;
                 case Marche:
-                    if (variantesActives[1]) { 
-                        pts *= 2; 
-                    }
+                    pts = 1;
                     break;
                 case Caserne:
-                    if (variantesActives[2]) { 
-                        pts *= 2;
-                    }
+                    pts = 1;
                     break;
                 case Temple:
-                    if (variantesActives[3]) { 
-                        pts *= 2; 
-                    }
+                    pts = 1;
                     break;
                 case Jardin:
-                    if (variantesActives[4]) { 
-                        pts *= 2; 
-                    }
+                    pts = 1;
                     break;
                 default:
-                    break;
+                    pts = 0;
             }
 
             totalScore += pts * multiplicateurNiveau;
@@ -120,4 +109,3 @@ int IA::calculerScoreIA(const std::array<bool, 5>& variantesActives) const {
 
     return totalScore;
 }
-
