@@ -42,7 +42,7 @@ void Cite::placer(Tuile* t, Coord c) {
     // Index 1 : (x, y-1)
     pos[1] = c.sud();
 
-    // Index 2 : (Standard: x-1, y) | (Inversé: x+1, y)
+    // Index 2 : (Standard: x-1, x % 2 == 0 ? y : y - 1) | (Inversé: x+1, x % 2 == 0 ? y : y - 1)
     pos[2] = c.cote(t->getInversion());
 
     // B. VÉRIFICATION : DISPONIBILITÉ
@@ -127,8 +127,8 @@ void Cite::afficher() const {
 
 // Mise à jour selon votre nouvelle géométrie "Index 2"
 Cite::Coord Cite::Coord::cote(bool inversion) {
-    if (inversion) return { x + 1, y, z };
-    return { x - 1, y, z };
+    if (inversion) return { x + 1, x % 2 == 0 ? y : y - 1, z };
+    return { x - 1, x % 2 == 0 ? y : y - 1, z };
 }
 
 vector<Hexagone*> Cite::getAdjacents(Coord c) {
