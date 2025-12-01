@@ -178,17 +178,15 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
     }
 }
 
-void Partie::jouerTourIA() {
+int Partie::jouerTourIA() {
     Joueur* j = getJoueurActuel();
     IA* ia = dynamic_cast<IA*>(j);
-    if (!ia) return;
+    if (!ia) return -1;
 
-    cout << "\n--- TOUR DE L'IA ---" << endl;
     
+	
     int indexChoisi = ia->choisirTuile(chantier);
     Tuile* t = chantier.getTuile(indexChoisi);
-    
-    cout << "L'IA choisit la tuile " << indexChoisi << endl;
     
 
     if (indexChoisi > 0) {
@@ -207,6 +205,8 @@ void Partie::jouerTourIA() {
     
     remplirChantier();
     passerAuJoueurSuivant();
+
+	return indexChoisi;
 }
 
 void Partie::passerAuJoueurSuivant() {
