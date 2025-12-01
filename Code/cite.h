@@ -34,7 +34,7 @@ private :
 	};
 	unordered_map<Coord, Hexagone*, CoordHash> carte; // Espace 3D de pointeurs d'hexagones 
 	//  carte[{0, 0, 0}] = tuile0;
-	const bool toucheCite(Coord c) const;
+	const bool toucheCite(Coord c);
 	string quadrillage;
 	TuileDepart *t;
 public :
@@ -78,4 +78,5 @@ public :
 	vector<Hexagone*> getAdjacents(Coord c);
 	void afficherMap() const;
 	const unordered_map<Coord, Hexagone*, CoordHash>& getCarte() const { return carte; }
+	vector<Cite::Coord> getVecteursVoisins();
 };

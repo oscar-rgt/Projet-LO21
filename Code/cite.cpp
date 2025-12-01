@@ -4,59 +4,136 @@
 #include "tuiles.h"
 using namespace std;
 
-const bool Cite::toucheCite(Coord c) const { 
-    """L'hexagone aux coos c touche-t-il la cité ?""";
-    return (!estLibre({ c.x - 1, c.y - 1, c.z }) || !estLibre({ c.x, c.y - 1, c.z }) || !estLibre({ c.x + 1, c.y - 1, c.z })
-        || !estLibre({ c.x - 1, c.y, c.z }) || !estLibre({ c.x, c.y + 1, c.z }) || !estLibre({ c.x + 1, c.y, c.z }));
+
+vector<Cite::Coord> Cite::getVecteursVoisins() {
+    return {
+        {0, 1, 0}, {0, -1, 0},   // Vertical
+        {1, 0, 0}, {-1, 0, 0},   // Horizontal
+        {1, 1, 0}, {1, -1, 0},   // Diagonales Droite
+        {-1, 1, 0}, {-1, -1, 0}  // Diagonales Gauche
+    };
 }
 
-void Cite::placer(Tuile* t, Coord c){ // Il faut tourner la tuile avant de la placer
-    Coord c2 = c.sud(), c3 = c.cote(t->getInversion()); 
-    if (!estLibre(c) || !estLibre(c2) || !estLibre(c3)) throw CiteException("Une des cases n'est pas libre.");
+const bool Cite::toucheCite(Coord c) {
+    // On vérifie large (carré de 3x3) pour gérer tous les cas d'adjacence
+    for (const auto& vec : getVecteursVoisins()) {
+        if (!estLibre({ c.x + vec.x, c.y + vec.y, c.z })) return true;
+    }
+    return false;
+}
 
-	
-    if (c.z == 0) {
-        if (!toucheCite(c) && !toucheCite(c2) && !toucheCite(c3)) throw CiteException("Placement impossible : L'emplacement ne touche pas la cite.");
+// =========================================================
+// 2. MÉTHODE PLACER
+// =========================================================
+
+void Cite::placer(Tuile* t, Coord c) {
+    // A. CALCUL DES POSITIONS (SLOTS)
+    // Selon vos nouvelles règles strictes :
+    Coord pos[3];
+
+    // Index 0 : L'Ancre (Nord) -> x, y
+    pos[0] = c;
+
+    // Index 1 : Le Sud -> x, y+1
+    pos[1] = { c.x, c.y + 1, c.z };
+
+    // Index 2 : Le Côté -> x-1 (Standard) ou x+1 (Inversé), y+1
+    if (t->getInversion()) {
+        // Cas Inversé : x+1, y+1
+        pos[2] = { c.x + 1, c.y + 1, c.z };
     }
     else {
-    // Vérifier que chaque hexagone de la tuile est soutenu par un hexagone en dessous
-    Coord dessous_c = {c.x, c.y, c.z - 1};
-    Coord dessous_c2 = {c2.x, c2.y, c2.z - 1};
-    Coord dessous_c3 = {c3.x, c3.y, c3.z - 1};
-    
-    if (estLibre(dessous_c) || estLibre(dessous_c2) || estLibre(dessous_c3)) throw CiteException("Placement impossible : Les cases inferieures sont vides.");
-        Tuile* tuile_dessous_c = carte[dessous_c]->getTuile();
-        Tuile* tuile_dessous_c2 = carte[dessous_c2]->getTuile();
-        Tuile* tuile_dessous_c3 = carte[dessous_c3]->getTuile();
-    
-    bool deuxTuilesDifferentes = (tuile_dessous_c != tuile_dessous_c2) || 
-                                  (tuile_dessous_c != tuile_dessous_c3) || 
-                                  (tuile_dessous_c2!= tuile_dessous_c3);
-    
-    if (!deuxTuilesDifferentes) throw CiteException("Les cases inférieures sont dans la même tuile.");
+        // Cas Standard : x-1, y+1
+        pos[2] = { c.x - 1, c.y + 1, c.z };
     }
-    carte[c] = t->getHexagone(0);
-    carte[c2] = t->getHexagone(1);
-    carte[c3] = t->getHexagone(2);
+
+    // B. VÉRIFICATION : DISPONIBILITÉ
+    for (int i = 0; i < 3; i++) {
+        if (!estLibre(pos[i]))
+            throw CiteException("Placement impossible : Une des cases n'est pas libre.");
+    }
+
+    // C. VÉRIFICATION : RÈGLES DE POSÉ
+    if (c.z == 0) {
+        // Au sol : Doit toucher la cité
+        bool contact = false;
+        for (int i = 0; i < 3; i++) {
+            if (toucheCite(pos[i])) {
+                contact = true;
+                break;
+            }
+        }
+        if (!contact) throw CiteException("Placement impossible : La tuile ne touche pas la cité.");
+    }
+    else {
+        // En hauteur : Support requis sous CHAQUE hexagone
+        Tuile* supportTiles[3] = { nullptr, nullptr, nullptr };
+
+        for (int i = 0; i < 3; i++) {
+            Coord dessous = { pos[i].x, pos[i].y, pos[i].z - 1 };
+
+            if (estLibre(dessous))
+                throw CiteException("Placement impossible : Vide sous un hexagone.");
+
+            supportTiles[i] = carte[dessous]->getTuile();
+        }
+
+        // Règle : Doit reposer sur au moins 2 tuiles différentes
+        bool memeSupportPartout = (supportTiles[0] == supportTiles[1]) &&
+            (supportTiles[1] == supportTiles[2]);
+
+        if (memeSupportPartout)
+            throw CiteException("Placement impossible : La tuile recouvre une seule et même tuile.");
+    }
+
+    // D. ENREGISTREMENT
+    for (int i = 0; i < 3; i++) {
+        carte[pos[i]] = t->getHexagone(i);
+    }
+
+    // E. AFFICHAGE
     remplirQuadrillage(c, *t);
 }
 
+// =========================================================
+// 3. TUILE DE DÉPART & AUTRES
+// =========================================================
+
 void Cite::placerTuileDepart() {
-    if (t->getNbHexagones() != 4) throw CiteException("La tuile de départ doit avoir 4 hexagones.");
-    
-    // Centre (Habitation) en (0,0,0)
-    Coord c0 = { 0, 0, 0 };
-    
-    
-    // placer autour de (0,0,0)    
-    Coord c1 = { -1, -1, 0 }; //SUD
-    Coord c2 = { 1, -1, 0 };
-    Coord c3 = { 0, 2, 0 };
+    if (t->getNbHexagones() < 4) return;
+
+    // Coordonnées spécifiques pour la tuile de départ (fixées précédemment)
+    Coord c0 = { 0, 0, 0 };   // Centre (H0)
+    Coord c1 = { -1, -1, 0 }; // Sud
+    Coord c2 = { 1, -1, 0 };  // Autre
+    Coord c3 = { 0, 2, 0 };   // Nord
 
     carte[c0] = t->getHexagone(0);
     carte[c1] = t->getHexagone(1);
     carte[c2] = t->getHexagone(2);
     carte[c3] = t->getHexagone(3);
+}
+
+
+// Helpers
+Cite::Coord Cite::Coord::cote(bool inversion) {
+    if (inversion) return { x + 1, y + 1, z };
+    return { x - 1, y + 1, z };
+}
+
+vector<Hexagone*> Cite::getAdjacents(Coord c) {
+    vector<Hexagone*> ret;
+    for (const auto& vec : getVecteursVoisins()) {
+        Coord voisin = { c.x + vec.x, c.y + vec.y, c.z };
+        if (!estLibre(voisin)) ret.push_back(carte[voisin]);
+    }
+    return ret;
+}
+
+void Cite::afficherMap() const {
+    for (const auto& paire : carte) {
+        cout << "(" << paire.first.x << ", " << paire.first.y << ", " << paire.first.z << ")" << endl;
+    }
 }
 	
 
@@ -91,29 +168,3 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
     }
 }
 
-Cite::Coord Cite::Coord::cote(bool inversion) {
-    if (inversion) return { x - 1, y,z };
-    else return { x + 1, y,z };
-}
-
-vector<Hexagone*> Cite::getAdjacents(Coord c){
-    if (!toucheCite(c)) throw CiteException("Cet hexagone ne touche pas la cité.");
-    vector<Coord> coo = { {c.x - 1, c.y - 1, c.z},  { c.x, c.y - 1, c.z }, { c.x + 1, c.y - 1, c.z },
-        { c.x - 1, c.y, c.z }, { c.x, c.y + 1, c.z }, { c.x + 1, c.y, c.z } };
-    vector<Hexagone*> ret;
-    for (Coord c : coo) {
-        if (!estLibre(c)) ret.push_back(carte[c]);
-    }
-    return ret;
-}
-
-
-void Cite::afficherMap() const {
-    // On parcourt toute la map
-    for (const auto& paire : carte) {
-        // paire.first contient la Coordonnée (la clé)
-        cout << "(" << paire.first.x << ", "
-            << paire.first.y << ", "
-            << paire.first.z << ")" << endl;
-    }
-}
