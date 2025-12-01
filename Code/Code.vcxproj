@@ -23,6 +23,7 @@
     <ClCompile Include="cite.cpp" />
     <ClCompile Include="hexagone.cpp" />
     <ClCompile Include="jeuConsole.cpp" />
+    <ClCompile Include="ia.cpp" />
     <ClCompile Include="joueur.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="partie.cpp" />
@@ -36,6 +37,7 @@
     <ClInclude Include="cite.h" />
     <ClInclude Include="hexagone.h" />
     <ClInclude Include="jeuConsole.h" />
+    <ClInclude Include="ia.h" />
     <ClInclude Include="joueur.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="partie.h" />

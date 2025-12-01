@@ -8,9 +8,9 @@ using namespace std;
 
 
 IA::~IA() {
-    for (auto t : tuilesAcquises) {
+    /*for (auto t : tuilesAcquises) {
         delete t;
-    }
+    }*/ //C'est partie qui doit supprimer les tuiles nn? IA n'y accède qu'en lecture
     tuilesAcquises.clear();
 }
 
