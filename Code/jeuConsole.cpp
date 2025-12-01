@@ -166,7 +166,7 @@ void JeuConsole::demanderConfiguration() {
         niveauIllustreConstructeur = saisieNombre("Niveau Illustre Constructeur", 1, 3);
     }
 
-    bool modeTuileCite = saisieOuiNon("Mode tuile cite augmenté ?");
+    bool modeTuileCite = saisieOuiNon("Mode tuile cite augmente ?");
     Partie::TuileCite mode = modeTuileCite ? Partie::TuileCite::AUGMENTE : Partie::TuileCite::STANDARD;
 
     if(saisieOuiNon("Activer les variantes ?")){
