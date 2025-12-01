@@ -134,7 +134,10 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
 
     try {
         j->getCite()->placer(t, {x, y, z}); 
-        
+        ////////////////////////////////////// TEST POUR AGRANDIR LE Q/////////////////////////////////////////
+        j->getCite()->agrandirQ('S');
+        ////////////////////////////////////// TEST POUR AGRANDIR LE Q/////////////////////////////////////////
+
         // 3. Paiement des pierres
         j->utiliserPierres(coutPierre);
         
@@ -155,7 +158,6 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
                 chantier.getTuile(i)->setPrix(chantier.getTuile(i)->getPrix() + 1);
             }
         }
-
         // 4. Récupération des pierres sur la tuile choisie
         int pierresGagnees = chantier.getTuile(index)->getPrix();
         j->ajouterPierres(pierresGagnees);

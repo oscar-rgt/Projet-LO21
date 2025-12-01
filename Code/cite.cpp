@@ -176,3 +176,17 @@ void Cite::afficherMap() const {
             << paire.first.z << ") " << carte.at({paire.first.x, paire.first.y, paire.first.z})->affiche() << endl;
     }
 }
+
+void Cite::agrandirQ(char dir) {
+    if (dir == 'S') {
+        string rep = to_string(lround(quadrillage.length() / 110)-30);
+        rep+= R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
+        quadrillage.replace(quadrillage.length() - 110, 110, rep);
+        quadrillage += R"(
+ /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
+ \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
+  \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
+     -7     -6     -5    -4     -3     -2     -1      0      1      2      3      4      5      6      7     
+)";
+    }
+}

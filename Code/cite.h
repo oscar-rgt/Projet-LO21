@@ -66,7 +66,7 @@ public :
  /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
  \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
   \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
-     -7     -6     -5    -4     -3     -2     -1      0      1      2      3      4      5      6      7
+     -7     -6     -5    -4     -3     -2     -1      0      1      2      3      4      5      6      7     
 )"), t(new TuileDepart) {}
 	~Cite() { delete t; }
 	void placer(Tuile* t, Coord c);
@@ -79,4 +79,5 @@ public :
 	void afficherMap() const;
 	const unordered_map<Coord, Hexagone*, CoordHash>& getCarte() const { return carte; }
 	vector<Cite::Coord> getVecteursVoisins();
+	void agrandirQ(char dir);
 };
