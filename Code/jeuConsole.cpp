@@ -96,6 +96,11 @@ void JeuConsole::jouerTour() {
     cout << "\n--- ACTION ---" << endl;
     int index = saisieNombre("Quelle tuile choisir ?", 0, maxChoix);
 
+	int inversion = 0;
+    if(saisieOuiNon("Inverser la tuile ?")) {
+        inversion = 1;
+	}
+
     int rotation = 0;
     if (saisieOuiNon("Tourner la tuile ?")) {
         rotation = saisieNombre("Combien de rotations ?", 1, 3);
@@ -106,7 +111,7 @@ void JeuConsole::jouerTour() {
     int z = saisieNombre("Coord Z (Niveau)", 0, 10);
 
     try {
-        Partie::getInstance().actionPlacerTuile(index, x, y, z, rotation);
+        Partie::getInstance().actionPlacerTuile(index, x, y, z, rotation, inversion);
     } catch (CiteException &e) {
         cout << " ECHEC : " << e.getInfos() << endl;
         jouerTour();

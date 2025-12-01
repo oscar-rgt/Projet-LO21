@@ -108,7 +108,7 @@ void Partie::designerArchitecteChef() {
     indexJoueurActuel = 0;
 }
 
-bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
+bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int inversion) {
     if (index < 0 || index >= chantier.getNbTuiles()) return false;
     Joueur* j = getJoueurActuel();
     if (!j) return false;
@@ -123,6 +123,11 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
     // 2. Vérifier le placement 
     Tuile* t = chantier.getTuile(index);
     if (!t) return false;
+
+	//Appliquer l'inversion si demandée
+    if(inversion) {
+        t->inverser();
+	}
     
     // Appliquer la rotation sur la tuile du chantier (temporairement)
     for(int r=0; r<rotation; r++) t->tourner();
@@ -161,6 +166,8 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
         // 7. Remplir le chantier (si nécessaire)
         remplirChantier();
 
+		// 8. Passer au joueur suivant
+		passerAuJoueurSuivant();
         return true;
 
     } catch (const CiteException& e) {
