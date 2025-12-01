@@ -12,7 +12,7 @@ using namespace std;
 
 // On garde une vérification large (8 voisins) pour être sûr de détecter
 // les contacts quelle que soit la topologie de la grille.
-vector<Cite::Coord> Cite::getVecteursVoisins() {
+vector<Cite::Coord> Cite::getVecteursVoisins() { //marche pas (il faut 6 voisins)
     return {
         {0, -1, 0}, {0, 1, 0},   // Vertical
         {-1, 0, 0}, {1, 0, 0},   // Horizontal bas
@@ -20,7 +20,7 @@ vector<Cite::Coord> Cite::getVecteursVoisins() {
     };
 }
 
-const bool Cite::toucheCite(Coord c) {
+const bool Cite::toucheCite(Coord c) { //marche pas (jsp pk)
     for (const auto& vec : getVecteursVoisins()) {
         if (!estLibre({ c.x + vec.x, c.y + vec.y, c.z })) return true;
     }
@@ -154,29 +154,6 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
         else {
             h = c;
         }
-        // placement
-        /*
-        j += 109 * (h.x+1) * 2;
-        if ((h.x+1) % 2 == 0) {
-            j += 3 + 14 * h.y;
-        }
-        else {
-            j += 10 + 14 * h.y;
-        }
-        /*test:
-        int hex_width = 8;           // largeur d'un hexagone
-        int vertical_spacing = 4;    // lignes entre centres sur y
-        int line_length = 109;       // largeur de la ligne dans le string
-        int horizontal_offset_for_odd_y = 3; // décalage horizontal pour y impair
-
-        int base_line_index = 14; // ligne de y=0
-        int line_index = base_line_index - h.y * vertical_spacing;
-
-        int col_index = h.x * hex_width;
-        if (h.y % 2 != 0) col_index += horizontal_offset_for_odd_y;
-            col_index += hex_width / 2; // centre horizontal de l'hexagone
-
-        j= line_index * line_length + col_index;*/
         
         int l = h.y*-4 + 14;
         int c = h.x*8 + 55;
