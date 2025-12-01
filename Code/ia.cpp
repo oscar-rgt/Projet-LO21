@@ -59,13 +59,14 @@ int IA::choisirTuile(const Chantier& chantier) {
     }
 }
 
-
-//BONNE VERSION SCORE IA
-int IA::calculerScoreIA() const {
+   
+int IA::calculerScoreIA(const std::array<bool, 5>& variantesActives) const {
 
     //niveau 1 : quartiers : 1pt / carriere : 0pt
     //niveau 2 : quartiers : 1pt / carriere : 2pt
-    //niveau 3 : quartiers : *2 (points doublés) / carriere : 0pt    
+    //niveau 3 : quartiers : *2 (points doublés) / carriere : 0pt 
+
+    
     int totalScore = 0;
 
     int multiplicateurNiveau = (difficulte == 3) ? 2 : 1;
@@ -76,31 +77,41 @@ int IA::calculerScoreIA() const {
             Type type = h->getType();
 
             if (type == Carriere) {
-                if (difficulte == 2) {
-                    totalScore += 2; // bonus Carriere niveau 2
-                }
+                if (difficulte == 2) totalScore += 2;
                 continue;
             }
 
-            int pts = 0;
+            int pts = 1; 
+
+            //avec les variantes
             switch (type) {
                 case Habitation:
-                    pts = 1; // on considère le placement correct
+                    if (variantesActives[0]) { 
+                        pts *= 2; 
+                    }
                     break;
                 case Marche:
-                    pts = 1;
+                    if (variantesActives[1]) { 
+                        pts *= 2; 
+                    }
                     break;
                 case Caserne:
-                    pts = 1;
+                    if (variantesActives[2]) { 
+                        pts *= 2;
+                    }
                     break;
                 case Temple:
-                    pts = 1;
+                    if (variantesActives[3]) { 
+                        pts *= 2; 
+                    }
                     break;
                 case Jardin:
-                    pts = 1;
+                    if (variantesActives[4]) { 
+                        pts *= 2; 
+                    }
                     break;
                 default:
-                    pts = 0;
+                    break;
             }
 
             totalScore += pts * multiplicateurNiveau;
