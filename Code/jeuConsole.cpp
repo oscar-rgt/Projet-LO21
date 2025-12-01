@@ -168,23 +168,37 @@ void JeuConsole::jouerTour() {
     int y = saisieNombre("Coord Y", -10, 10);
     int z = saisieNombre("Coord Z (Niveau)", 0, 10);
 
-    try {
-    bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, rotationCompteur, inversionEtat);
+    
+	cout << "\n\nLa tuile\n\n" << tuileAffichee->getDesign() << "\n\nva etre placee en (" << x << ", " << y << ", " << z << ").\n" <<endl;
+    if(saisieOuiNon("Valider ce choix ?")){
 
-    if (!succes) {
-        cout << ">> ECHEC : Pas assez de pierres ou regle non respectee." << endl;
-        cout << "Appuyez sur Entree pour reessayer...";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cin.get();
+        try {
+            bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, rotationCompteur, inversionEtat);
+
+            if (!succes) {
+                cout << ">> ECHEC : Pas assez de pierres ou regle non respectee." << endl;
+                cout << "Appuyez sur Entree pour reessayer...";
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cin.get();
+                jouerTour();
+            }
+        }
+        catch (CiteException& e) {
+            cout << ">> ECHEC : " << e.getInfos() << endl;
+            cout << "Appuyez sur Entree pour reessayer...";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.get();
+            jouerTour();
+        }
+    }
+    else {
+        if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser(); // Remettre l'état initial
+        for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) {
+            tuileAffichee->tourner(); // Remettre l'orientation initiale
+        }
         jouerTour();
     }
-    }catch (CiteException& e) {
-        cout << ">> ECHEC : " << e.getInfos() << endl;
-        cout << "Appuyez sur Entree pour reessayer...";
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        cin.get();
-        jouerTour();
-    }
+
     
 }
 
