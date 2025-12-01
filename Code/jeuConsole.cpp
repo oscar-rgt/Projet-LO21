@@ -6,8 +6,17 @@
 #include <iostream>
 #include <limits>
 #include <algorithm>
+#include <cstdlib>
 
 using namespace std;
+
+void JeuConsole::nettoyerEcran() {
+#ifdef _WIN32
+    std::system("cls");
+#else
+    std::system("clear");
+#endif
+}
 
 int JeuConsole::saisieNombre(const string& prompt, int min, int max) {
     int reponse = -1;
@@ -81,6 +90,10 @@ void JeuConsole::afficherEtatJeu() {
 }
 
 void JeuConsole::jouerTour() {
+
+    nettoyerEcran();
+    afficherEtatJeu();
+
     Joueur* j = Partie::getInstance().getJoueurActuel();
     
     // Si c'est l'IA, on joue automatiquement
@@ -96,33 +109,77 @@ void JeuConsole::jouerTour() {
         return;
     }
 
-    afficherEtatJeu();
+    //Tour humain
 
     size_t maxChoix = Partie::getInstance().getChantier().getNbTuiles() - 1;
     
     cout << "\n--- ACTION ---" << endl;
     int index = saisieNombre("Quelle tuile choisir ?", 0, maxChoix);
 
-	int inversion = 0;
-    if(saisieOuiNon("Inverser la tuile ?")) {
-        inversion = 1;
-	}
+    Tuile* tuileAffichee = Partie::getInstance().getChantier().getTuile(index);
 
-    int rotation = 0;
-    if (saisieOuiNon("Tourner la tuile ?")) {
-        rotation = saisieNombre("Combien de rotations ?", 1, 3);
+    // --- MODE PREVISUALISATION ---
+
+    bool placementValide = false;
+    int rotationCompteur = 0; 
+    bool inversionEtat = false;
+
+    while (!placementValide) {
+        nettoyerEcran();
+        afficherEtatJeu(); // On réaffiche le contexte
+
+
+        cout << "\n\nCommandes : [R]otation | [I]nversion | [V]alider | [A]nnuler choix" << endl;
+        cout << "Votre choix : ";
+
+        string choix;
+        cin >> choix;
+
+        // Gestion des commandes
+        if (choix == "R" || choix == "r") {
+            tuileAffichee->tourner();
+            rotationCompteur = (rotationCompteur + 1) % 3;
+        }
+        else if (choix == "I" || choix == "i") {
+            tuileAffichee->inverser(); 
+        }
+        else if (choix == "A" || choix == "a") {
+            // Annuler le choix de la tuile, on recommence le tour
+            if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser(); // Remettre l'état initial
+            for(int i = 0; i < (3 - rotationCompteur) % 3; ++i) {
+                tuileAffichee->tourner(); // Remettre l'orientation initiale
+			}
+            jouerTour();
+            return;
+        }
+        else if (choix == "V" || choix == "v") {
+            // On sort de la boucle de prévisualisation pour aller placer
+            placementValide = true;
+        }
     }
 
+    //Placement
     int x = saisieNombre("Coord X", -10, 10);
     int y = saisieNombre("Coord Y", -10, 10);
     int z = saisieNombre("Coord Z (Niveau)", 0, 10);
 
     try {
-        Partie::getInstance().actionPlacerTuile(index, x, y, z, rotation, inversion);
-    } catch (CiteException &e) {
-        cout << " ECHEC : " << e.getInfos() << endl;
+    bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, rotationCompteur, inversionEtat);
+
+    if (!succes) {
+        cout << ">> ECHEC : Pas assez de pierres ou règle non respectée." << endl;
+        cout << "Appuyez sur Entree pour réessayer...";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin.get();
         jouerTour();
-	}
+    }
+    }catch (CiteException& e) {
+        cout << ">> ECHEC : " << e.getInfos() << endl;
+        cout << "Appuyez sur Entree pour réessayer...";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        cin.get();
+        jouerTour();
+    }
     
 }
 

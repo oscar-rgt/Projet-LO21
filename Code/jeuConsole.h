@@ -18,6 +18,8 @@ private:
     void jouerTour();
     void afficherChantier();
 
+    void nettoyerEcran();
+
     // Utilitaires de saisie robustes
     int saisieNombre(const std::string& prompt, int min, int max);
     bool saisieOuiNon(const std::string& prompt);

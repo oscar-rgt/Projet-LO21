@@ -144,12 +144,12 @@ string& Tuile::getDesign(){
             " /       \\_____    \n" // Ligne 2
             " \\       /     \\   \n" // Ligne 3
             "  \\_____/       \\  \n" // Ligne 4
-            "   /    \\       /  \n" // Ligne 5
-            "  /      \\_____/   \n" // Ligne 6
+            "  /     \\       /  \n" // Ligne 5
+            " /       \\_____/   \n" // Ligne 6
             " \\       /         \n" // Ligne 7
             "  \\_____/          \n";
             
-            int positions[3] = { 44, 131, 92 };
+            int positions[3] = { 44, 124, 91 };
             auto it = hexagones.begin();
             for (int k = 0; k < 3; k++, ++it) {
                 design.replace(positions[k], 3, (*it)->affiche());
