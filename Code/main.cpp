@@ -1,7 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include "main.h"
-#include "jeu_console.h"
+#include "jeuConsole.h"
 
 using namespace std;
 

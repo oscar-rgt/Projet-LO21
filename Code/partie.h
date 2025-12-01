@@ -9,7 +9,7 @@
 #include "joueur.h"
 #include "pile.h"
 #include "tuiles.h"
-#include "placement.h"
+#include "cite.h"
 
 using namespace std;
 

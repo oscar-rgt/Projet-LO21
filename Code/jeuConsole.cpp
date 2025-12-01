@@ -2,7 +2,7 @@
 #include "joueur.h"
 #include "ia.h"  
 #include "tuiles.h" 
-#include "placement.h" 
+#include "cite.h" 
 #include <iostream>
 #include <limits>
 #include <algorithm>

@@ -5,7 +5,7 @@
 #include <vector>
 #include "joueur.h"
 #include "hexagone.h"
-#include "placement.h"
+#include "cite.h"
 
 enum class TypeQuartier {
     Habitation,
