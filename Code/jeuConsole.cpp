@@ -1,4 +1,4 @@
-#include "jeu_console.h"
+#include "jeuConsole.h"
 #include "joueur.h"
 #include "ia.h"  
 #include "tuiles.h" 
