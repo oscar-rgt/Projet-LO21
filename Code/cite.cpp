@@ -14,10 +14,9 @@ using namespace std;
 // les contacts quelle que soit la topologie de la grille.
 vector<Cite::Coord> Cite::getVecteursVoisins() {
     return {
-        {0, 1, 0}, {0, -1, 0},   // Vertical
-        {1, 0, 0}, {-1, 0, 0},   // Horizontal
-        {1, 1, 0}, {1, -1, 0},   // Diagonales Droite
-        {-1, 1, 0}, {-1, -1, 0}  // Diagonales Gauche
+        {0, -1, 0}, {0, 1, 0},   // Vertical
+        {-1, 0, 0}, {1, 0, 0},   // Horizontal bas
+        {-1, 1, 0}, {1, 1, 0},   // Horizontal haut
     };
 }
 
