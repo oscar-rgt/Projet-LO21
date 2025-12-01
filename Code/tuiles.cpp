@@ -33,19 +33,21 @@ int randomPlaceValue() {
 Tuile::Tuile(unsigned int i, unsigned int p) : id(i), prix(p), inversion(0), design()
 {
     hexagones.resize(3); // Initialize vector with 3 elements
-    for (int k = 0; k < 3; k++) {
+    auto itHex = hexagones.begin();
+
+    for (int k = 0; k < 3; k++, ++itHex) {
         int t = randomIndexAkropolis();
         if (Type(t) == Carriere) {
-            hexagones[k] = new Hexagone(Type(t),0, this);
+            *itHex = new Hexagone(Type(t),0, this);
         }
         else {
             bool place = randomPlaceValue();
             if (place == true) {
                 int etoiles = randomStarValue();
-                hexagones[k] = new Hexagone(Type(t),0, this, etoiles, place);
+                *itHex = new Hexagone(Type(t),0, this, etoiles, place);
             }
             else {
-                hexagones[k] = new Hexagone(Type(t),0, this);
+                *itHex = new Hexagone(Type(t),0, this);
             }
 
         }
@@ -58,14 +60,14 @@ TuileDepart::TuileDepart() : Tuile() {
     prix = 0;
 
     hexagones.resize(4);
-    
+    auto it = hexagones.begin();
     // 0: Habitation (Bleu) avec 1 étoile (Centre)
-    hexagones[0] = new Hexagone(Habitation, 0, this, 1, true);
+    *it = new Hexagone(Habitation, 0, this, 1, true);
     
     // 1, 2, 3: Carrières (Autour)
-    hexagones[1] = new Hexagone(Carriere,0, this);
-    hexagones[2] = new Hexagone(Carriere, 0, this);
-    hexagones[3] = new Hexagone(Carriere, 0, this);
+    *(it + 1) = new Hexagone(Carriere,0, this);
+    *(it + 2) = new Hexagone(Carriere, 0, this);
+    *(it + 3) = new Hexagone(Carriere, 0, this);
 }
 
 void Tuile::setPrix(unsigned int p) {
@@ -79,11 +81,16 @@ void Tuile::setPrix(unsigned int p) {
 
 void Tuile::tourner() {
     if (hexagones.size() != 3) return; // Rotation interdite à la tuile de départ
-    Hexagone* temp = hexagones[0];
-    Hexagone* temp1 = hexagones[1];
-    hexagones[0] = hexagones[2];
-    hexagones[1] = temp;
-    hexagones[2] = temp1;
+    auto it0 = hexagones.begin();
+    auto it1 = hexagones.begin() + 1;
+    auto it2 = hexagones.begin() + 2;
+
+    // Echange des pointeurs via les itérateurs
+    Hexagone* temp = *it0;
+    Hexagone* temp1 = *it1;
+    *it0 = *it2;
+    *it1 = temp;
+    *it2 = temp1;
 }
 
 
@@ -92,21 +99,17 @@ Tuile::Tuile(const Tuile& t)
 {
     // On ne fait PAS hexagones = t.hexagones (sinon deux tuiles pointent vers les mêmes hexagones -> crash au delete)
     hexagones.reserve(t.hexagones.size());
-    for (size_t i = 0; i < t.hexagones.size(); ++i) {
-        // On crée un NOUVEL hexagone en copiant celui de l'autre tuile
-        // Cela appelle le constructeur de copie par défaut de Hexagone
-        hexagones.push_back(new Hexagone(*t.hexagones[i]));
-
-        // On met à jour le pointeur 'tuile' pour qu'il pointe vers CETTE nouvelle tuile
+    for (auto it = t.hexagones.cbegin(); it != t.hexagones.cend(); ++it) {
+        hexagones.push_back(new Hexagone(**it));
         hexagones.back()->tuile = this;
     }
 }
 
 Tuile& Tuile::operator=(const Tuile& t) {
     if (this != &t) {
-        // 1. Nettoyer l'existant
-        for (size_t i = 0; i < hexagones.size(); ++i) {
-            delete hexagones[i];
+        // 1. Nettoyer l'existant avec itérateur
+        for (auto it = hexagones.begin(); it != hexagones.end(); ++it) {
+            delete* it;
         }
         hexagones.clear();
 
@@ -118,8 +121,8 @@ Tuile& Tuile::operator=(const Tuile& t) {
 
         // 3. Copie profonde des hexagones
         hexagones.reserve(t.hexagones.size());
-        for (size_t i = 0; i < t.hexagones.size(); ++i) {
-            hexagones.push_back(new Hexagone(*t.hexagones[i]));
+        for (auto it = t.hexagones.cbegin(); it != t.hexagones.cend(); ++it) {
+            hexagones.push_back(new Hexagone(**it));
             hexagones.back()->tuile = this;
         }
     }
@@ -127,14 +130,14 @@ Tuile& Tuile::operator=(const Tuile& t) {
 }
 
 Tuile::~Tuile() {
-    for (size_t i = 0; i < hexagones.size(); ++i) {
-        delete hexagones[i]; // On libère la mémoire de chaque hexagone
+    for (auto it = hexagones.begin(); it != hexagones.end(); ++it) {
+        delete* it;
     }
     hexagones.clear();
 }
 
 string& Tuile::getDesign(){
-    if (inverser) {
+    if (inversion) {
         design =
             "   _____           \n" // Ligne 0 15
             "  /     \\          \n" // Ligne 1
@@ -147,8 +150,9 @@ string& Tuile::getDesign(){
             "  \\_____/          \n";
             
             int positions[3] = { 44, 131, 98 };
-            for (int k = 0; k < 3; k++) {
-                design.replace(positions[k], 3, hexagones[k]->affiche());
+            auto it = hexagones.begin();
+            for (int k = 0; k < 3; k++, ++it) {
+                design.replace(positions[k], 3, (*it)->affiche());
             }
     }
     else {
@@ -163,8 +167,9 @@ string& Tuile::getDesign(){
             "       \\       /   \n" // Ligne 7
             "        \\_____/    \n";
             int positions[3] = { 50, 130, 83 };
-            for (int k = 0; k < 3; k++) {
-                design.replace(positions[k], 3, hexagones[k]->affiche());
+            auto it = hexagones.begin();
+            for (int k = 0; k < 3; k++, ++it) {
+                design.replace(positions[k], 3, (*it)->affiche());
             }
     }
     return design; 
