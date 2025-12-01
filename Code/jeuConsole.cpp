@@ -85,7 +85,14 @@ void JeuConsole::jouerTour() {
     
     // Si c'est l'IA, on joue automatiquement
     if (dynamic_cast<IA*>(j)) {
-        Partie::getInstance().jouerTourIA();
+        cout << "\n--- TOUR DE L'IA ---" << endl;
+		int indexChoisi = Partie::getInstance().jouerTourIA();
+        afficherChantier();
+        try {
+            cout << "\n\nL'IA choisit la tuile " << indexChoisi << endl;
+        } catch (const PartieException& e) {
+            cout << "L'IA a rencontre une erreur en choisissant une tuile : " << e.getInfo() << endl;
+		}
         return;
     }
 

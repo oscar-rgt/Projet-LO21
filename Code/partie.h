@@ -38,7 +38,7 @@ public:
     // return true si succès, false si erreur (ressources, placement, index)
     bool actionPlacerTuile(int indexTuileChantier, int x, int y, int z, int rotation, int inversion);
     
-    void jouerTourIA();
+	int jouerTourIA(); //retourne l'index de la tuile choisie par l'IA (-1 si erreur)
 
     void passerAuJoueurSuivant();
     bool estFinDePartie() const;
