@@ -173,14 +173,14 @@ void JeuConsole::jouerTour() {
 
     if (!succes) {
         cout << ">> ECHEC : Pas assez de pierres ou regle non respectee." << endl;
-        cout << "Appuyez sur Entree pour réessayer...";
+        cout << "Appuyez sur Entree pour reessayer...";
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cin.get();
         jouerTour();
     }
     }catch (CiteException& e) {
         cout << ">> ECHEC : " << e.getInfos() << endl;
-        cout << "Appuyez sur Entree pour réessayer...";
+        cout << "Appuyez sur Entree pour reessayer...";
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cin.get();
         jouerTour();
