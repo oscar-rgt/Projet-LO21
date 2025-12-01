@@ -83,7 +83,8 @@ void Cite::placer(Tuile* t, Coord c) {
         if (memeSupportPartout)
             throw CiteException("Placement impossible : La tuile recouvre une seule et même tuile.");
     }
-
+    // Temporaire : sortie du cadrillage
+    for (Coord h : pos) if (h.x > 7 || h.x < -7 || h.y>3 || h.y < -2 || h.z < 0) throw CiteException("Placement impossible : Quadrillage trop petit (WIP)");
     // D. ENREGISTREMENT
     for (int i = 0; i < 3; i++) {
         carte[pos[i]] = t->getHexagone(i);
@@ -157,8 +158,9 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
         
         int l = h.y*-4 + 14;
         int c = h.x*7 + 56;
-        j = c + l*110 + 1;
+        j = c + l*110 - 1;
         if ((h.x % 2)) j += 220;
+        if (j<0 || j > quadrillage.length()) throw CiteException("Placement impossible : sortie du quadrillage");
         quadrillage.replace(j, 3, t.getHexagone(i)->affiche());
     }
 }
