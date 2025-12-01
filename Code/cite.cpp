@@ -104,13 +104,16 @@ void Cite::placer(Tuile* t, Coord c) {
 // =========================================================
 
 void Cite::placerTuileDepart() {
-    if (t->getNbHexagones() < 4) return;
-
-    // Configuration personnalisée (selon votre code précédent)
-    Coord c0 = { 0, 0, 0 };   // Centre
-    Coord c1 = { -1, 0, 0 }; // Sud-Ouest ?
-    Coord c2 = { 1, 0, 0 };  // Sud-Est ?
-    Coord c3 = { 0, 1, 0 };   // Nord ?
+    if (t->getNbHexagones() != 4) throw CiteException("La tuile de départ doit avoir 4 hexagones.");
+    
+    // Centre (Habitation) en (0,0,0)
+    Coord c0 = { 0, 0, 0 };
+    
+    
+    // placer autour de (0,0,0)    
+    Coord c1 = { -1, 0, 0 };
+    Coord c2 = { 1, 0, 0 };
+    Coord c3 = { 0, 1, 0 }; //NORD
 
     carte[c0] = t->getHexagone(0);
     carte[c1] = t->getHexagone(1);
@@ -166,6 +169,7 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
             h = c;
         }
         // placement
+        /*
         j += 109 * (h.x+1) * 2;
         if ((h.x+1) % 2 == 0) {
             j += 3 + 14 * h.y;
@@ -173,7 +177,52 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
         else {
             j += 10 + 14 * h.y;
         }
+        /*test:
+        int hex_width = 8;           // largeur d'un hexagone
+        int vertical_spacing = 4;    // lignes entre centres sur y
+        int line_length = 109;       // largeur de la ligne dans le string
+        int horizontal_offset_for_odd_y = 3; // décalage horizontal pour y impair
+
+        int base_line_index = 14; // ligne de y=0
+        int line_index = base_line_index - h.y * vertical_spacing;
+
+        int col_index = h.x * hex_width;
+        if (h.y % 2 != 0) col_index += horizontal_offset_for_odd_y;
+            col_index += hex_width / 2; // centre horizontal de l'hexagone
+
+        j= line_index * line_length + col_index;*/
+        
+        int l = h.y*-4 + 14;
+        int c = h.x*8 + 55;
+        j = c + l*110;
+        if ((h.x % 2)) j += 220;
         quadrillage.replace(j, 3, t.getHexagone(i)->affiche());
     }
 }
 
+Cite::Coord Cite::Coord::cote(bool inversion) {
+    if (inversion) return { x - 1, y,z };
+    else return { x -1, y,z };
+}
+
+vector<Hexagone*> Cite::getAdjacents(Coord c){
+    if (!toucheCite(c)) throw CiteException("Cet hexagone ne touche pas la cité.");
+    vector<Coord> coo = { {c.x - 1, c.y - 1, c.z},  { c.x, c.y - 1, c.z }, { c.x + 1, c.y - 1, c.z },
+        { c.x - 1, c.y, c.z }, { c.x, c.y + 1, c.z }, { c.x + 1, c.y, c.z } };
+    vector<Hexagone*> ret;
+    for (Coord c : coo) {
+        if (!estLibre(c)) ret.push_back(carte[c]);
+    }
+    return ret;
+}
+
+
+void Cite::afficherMap() const {
+    // On parcourt toute la map
+    for (const auto& paire : carte) {
+        // paire.first contient la Coordonnée (la clé)
+        cout << "(" << paire.first.x << ", "
+            << paire.first.y << ", "
+            << paire.first.z << ") " << carte.at({paire.first.x, paire.first.y, paire.first.z})->affiche() << endl;
+    }
+}
