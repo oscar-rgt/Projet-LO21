@@ -8,9 +8,6 @@ using namespace std;
 
 
 IA::~IA() {
-    for (auto t : tuilesAcquises) {
-        delete t;
-    }
     tuilesAcquises.clear();
 }
 
