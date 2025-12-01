@@ -140,24 +140,16 @@ vector<Hexagone*> Cite::getAdjacents(Coord c) {
     return ret;
 }
 
-void Cite::afficherMap() const {
-    for (const auto& paire : carte) {
-        cout << "(" << paire.first.x << ", "
-            << paire.first.y << ", "
-            << paire.first.z << ")" << endl;
-    }
-}
-
 void Cite::remplirQuadrillage(Coord c, Tuile& t) {
     for (int i = 0; i < 3; i++) {
         int j = 0;
         Coord h;
         // bonnes coordonnees selon l'hexa
         if (i == 1) {
-            h = c.cote(t.getInversion());
+            h = c.sud();
         }
         else if (i == 2) {
-            h = c.sud();
+            h = c.cote(t.getInversion());
         }
         else {
             h = c;
@@ -194,21 +186,6 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
     }
 }
 
-Cite::Coord Cite::Coord::cote(bool inversion) {
-    if (inversion) return { x - 1, y,z };
-    else return { x -1, y,z };
-}
-
-vector<Hexagone*> Cite::getAdjacents(Coord c){
-    if (!toucheCite(c)) throw CiteException("Cet hexagone ne touche pas la cité.");
-    vector<Coord> coo = { {c.x - 1, c.y - 1, c.z},  { c.x, c.y - 1, c.z }, { c.x + 1, c.y - 1, c.z },
-        { c.x - 1, c.y, c.z }, { c.x, c.y + 1, c.z }, { c.x + 1, c.y, c.z } };
-    vector<Hexagone*> ret;
-    for (Coord c : coo) {
-        if (!estLibre(c)) ret.push_back(carte[c]);
-    }
-    return ret;
-}
 
 
 void Cite::afficherMap() const {
