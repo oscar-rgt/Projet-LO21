@@ -37,7 +37,7 @@ public:
 	unsigned int getPrix() const { return prix; }
 	void tourner();
 	void setPrix(unsigned int p);
-	string& getDesign() { return design; }
+	string& getDesign();
 };
 
 class TuileDepart : public Tuile {

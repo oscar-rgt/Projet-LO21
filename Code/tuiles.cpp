@@ -30,22 +30,9 @@ int randomPlaceValue() {
 }
 
 
-Tuile::Tuile(unsigned int i, unsigned int p) : id(i), prix(p), inversion(0)
+Tuile::Tuile(unsigned int i, unsigned int p) : id(i), prix(p), inversion(0), design()
 {
-    design =
-        "         _____     \n" // Ligne 0
-        "        /     \\    \n" // Ligne 1
-        "  _____/       \\   \n" // Ligne 2
-        " /     \\       /   \n" // Ligne 3
-        "/       \\_____/    \n" // Ligne 4
-        "\\       /     \\    \n" // Ligne 5
-        " \\_____/       \\   \n" // Ligne 6
-        "       \\       /   \n" // Ligne 7
-        "        \\_____/    \n";
-
     hexagones.resize(3); // Initialize vector with 3 elements
-    
-    int positions[3] = { 50, 130, 83 };
     for (int k = 0; k < 3; k++) {
         int t = randomIndexAkropolis();
         if (Type(t) == Carriere) {
@@ -62,7 +49,6 @@ Tuile::Tuile(unsigned int i, unsigned int p) : id(i), prix(p), inversion(0)
             }
 
         }
-        design.replace(positions[k], 3, hexagones[k]->affiche());
     }
 }
 
@@ -145,4 +131,41 @@ Tuile::~Tuile() {
         delete hexagones[i]; // On libère la mémoire de chaque hexagone
     }
     hexagones.clear();
+}
+
+string& Tuile::getDesign(){
+    if (inverser) {
+        design =
+            "   _____           \n" // Ligne 0 15
+            "  /     \\          \n" // Ligne 1
+            " /       \\_____    \n" // Ligne 2
+            " \\       /     \\   \n" // Ligne 3
+            "  \\_____/       \\  \n" // Ligne 4
+            "   /    \\       /  \n" // Ligne 5
+            "  /      \\_____/   \n" // Ligne 6
+            " \\       /         \n" // Ligne 7
+            "  \\_____/          \n";
+            
+            int positions[3] = { 44, 131, 98 };
+            for (int k = 0; k < 3; k++) {
+                design.replace(positions[k], 3, hexagones[k]->affiche());
+            }
+    }
+    else {
+        design =
+            "         _____     \n" // Ligne 0
+            "        /     \\    \n" // Ligne 1
+            "  _____/       \\   \n" // Ligne 2
+            " /     \\       /   \n" // Ligne 3
+            "/       \\_____/    \n" // Ligne 4
+            "\\       /     \\    \n" // Ligne 5
+            " \\_____/       \\   \n" // Ligne 6
+            "       \\       /   \n" // Ligne 7
+            "        \\_____/    \n";
+            int positions[3] = { 50, 130, 83 };
+            for (int k = 0; k < 3; k++) {
+                design.replace(positions[k], 3, hexagones[k]->affiche());
+            }
+    }
+    return design; 
 }
