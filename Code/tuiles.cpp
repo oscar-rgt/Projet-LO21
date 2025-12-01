@@ -149,7 +149,7 @@ string& Tuile::getDesign(){
             " \\       /         \n" // Ligne 7
             "  \\_____/          \n";
             
-            int positions[3] = { 44, 131, 98 };
+            int positions[3] = { 45, 131, 94 };
             auto it = hexagones.begin();
             for (int k = 0; k < 3; k++, ++it) {
                 design.replace(positions[k], 3, (*it)->affiche());
