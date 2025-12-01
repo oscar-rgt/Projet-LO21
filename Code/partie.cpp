@@ -125,7 +125,7 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
     if (!t) return false;
     
     // Appliquer la rotation sur la tuile du chantier (temporairement)
-    for(int r=0; r<rotation; ++r) t->tourner();
+    for(int r=0; r<rotation; r++) t->tourner();
 
     try {
         j->getCite()->placer(t, {x, y, z}); 
