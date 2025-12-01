@@ -161,6 +161,8 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
         // 7. Remplir le chantier (si nécessaire)
         remplirChantier();
 
+		// 8. Passer au joueur suivant
+		passerAuJoueurSuivant();
         return true;
 
     } catch (const CiteException& e) {
