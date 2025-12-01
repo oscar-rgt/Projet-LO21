@@ -40,15 +40,10 @@ void Cite::placer(Tuile* t, Coord c) {
     pos[0] = c;
 
     // Index 1 : (x, y-1)
-    pos[1] = { c.x, c.y - 1, c.z };
+    pos[1] = c.sud();
 
     // Index 2 : (Standard: x-1, y) | (Inversé: x+1, y)
-    if (t->getInversion()) {
-        pos[2] = { c.x + 1, c.y, c.z };
-    }
-    else {
-        pos[2] = { c.x - 1, c.y, c.z };
-    }
+    pos[2] = c.cote(t->getInversion());
 
     // B. VÉRIFICATION : DISPONIBILITÉ
     for (int i = 0; i < 3; i++) {
