@@ -1,8 +1,8 @@
-#include "jeu_console.h"
+#include "jeuConsole.h"
 #include "joueur.h"
 #include "ia.h"  
 #include "tuiles.h" 
-#include "placement.h" 
+#include "cite.h" 
 #include <iostream>
 #include <limits>
 #include <algorithm>
@@ -91,7 +91,7 @@ void JeuConsole::jouerTour() {
 
     afficherEtatJeu();
 
-    int maxChoix = Partie::getInstance().getChantier().getNbTuiles() - 1;
+    size_t maxChoix = Partie::getInstance().getChantier().getNbTuiles() - 1;
     
     cout << "\n--- ACTION ---" << endl;
     int index = saisieNombre("Quelle tuile choisir ?", 0, maxChoix);
@@ -166,7 +166,7 @@ void JeuConsole::demanderConfiguration() {
         niveauIllustreConstructeur = saisieNombre("Niveau Illustre Constructeur", 1, 3);
     }
 
-    bool modeTuileCite = saisieOuiNon("Mode tuile cite standard ?");
+    bool modeTuileCite = saisieOuiNon("Mode tuile cite augmente ?");
     Partie::TuileCite mode = modeTuileCite ? Partie::TuileCite::AUGMENTE : Partie::TuileCite::STANDARD;
 
     if(saisieOuiNon("Activer les variantes ?")){

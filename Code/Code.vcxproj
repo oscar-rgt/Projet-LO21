@@ -20,26 +20,28 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="chantier.cpp" />
+    <ClCompile Include="cite.cpp" />
     <ClCompile Include="hexagone.cpp" />
-    <ClCompile Include="jeu_console.cpp" />
+    <ClCompile Include="jeuConsole.cpp" />
+    <ClCompile Include="ia.cpp" />
     <ClCompile Include="joueur.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="partie.cpp" />
     <ClCompile Include="pile.cpp" />
-    <ClCompile Include="placement.cpp" />
     <ClCompile Include="quadrillage.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="tuiles.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="chantier.h" />
+    <ClInclude Include="cite.h" />
     <ClInclude Include="hexagone.h" />
-    <ClInclude Include="jeu_console.h" />
+    <ClInclude Include="jeuConsole.h" />
+    <ClInclude Include="ia.h" />
     <ClInclude Include="joueur.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="partie.h" />
     <ClInclude Include="pile.h" />
-    <ClInclude Include="placement.h" />
     <ClInclude Include="quadrillage.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="tuiles.h" />

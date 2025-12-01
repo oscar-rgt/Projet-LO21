@@ -9,7 +9,7 @@
 #include "joueur.h"
 #include "pile.h"
 #include "tuiles.h"
-#include "placement.h"
+#include "cite.h"
 
 using namespace std;
 
@@ -51,6 +51,9 @@ public:
     const Chantier& getChantier() const { return chantier; }
     size_t getNbPiles() const { return piles.size(); }
     int getIndexPileActuelle() const { return indexPileActuelle; }
+
+    const std::array<bool,5>& getVariantes() const { return variantes; }//getter public pour les variantes
+
 
 private:
     Partie();
