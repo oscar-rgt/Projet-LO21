@@ -77,16 +77,17 @@ void JeuConsole::afficherEtatJeu() {
     cout << "Score : " << j->getPoints() << endl;
     cout << "##########################################" << endl;
 
-    cout << "\n--- VOTRE CITE ---" << endl;
+    cout << "\n--- CITE ---" << endl;
     
     if (dynamic_cast<IA*>(j)) {
-        cout << "(Cité de l'IA - Gestion virtuelle)" << endl;
+        cout << "(Cite de l'IA - Gestion virtuelle)" << endl;
     } else {
         j->getCite()->afficher();
         j->getCite()->afficherMap();
+        afficherChantier();
     }
 
-    afficherChantier();
+    
 }
 
 void JeuConsole::jouerTour() {
@@ -98,11 +99,15 @@ void JeuConsole::jouerTour() {
     
     // Si c'est l'IA, on joue automatiquement
     if (dynamic_cast<IA*>(j)) {
-        cout << "\n--- TOUR DE L'IA ---" << endl;
+        cout << "\n\n--- TOUR DE L'IA ---" << endl;
+        cout << "\nL'Illustre Constructeur reflechit..." << endl;
 		int indexChoisi = Partie::getInstance().jouerTourIA();
         afficherChantier();
         try {
             cout << "\n\nL'IA choisit la tuile " << indexChoisi << endl;
+            cout << "Appuyez sur une touche pour continuer...";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.get();
         } catch (const PartieException& e) {
             cout << "L'IA a rencontre une erreur en choisissant une tuile : " << e.getInfo() << endl;
 		}
@@ -167,7 +172,7 @@ void JeuConsole::jouerTour() {
     bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, rotationCompteur, inversionEtat);
 
     if (!succes) {
-        cout << ">> ECHEC : Pas assez de pierres ou règle non respectée." << endl;
+        cout << ">> ECHEC : Pas assez de pierres ou regle non respectee." << endl;
         cout << "Appuyez sur Entree pour réessayer...";
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         cin.get();

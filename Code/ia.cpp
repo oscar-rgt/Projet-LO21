@@ -2,7 +2,6 @@
 #include "tuiles.h"
 #include "hexagone.h"
 #include "partie.h"
-#include "ia.h"
 #include <iostream>
 
 using namespace std;
