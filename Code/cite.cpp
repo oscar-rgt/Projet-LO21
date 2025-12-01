@@ -5,6 +5,13 @@
 using namespace std;
 
 
+
+// =========================================================
+// 1. OUTILS DE VOISINAGE
+// =========================================================
+
+// On garde une vérification large (8 voisins) pour être sûr de détecter
+// les contacts quelle que soit la topologie de la grille.
 vector<Cite::Coord> Cite::getVecteursVoisins() {
     return {
         {0, 1, 0}, {0, -1, 0},   // Vertical
@@ -15,7 +22,6 @@ vector<Cite::Coord> Cite::getVecteursVoisins() {
 }
 
 const bool Cite::toucheCite(Coord c) {
-    // On vérifie large (carré de 3x3) pour gérer tous les cas d'adjacence
     for (const auto& vec : getVecteursVoisins()) {
         if (!estLibre({ c.x + vec.x, c.y + vec.y, c.z })) return true;
     }
@@ -23,28 +29,26 @@ const bool Cite::toucheCite(Coord c) {
 }
 
 // =========================================================
-// 2. MÉTHODE PLACER
+// 2. MÉTHODE PLACER (Version Finale)
 // =========================================================
 
 void Cite::placer(Tuile* t, Coord c) {
     // A. CALCUL DES POSITIONS (SLOTS)
-    // Selon vos nouvelles règles strictes :
+    // Nouvelle géométrie demandée :
     Coord pos[3];
 
-    // Index 0 : L'Ancre (Nord) -> x, y
+    // Index 0 : L'Ancre (x, y)
     pos[0] = c;
 
-    // Index 1 : Le Sud -> x, y+1
-    pos[1] = { c.x, c.y + 1, c.z };
+    // Index 1 : (x, y-1)
+    pos[1] = { c.x, c.y - 1, c.z };
 
-    // Index 2 : Le Côté -> x-1 (Standard) ou x+1 (Inversé), y+1
+    // Index 2 : (Standard: x-1, y) | (Inversé: x+1, y)
     if (t->getInversion()) {
-        // Cas Inversé : x+1, y+1
-        pos[2] = { c.x + 1, c.y + 1, c.z };
+        pos[2] = { c.x + 1, c.y, c.z };
     }
     else {
-        // Cas Standard : x-1, y+1
-        pos[2] = { c.x - 1, c.y + 1, c.z };
+        pos[2] = { c.x - 1, c.y, c.z };
     }
 
     // B. VÉRIFICATION : DISPONIBILITÉ
@@ -53,9 +57,9 @@ void Cite::placer(Tuile* t, Coord c) {
             throw CiteException("Placement impossible : Une des cases n'est pas libre.");
     }
 
-    // C. VÉRIFICATION : RÈGLES DE POSÉ
+    // C. VÉRIFICATION : RÈGLES DE JEU
     if (c.z == 0) {
-        // Au sol : Doit toucher la cité
+        // Niveau 0 : Doit toucher la cité
         bool contact = false;
         for (int i = 0; i < 3; i++) {
             if (toucheCite(pos[i])) {
@@ -66,7 +70,7 @@ void Cite::placer(Tuile* t, Coord c) {
         if (!contact) throw CiteException("Placement impossible : La tuile ne touche pas la cité.");
     }
     else {
-        // En hauteur : Support requis sous CHAQUE hexagone
+        // Niveau Z > 0 : Support requis sous CHAQUE hexagone
         Tuile* supportTiles[3] = { nullptr, nullptr, nullptr };
 
         for (int i = 0; i < 3; i++) {
@@ -96,17 +100,17 @@ void Cite::placer(Tuile* t, Coord c) {
 }
 
 // =========================================================
-// 3. TUILE DE DÉPART & AUTRES
+// 3. TUILE DE DÉPART
 // =========================================================
 
 void Cite::placerTuileDepart() {
     if (t->getNbHexagones() < 4) return;
 
-    // Coordonnées spécifiques pour la tuile de départ (fixées précédemment)
-    Coord c0 = { 0, 0, 0 };   // Centre (H0)
-    Coord c1 = { -1, -1, 0 }; // Sud
-    Coord c2 = { 1, -1, 0 };  // Autre
-    Coord c3 = { 0, 2, 0 };   // Nord
+    // Configuration personnalisée (selon votre code précédent)
+    Coord c0 = { 0, 0, 0 };   // Centre
+    Coord c1 = { -1, 0, 0 }; // Sud-Ouest ?
+    Coord c2 = { 1, 0, 0 };  // Sud-Est ?
+    Coord c3 = { 0, 1, 0 };   // Nord ?
 
     carte[c0] = t->getHexagone(0);
     carte[c1] = t->getHexagone(1);
@@ -114,11 +118,20 @@ void Cite::placerTuileDepart() {
     carte[c3] = t->getHexagone(3);
 }
 
+void Cite::afficher() const {
+    cout << quadrillage << endl;
+}
 
-// Helpers
+
+
+// =========================================================
+// 5. HELPERS
+// =========================================================
+
+// Mise à jour selon votre nouvelle géométrie "Index 2"
 Cite::Coord Cite::Coord::cote(bool inversion) {
-    if (inversion) return { x + 1, y + 1, z };
-    return { x - 1, y + 1, z };
+    if (inversion) return { x + 1, y, z };
+    return { x - 1, y, z };
 }
 
 vector<Hexagone*> Cite::getAdjacents(Coord c) {
@@ -132,14 +145,10 @@ vector<Hexagone*> Cite::getAdjacents(Coord c) {
 
 void Cite::afficherMap() const {
     for (const auto& paire : carte) {
-        cout << "(" << paire.first.x << ", " << paire.first.y << ", " << paire.first.z << ")" << endl;
+        cout << "(" << paire.first.x << ", "
+            << paire.first.y << ", "
+            << paire.first.z << ")" << endl;
     }
-}
-	
-
-
-void Cite::afficher() const{
-    cout << quadrillage << endl;
 }
 
 void Cite::remplirQuadrillage(Coord c, Tuile& t) {
