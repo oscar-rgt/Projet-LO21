@@ -397,3 +397,9 @@ bool Partie::charger(const string& nomFichier) {
 bool Partie::supprimerSauvegarde(const string& nomFichier) {
     return std::remove(nomFichier.c_str()) == 0;
 }
+// À la fin du fichier Code/partie.cpp
+
+bool Partie::sauvegardeExiste(const string& nomFichier) {
+    ifstream f(nomFichier);
+    return f.good();
+}
