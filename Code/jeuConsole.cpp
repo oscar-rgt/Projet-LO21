@@ -100,8 +100,8 @@ void JeuConsole::jouerTour() {
     if (dynamic_cast<IA*>(j)) {
         cout << "\n\n--- TOUR DE L'IA ---" << endl;
         cout << "\nL'Illustre Constructeur reflechit..." << endl;
-		int indexChoisi = Partie::getInstance().jouerTourIA();
         afficherChantier();
+		int indexChoisi = Partie::getInstance().jouerTourIA();
         try {
             cout << "\n\nL'IA choisit la tuile " << indexChoisi << endl;
             cout << "Appuyez sur une touche pour continuer...";
