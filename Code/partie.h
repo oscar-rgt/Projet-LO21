@@ -65,6 +65,7 @@ public:
 	bool sauvegarder(const string& nomFichier = "akropolis_save.txt") const;
     bool charger(const string& nomFichier = "akropolis_save.txt");
     static bool supprimerSauvegarde(const string& nomFichier = "akropolis_save.txt");
+	bool sauvegardeExiste(const string& nomFichier)
 private:
     Partie();
     ~Partie();
