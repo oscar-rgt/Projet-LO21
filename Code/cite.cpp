@@ -89,7 +89,22 @@ void Cite::placer(Tuile* t, Coord c) {
     for (int i = 0; i < 3; i++) {
         carte[pos[i]] = t->getHexagone(i);
     }
-
+    // Sauvegarde d'une action
+    Action act;
+    act.tuileId = t->getId();
+    act.x = c.x;
+    act.y = c.y;
+    act.z = c.z;
+    act.inversion = t->getInversion();
+    
+    // On sauvegarde l'état VISUEL actuel des hexagones (après rotation éventuelle)
+    for(int k=0; k<3; k++) {
+        Hexagone* h = t->getHexagone(k);
+        act.hexas[k].type = (int)h->getType();
+        act.hexas[k].etoiles = h->getEtoiles();
+        act.hexas[k].estPlace = (h->getType() == Type::Place); 
+    }
+    historique.push_back(act);
     // E. AFFICHAGE
     remplirQuadrillage(c, *t);
 }
