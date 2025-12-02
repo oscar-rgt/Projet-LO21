@@ -6,6 +6,19 @@
 #include <unordered_map>
 
 using namespace std;
+struct InfoHexa {
+    int type;     
+    int etoiles;
+    bool estPlace;
+};
+
+struct Action {
+    int tuileId;
+    int x, y, z;
+    bool inversion;
+    InfoHexa hexas[3]; 
+};
+
 
 class CiteException {
 private:
@@ -37,6 +50,7 @@ private :
 	const bool toucheCite(Coord c);
 	string quadrillage;
 	TuileDepart *t;
+	vector<Action> historique;
 public :
 	Cite() : quadrillage(R"(
           _____         _____         _____         _____         _____         _____         _____          
@@ -79,4 +93,6 @@ public :
 	const unordered_map<Coord, Hexagone*, CoordHash>& getCarte() const { return carte; }
 	vector<Cite::Coord> getVecteursVoisins();
 	void agrandirQ(char dir);
+	const vector<Action>& getHistorique() const { return historique; }
+    void forcerHistorique(const Action& a) { historique.push_back(a); }
 };
