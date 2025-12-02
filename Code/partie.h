@@ -10,12 +10,13 @@
 #include "pile.h"
 #include "tuiles.h"
 #include "cite.h"
+#include "score.h"
 
 using namespace std;
 
 class Joueur;
 class Pile;
-class Tuile; 
+class Tuile;
 
 class PartieException {
     string info;
@@ -26,6 +27,13 @@ public:
 
 class Partie {
 public:
+    //tbaleau des scores
+    std::vector<Score*> scores;
+    void mettreAJourScores();
+    int getScore(int indexJoueur) const;
+    int getIndexJoueurActuel() const { return indexJoueurActuel; }
+
+
     enum class TuileCite { STANDARD, AUGMENTE };
     static Partie& getInstance();
 
@@ -37,7 +45,7 @@ public:
     // ACTION PRINCIPALE
     // return true si succès, false si erreur (ressources, placement, index)
     bool actionPlacerTuile(int indexTuileChantier, int x, int y, int z, int rotation, int inversion);
-    
+
 	int jouerTourIA(); //retourne l'index de la tuile choisie par l'IA (-1 si erreur)
 
     void passerAuJoueurSuivant();
@@ -46,8 +54,8 @@ public:
     int getNbJoueurs() const { return nbJoueurs; }
     Joueur* getJoueurActuel() const;
     Joueur* getJoueur(int index) const;
-    
-    // Accès au chantier pour l'affichage 
+
+    // Accès au chantier pour l'affichage
     const Chantier& getChantier() const { return chantier; }
     size_t getNbPiles() const { return piles.size(); }
     int getIndexPileActuelle() const { return indexPileActuelle; }
@@ -81,7 +89,7 @@ private:
 
     TuileCite modeTuileCite;
     unsigned int niveauIllustreConstructeur;
-    
+
     vector<Tuile*> tuilesDepart; // Pour gérer la mémoire des tuiles de départ
 };
 
