@@ -24,6 +24,7 @@ public:
 
     // Accesseurs pour l'affichage (références constantes)
     const std::vector<Tuile*>& getTuiles() const { return tuiles; }
+    void ajouterTuileSpecifique(Tuile* t);
 
 
 private:

@@ -85,11 +85,8 @@ void Cite::placer(Tuile* t, Coord c) {
     }
     // Temporaire : sortie du cadrillage
     for (Coord h : pos) if (h.x > 7 || h.x < -7 || h.y>3 || h.y < -2 || h.z < 0) throw CiteException("Placement impossible : Quadrillage trop petit (WIP)");
-    // D. ENREGISTREMENT
-    for (int i = 0; i < 3; i++) {
-        carte[pos[i]] = t->getHexagone(i);
-    }
-    // Sauvegarde d'une action
+    
+    //D.Sauvegarde
     Action act;
     act.tuileId = t->getId();
     act.x = c.x;
@@ -102,10 +99,14 @@ void Cite::placer(Tuile* t, Coord c) {
         Hexagone* h = t->getHexagone(k);
         act.hexas[k].type = (int)h->getType();
         act.hexas[k].etoiles = h->getEtoiles();
-        act.hexas[k].estPlace = (h->getType() == Type::Place); 
     }
     historique.push_back(act);
-    // E. AFFICHAGE
+
+    // E. ENREGISTREMENT
+    for (int i = 0; i < 3; i++) {
+        carte[pos[i]] = t->getHexagone(i);
+    }
+    // F. AFFICHAGE
     remplirQuadrillage(c, *t);
 }
 

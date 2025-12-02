@@ -43,4 +43,8 @@ bool Chantier::estVide() const {
     return tuiles.empty();
 }
 
-
+void Chantier::ajouterTuileSpecifique(Tuile* t) {
+    if (t) {
+        tuiles.push_back(t);
+    }
+}

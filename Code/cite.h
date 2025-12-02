@@ -92,5 +92,4 @@ public :
 	vector<Cite::Coord> getVecteursVoisins();
 	void agrandirQ(char dir);
 	const vector<Action>& getHistorique() const { return historique; }
-    void forcerHistorique(const Action& a) { historique.push_back(a); }
 };

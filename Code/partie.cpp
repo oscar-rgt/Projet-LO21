@@ -1,4 +1,6 @@
 #include <algorithm>
+#include <fstream>
+#include <cstdio>
 #include <random>
 #include <iostream>
 #include "partie.h"
@@ -233,4 +235,154 @@ Joueur* Partie::getJoueurActuel() const {
 Joueur* Partie::getJoueur(int index) const {
     if (index < 0 || index >= joueurs.size()) return nullptr;
     return joueurs[index];
+}
+
+
+
+bool Partie::sauvegarder(const string& nomFichier) const {
+    ofstream f(nomFichier);
+    if (!f.is_open()) return false;
+
+    // A. ETAT GLOBAL
+    f << nbJoueurs << endl;
+    f << indexJoueurActuel << endl;
+    f << indexPileActuelle << endl;
+
+    // B. LE CHANTIER 
+    f << chantier.getNbTuiles() << endl;
+    for (size_t i = 0; i < chantier.getNbTuiles(); i++) {
+        Tuile* t = chantier.getTuile(i);
+        // On sauvegarde l'ID, l'INVERSION
+        f << t->getId() << " " << t->getInversion() << endl;
+        
+        // On sauvegarde le contenu visuel exact des 3 hexagones
+        for(int k=0; k<3; k++) {
+            f << (int)t->getHexagone(k)->getType() << " " << t->getHexagone(k)->getEtoiles() << " ";
+        }
+        f << endl;
+    }
+
+    // C. LES JOUEURS ET LEURS CITÉS
+    for (Joueur* j : joueurs) {
+        f << j->getNom() << endl;
+        f << j->getPoints() << endl;
+        f << j->getPierres() << endl;
+
+        // On écrit l'historique des coups pour rejouer la partie
+        const auto& hist = j->getCite()->getHistorique();
+        f << hist.size() << endl;
+
+        for (const auto& a : hist) {
+            f << a.tuileId << " " << a.x << " " << a.y << " " << a.z << " " << a.inversion << " ";
+            for(int k=0; k<3; k++) {
+                f << a.hexas[k].type << " " << a.hexas[k].etoiles << " ";
+            }
+            f << endl;
+        }
+    }
+    
+    return true;
+}
+
+
+
+bool Partie::charger(const string& nomFichier) {
+    ifstream f(nomFichier);
+    if (!f.is_open()) return false;
+
+    // A. NETTOYAGE COMPLET (Reset)
+    for (auto j : joueurs) delete j;
+    joueurs.clear();
+    chantier.vider();
+    for(auto p : piles) delete p;
+    piles.clear();
+
+    // B. LECTURE GLOBAL
+    int nbJ, idxJ, idxP;
+    if (!(f >> nbJ >> idxJ >> idxP)) return false;
+
+    nbJoueurs = nbJ;
+    indexJoueurActuel = idxJ;
+    indexPileActuelle = idxP;
+
+    // C. GÉNÉRATION DU FUTUR (Nouvelles piles aléatoires)
+    initialiserPiles(); 
+	chantier.vider(); 
+    indexPileActuelle = idxP;
+
+    // D. RESTAURATION DU CHANTIER (Passé immédiat)
+    int nbTuilesChantier;
+    f >> nbTuilesChantier;
+    for (int i = 0; i < nbTuilesChantier; i++) {
+        int id, prix; 
+        bool inv;
+        f >> id >> prix >> inv;
+
+        // Nouvelle tuile (générée aléatoirement via new Tuile)
+        Tuile* t = new Tuile(id);
+        t->setPrix(prix);
+        if (inv) t->inverser();
+
+        // On force son apparence pour qu'elle soit identique à la sauvegarde
+        for(int k=0; k<3; k++) {
+            int type, etoiles;
+            f >> type >> etoiles;
+            t->reconstruireHexagone(k, type, etoiles);
+        }
+        
+        // On l'ajoute au chantier
+        chantier.ajouterTuileSpecifique(t);
+    }
+
+    // E. RESTAURATION DES JOUEURS (Passé lointain)
+    for (int i = 0; i < nbJoueurs; i++) {
+        string nom;
+        int pts, pierres;
+        f >> nom >> pts >> pierres;
+
+        // Note : ici on crée un Joueur humain par défaut. 
+        // Si tu as des IA, il faudrait sauvegarder le type ("IA" ou "Humain") et faire un if/else.
+        Joueur* j = new Joueur(nom); 
+        j->setPoints(pts);
+        j->utiliserPierres(j->getPierres()); // Reset pierres par défaut
+        j->ajouterPierres(pierres);
+
+        int nbActions;
+        f >> nbActions;
+
+        // REPLAY : On rejoue tous les coups
+        for (int k = 0; k < nbActions; k++) {
+            Action a;
+            f >> a.tuileId >> a.x >> a.y >> a.z >> a.inversion;
+            
+            Tuile* t = new Tuile(a.tuileId);
+            if (a.inversion) t->inverser();
+
+            for(int h=0; h<3; h++) {
+                int type, etoiles;
+                f >> type >> etoiles;
+                t->reconstruireHexagone(h, type, etoiles);
+            }
+
+            try {
+                // Le moteur Cite refait les calculs de voisins et remplit la map
+                j->getCite()->placer(t, {a.x, a.y, a.z});
+            } catch (...) { 
+                // Ne devrait pas arriver sur une save valide
+            } 
+        }
+        joueurs.push_back(j);
+    }
+
+    return true;
+}
+
+bool Partie::supprimerSauvegarde(const string& nomFichier) {
+    return std::remove(nomFichier.c_str()) == 0;
+}
+// À la fin du fichier Code/partie.cpp
+
+bool Partie::sauvegardeExiste(const string& nomFichier) {
+    ifstream f(nomFichier);
+    return f.good();
 }
