@@ -167,15 +167,7 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
 
 
 
-void Cite::afficherMap() const {
-    // On parcourt toute la map
-    for (const auto& paire : carte) {
-        // paire.first contient la Coordonnée (la clé)
-        cout << "(" << paire.first.x << ", "
-            << paire.first.y << ", "
-            << paire.first.z << ") " << carte.at({paire.first.x, paire.first.y, paire.first.z})->affiche() << endl;
-    }
-}
+
 
 void Cite::agrandirQ(char dir) {
     if (dir == 'S') {

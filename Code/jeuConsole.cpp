@@ -83,7 +83,6 @@ void JeuConsole::afficherEtatJeu() {
         cout << "(Cite de l'IA - Gestion virtuelle)" << endl;
     } else {
         j->getCite()->afficher();
-        j->getCite()->afficherMap();
         afficherChantier();
     }
 
