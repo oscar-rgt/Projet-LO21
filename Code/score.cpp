@@ -39,10 +39,6 @@ void Score::calculerScore() {
         pointsParType[type] = pts;
         total += pts;
     }
-
-    if (joueur) {
-        const_cast<Joueur*>(joueur)->setPoints(total);
-    }
 }
 
 int Score::calculerScoreType(TypeQuartier type) {
