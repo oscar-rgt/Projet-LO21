@@ -19,6 +19,7 @@ private:
     void afficherChantier();
 
     void nettoyerEcran();
+    void afficherRegles();
 
     // Utilitaires de saisie robustes
     int saisieNombre(const std::string& prompt, int min, int max);

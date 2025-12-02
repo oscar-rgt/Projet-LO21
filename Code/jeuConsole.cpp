@@ -237,8 +237,31 @@ void JeuConsole::lancer() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
 	nettoyerEcran();
 
+    
+    unsigned int choixMenu;
+    do {
+        nettoyerEcran();
+        std::cout << "1. JOUER UNE PARTIE                     " << std::endl;
+        std::cout << "2. REGLES DU JEU                        " << std::endl;
+        std::cout << "3. QUITTER                              " << std::endl;
+        std::cout << "\n\n";
+        choixMenu = saisieNombre("Choisissez une option", 1, 3);
 
+        switch (choixMenu)
+        {
+        case 1:
+            break;
+        case 2:
+            afficherRegles();
+            break;
+        case 3:
+            exit(0);
+        default:
+            break;
+        }
+    } while (choixMenu != 1);
 
+    nettoyerEcran();
     demanderConfiguration();
 
     while (!Partie::getInstance().estFinDePartie()) {
@@ -310,4 +333,28 @@ void JeuConsole::demanderConfiguration() {
 
 
     Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIllustreConstructeur);
+}
+
+void JeuConsole::afficherRegles() {
+    nettoyerEcran();
+    cout << "===========================================================" << endl;
+    cout << "                  REGLES D'AKROPOLIS                       " << endl;
+    cout << "===========================================================" << endl;
+    cout << "1. LE BUT : Construisez la cite la plus prestigieuse." << endl;
+    cout << "   Les points sont marques grace aux Quartiers (couleurs)" << endl;
+    cout << "   multiplies par les Places (etoiles) correspondantes." << endl;
+    cout << "\n";
+    cout << "2. LES QUARTIERS :" << endl;
+    cout << "   - Bleu (Habitation) : Points pour le plus grand groupe." << endl;
+    cout << "   - Jaune (Marche)    : Points si pas adjacent a un autre marche." << endl;
+    cout << "   - Rouge (Caserne)   : Points si en peripherie (bord)." << endl;
+    cout << "   - Violet (Temple)   : Points si completement entoure." << endl;
+    cout << "   - Vert (Jardin)     : Points sans condition." << endl;
+    cout << "\n";
+    cout << "3. LA PIERRE :" << endl;
+    cout << "   Payez des pierres pour prendre une tuile plus loin dans le chantier." << endl;
+    cout << "\n";
+    cout << "Appuyez sur Entree pour revenir au menu.";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.get();
 }
