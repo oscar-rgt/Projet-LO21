@@ -10,8 +10,9 @@ class Cite;
 
 class Joueur {
 private:
+    Score* score;//a update
     string nom;
-    int points;
+    int points;//a supp dcp
     int pierres;
     Cite* cite;
 
