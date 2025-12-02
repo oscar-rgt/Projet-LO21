@@ -38,6 +38,7 @@ public:
 	void tourner();
 	void setPrix(unsigned int p);
 	string& getDesign();
+	void reconstruireHexagone(int index, int typeInt, int etoiles);
 };
 
 class TuileDepart : public Tuile {
