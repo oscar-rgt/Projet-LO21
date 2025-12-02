@@ -64,8 +64,7 @@ public:
 	//Sauvegarde de la partie
 	bool sauvegarder(const string& nomFichier = "akropolis_save.txt") const;
     bool charger(const string& nomFichier = "akropolis_save.txt");
-    static bool sauvegardeExiste(const string& nomFichier = "akropolis_save.txt");
-
+    bool supprimerSauvegarde(const string& nomFichier = "akropolis_save.txt");
 
 private:
     Partie();
