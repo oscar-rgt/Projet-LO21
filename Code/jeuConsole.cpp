@@ -1,8 +1,8 @@
 #include "jeuConsole.h"
 #include "joueur.h"
-#include "ia.h"  
-#include "tuiles.h" 
-#include "cite.h" 
+#include "ia.h"
+#include "tuiles.h"
+#include "cite.h"
 #include <iostream>
 #include <limits>
 #include <algorithm>
@@ -74,11 +74,11 @@ void JeuConsole::afficherEtatJeu() {
     cout << "\n##########################################" << endl;
     cout << "TOUR DE : " << j->getNom() << endl;
     cout << "Pierres : " << j->getPierres() << endl;
-    cout << "Score : " << j->getPoints() << endl;
+    cout << "Score : " << Partie::getInstance().getScore(Partie::getInstance().getIndexJoueurActuel()) << endl;
     cout << "##########################################" << endl;
 
     cout << "\n--- CITE ---" << endl;
-    
+
     if (dynamic_cast<IA*>(j)) {
         cout << "(Cite de l'IA - Gestion virtuelle)" << endl;
     } else {
@@ -86,7 +86,7 @@ void JeuConsole::afficherEtatJeu() {
         afficherChantier();
     }
 
-    
+
 }
 
 void JeuConsole::jouerTour() {
@@ -95,7 +95,7 @@ void JeuConsole::jouerTour() {
     afficherEtatJeu();
 
     Joueur* j = Partie::getInstance().getJoueurActuel();
-    
+
     // Si c'est l'IA, on joue automatiquement
     if (dynamic_cast<IA*>(j)) {
         cout << "\n\n--- TOUR DE L'IA ---" << endl;
@@ -116,7 +116,7 @@ void JeuConsole::jouerTour() {
     //Tour humain
 
     size_t maxChoix = Partie::getInstance().getChantier().getNbTuiles() - 1;
-    
+
     cout << "\n--- ACTION ---" << endl;
     int index = saisieNombre("Quelle tuile choisir ?", 0, maxChoix);
 
@@ -125,7 +125,7 @@ void JeuConsole::jouerTour() {
     // --- MODE PREVISUALISATION ---
 
     bool placementValide = false;
-    int rotationCompteur = 0; 
+    int rotationCompteur = 0;
     bool inversionEtat = false;
 
     while (!placementValide) {
@@ -145,7 +145,7 @@ void JeuConsole::jouerTour() {
             rotationCompteur = (rotationCompteur + 1) % 3;
         }
         else if (choix == "I" || choix == "i") {
-            tuileAffichee->inverser(); 
+            tuileAffichee->inverser();
         }
         else if (choix == "A" || choix == "a") {
             // Annuler le choix de la tuile, on recommence le tour
@@ -167,7 +167,7 @@ void JeuConsole::jouerTour() {
     int y = saisieNombre("Coord Y", -10, 10);
     int z = saisieNombre("Coord Z (Niveau)", 0, 10);
 
-    
+
 	cout << "\n\nLa tuile\n\n" << tuileAffichee->getDesign() << "\n\nva etre placee en (" << x << ", " << y << ", " << z << ").\n" <<endl;
     if(saisieOuiNon("Valider ce choix ?")){
 
@@ -198,43 +198,50 @@ void JeuConsole::jouerTour() {
         jouerTour();
     }
 
-    
+
 }
 
 void JeuConsole::lancer() {
     cout << "=== AKROPOLIS CONSOLE ===" << endl;
     demanderConfiguration();
-    
+
     while (!Partie::getInstance().estFinDePartie()) {
         jouerTour();
     }
-    
+
     cout << "=== FIN DE PARTIE ===" << endl;
 
     //Classement final
     cout << "\n--- CLASSEMENT ---" << endl;
     for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
         Joueur* j = Partie::getInstance().getJoueur(i);
-        
+
         // Calcul du score IA si n�cessaire
         IA* ia = dynamic_cast<IA*>(j);
         if (ia) {
-            j->setPoints(ia->calculerScoreIA());
+            //j->setPoints(ia->calculerScoreIA());
+            int scoreIA = ia->calculerScoreIA();
         }
-        
-        cout << i + 1 << ". " << j->getNom() << " : " << j->getPoints() << " points" << endl;
+    cout << i + 1 << ". " << j->getNom()
+     << " : " << Partie::getInstance().getScore(i)
+     << " points" << endl;
+
+
     }
     cout << "\n--- GAGNANT ---" << endl;
     int maxPoints = 0;
     int gagnant = 0;
     for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
         Joueur* j = Partie::getInstance().getJoueur(i);
-        if (j->getPoints() > maxPoints) {
-            maxPoints = j->getPoints();
+        int scoreJoueur = Partie::getInstance().getScore(i);
+        if (scoreJoueur > maxPoints) {
+            maxPoints = scoreJoueur;
             gagnant = i;
         }
+
     }
-    cout << Partie::getInstance().getJoueur(gagnant)->getNom() << " a remporte la partie avec " << maxPoints << " points !" << endl;
+    cout << Partie::getInstance().getJoueur(gagnant)->getNom()<< " a remporte la partie avec " << maxPoints << " points !" << endl;
+
 }
 
 void JeuConsole::demanderConfiguration() {
@@ -264,7 +271,7 @@ void JeuConsole::demanderConfiguration() {
         variantesActives[3] = saisieOuiNon("Variante temples active ?");
         variantesActives[4] = saisieOuiNon("Variante jardins active ?");
 	}
-    
-    
+
+
     Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIllustreConstructeur);
 }
