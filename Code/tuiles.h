@@ -32,7 +32,7 @@ public:
 	unsigned int getId() const { return id; }
 	bool getInversion() const { return inversion; }
 	void inverser() { inversion = !inversion; }
-	Hexagone* getHexagone(int i) { return hexagones[i]; } // pas possible -> iterator
+	Hexagone* getHexagone(int i) { return *(hexagones.begin() + i); } // pas possible -> iterator
     size_t getNbHexagones() const { return hexagones.size(); } 
 	unsigned int getPrix() const { return prix; }
 	void tourner();

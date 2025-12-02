@@ -12,17 +12,17 @@ Pile::Pile(unsigned int id_, unsigned int nb): id(id_)
 }
 
 Pile::~Pile() {
-    for (size_t i = 0; i < tuiles.size(); i++) {
-        delete tuiles[i];
+    for (auto it = tuiles.begin(); it != tuiles.end(); ++it) {
+        delete* it;
     }
     tuiles.clear();
 }
 
 
 Tuile* Pile::getTuile(unsigned int id_) {
-    for (size_t i = 0; i < tuiles.size(); i++) {
-        if (tuiles[i]->getId() == id_) {
-            return tuiles[i];
+    for (auto it = tuiles.begin(); it != tuiles.end(); ++it) {
+        if ((*it)->getId() == id_) {
+            return *it;
         }
     }
     throw PileException("La tuile n'existe pas");

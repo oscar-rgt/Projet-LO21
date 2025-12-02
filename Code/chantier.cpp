@@ -25,12 +25,12 @@ void Chantier::ajouterPile(Pile& p) {
 
 
 Tuile* Chantier::getTuile(int index) const {
-    if (index < 0 || index >= tuiles.size()) return nullptr;
-    return tuiles[index];
+    if (index < 0 || index >= (int)tuiles.size()) return nullptr;
+    return *(tuiles.begin() + index);
 }
 
 void Chantier::retirerTuile(int index) {
-    if (index < 0 || index >= tuiles.size()) return;
+    if (index < 0 || index >= (int)tuiles.size()) return;
     // Le pointeur est retiré du vecteur
     tuiles.erase(tuiles.begin() + index);
 }
