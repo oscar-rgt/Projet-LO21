@@ -53,6 +53,10 @@ public:
     int getIndexPileActuelle() const { return indexPileActuelle; }
 
     const std::array<bool,5>& getVariantes() const { return variantes; }//getter public pour les variantes
+	//Sauvegarde de la partie
+	bool sauvegarder(const string& nomFichier = "akropolis_save.txt") const;
+    bool charger(const string& nomFichier = "akropolis_save.txt");
+    static bool sauvegardeExiste(const string& nomFichier = "akropolis_save.txt");
 
 
 private:
