@@ -1,35 +1,43 @@
 
-#ifndef JOUEUR_H
-#define JOUEUR_H
-
-#include <string>
+#include "joueur.h"
+#include "cite.h"
 
 using namespace std;
 
-class Cite;
+Joueur::Joueur(const string& n)
+    : nom(n), pierres(2) {
+    cite = new Cite();
+    cite->placerTuileDepart();
+}
 
-class Joueur {
-private:
-    Score* score;//a update
-    string nom;
-    int points;//a supp dcp
-    int pierres;
-    Cite* cite;
+const string& Joueur::getNom() const {
+    return nom;
+}
 
-public:
-    Cite* getCite() const { return cite; }
-    void setCite(Cite* c) { cite = c; }
-    Joueur(const string& n);
-    const string& getNom() const;
-    int getPoints() const;
-    int getPierres() const;
-    void setPoints(int p);
-    void ajouterPoints(int delta);
-    void ajouterPierres(int n = 1);
-    bool utiliserPierres(int n = 1);
-    void ajouterPierresRecouvrement(int nbRecouverts);
-    virtual ~Joueur();
-};
 
-#endif
+int Joueur::getPierres() const {
+    return pierres;
+}
 
+void Joueur::ajouterPierres(int n) {
+    pierres += n;
+    if (pierres < 0) pierres = 0;
+}
+
+bool Joueur::utiliserPierres(int n) {
+    if (pierres >= n) {
+        pierres -= n;
+        return true;
+    }
+    return false;
+}
+
+void Joueur::ajouterPierresRecouvrement(int nbRecouverts) {
+    if (nbRecouverts > 0) {
+        ajouterPierres(nbRecouverts);
+    }
+}
+
+Joueur::~Joueur() {
+    delete cite;
+}
