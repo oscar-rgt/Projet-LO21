@@ -27,10 +27,6 @@ public:
 
 class Partie {
 public:
-    //tbaleau des scores
-    std::vector<Score*> scores;
-    void mettreAJourScores();
-    int getScore(int indexJoueur) const;
     int getIndexJoueurActuel() const { return indexJoueurActuel; }
 
 

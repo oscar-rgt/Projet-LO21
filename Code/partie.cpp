@@ -6,16 +6,7 @@
 
 using namespace std;
 
-//score
-void Partie::mettreAJourScores() {
-    for (auto* s : scores)
-        s->calculerScore();
-}
 
-int Partie::getScore(int indexJoueur) const {
-    if (indexJoueur < 0 || indexJoueur >= scores.size()) return 0;
-    return scores[indexJoueur]->getTotal();
-}
 
 
 
@@ -45,11 +36,6 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
     niveauIllustreConstructeur = nivIC;
 
     for (const auto& nom : noms) joueurs.push_back(new Joueur(nom));
-
-    //score
-    scores.clear();
-    for (auto* j : joueurs)
-    scores.push_back(new Score(j));
 
 
     // Si mode solo, on ajoute l'IA
@@ -187,11 +173,8 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
         // 7. Remplir le chantier (si nécessaire)
         remplirChantier();
 
-        //8. maj des scores
-        Partie::getInstance().mettreAJourScores();
 
-
-		// 9. Passer au joueur suivant
+		// 8. Passer au joueur suivant
 		passerAuJoueurSuivant();
         return true;
 

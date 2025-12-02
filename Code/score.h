@@ -1,11 +1,9 @@
 #ifndef SCORE_H
 #define SCORE_H
-
 #include <map>
 #include <vector>
-#include "joueur.h"
 #include "hexagone.h"
-#include "cite.h"
+
 
 enum class TypeQuartier {
     Habitation,
@@ -15,10 +13,13 @@ enum class TypeQuartier {
     Jardin
 };
 
+// Déclaration anticipée
+class Joueur;
+class Cite;
+
 class Score {
 private:
     Joueur* joueur;
-    Cite* cite;
     std::map<TypeQuartier, int> pointsParType;
     int total;
 
@@ -26,9 +27,8 @@ public:
     Score(Joueur* j);
     void calculerScore();
     int calculerScoreType(TypeQuartier type);
-    int getTotal() const;
+    int getTotal() const { return total; }
     int getScoreType(TypeQuartier type) const;
-    const Joueur* getJoueur() const;
 };
 
 #endif

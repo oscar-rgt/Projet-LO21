@@ -1,7 +1,6 @@
 #pragma once
 #include "tuiles.h"
 #include "hexagone.h"
-#include "score.h"
 #include <vector>
 #include <unordered_map>
 
@@ -45,8 +44,7 @@ private :
 			return hx ^ (hy << 1) ^ (hz << 2);
 		}
 	};
-	unordered_map<Coord, Hexagone*, CoordHash> carte; // Espace 3D de pointeurs d'hexagones 
-	//  carte[{0, 0, 0}] = tuile0;
+	unordered_map<Coord, Hexagone*, CoordHash> carte; // Espace 3D de pointeurs d'hexagones  / carte[{0, 0, 0}] = tuile0;
 	const bool toucheCite(Coord c);
 	string quadrillage;
 	TuileDepart *t;

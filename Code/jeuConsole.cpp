@@ -74,7 +74,7 @@ void JeuConsole::afficherEtatJeu() {
     cout << "\n##########################################" << endl;
     cout << "TOUR DE : " << j->getNom() << endl;
     cout << "Pierres : " << j->getPierres() << endl;
-    cout << "Score : " << Partie::getInstance().getScore(Partie::getInstance().getIndexJoueurActuel()) << endl;
+    cout << "Score : " << j->getScore()->getTotal() << endl;
     cout << "##########################################" << endl;
 
     cout << "\n--- CITE ---" << endl;
@@ -223,7 +223,7 @@ void JeuConsole::lancer() {
             int scoreIA = ia->calculerScoreIA();
         }
     cout << i + 1 << ". " << j->getNom()
-     << " : " << Partie::getInstance().getScore(i)
+		<< " : " << j->getScore()->getTotal()
      << " points" << endl;
 
 
@@ -233,7 +233,7 @@ void JeuConsole::lancer() {
     int gagnant = 0;
     for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
         Joueur* j = Partie::getInstance().getJoueur(i);
-        int scoreJoueur = Partie::getInstance().getScore(i);
+        int scoreJoueur = Partie::getInstance().getJoueurActuel()->getScore()->getTotal();
         if (scoreJoueur > maxPoints) {
             maxPoints = scoreJoueur;
             gagnant = i;

@@ -1,10 +1,12 @@
-
 #ifndef JOUEUR_H
 #define JOUEUR_H
 #include <string>
 
+
+
 using namespace std;
 
+class Score;
 class Cite;
 
 class Joueur {
@@ -17,10 +19,9 @@ private:
 public:
     Score* getScore() const { return score; }
     Cite* getCite() const { return cite; }
-    void setCite(Cite* c) { cite = c; }
     Joueur(const string& n);
-    const string& getNom() const;
-    int getPierres() const;
+    const string& getNom() const { return nom; }
+	int getPierres() const { return pierres; }
     void ajouterPierres(int n = 1);
     bool utiliserPierres(int n = 1);
     void ajouterPierresRecouvrement(int nbRecouverts);

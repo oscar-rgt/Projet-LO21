@@ -1,9 +1,11 @@
 #include "score.h"
 #include "partie.h"
+#include "joueur.h"
+#include "cite.h"
 #include <stdexcept>
 
 Score::Score(Joueur* j)
-    : joueur(j), cite(j ? j->getCite() : nullptr), total(0)
+    : joueur(j), total(0)
 {
     for (auto t : {TypeQuartier::Habitation, TypeQuartier::Marche,
                    TypeQuartier::Caserne, TypeQuartier::Temple,
@@ -12,21 +14,16 @@ Score::Score(Joueur* j)
     }
 }
 
-int Score::getTotal() const {
-    return total;
-}
+
 
 int Score::getScoreType(TypeQuartier type) const {
     auto it = pointsParType.find(type);
     return (it != pointsParType.end()) ? it->second : 0;
 }
 
-const Joueur* Score::getJoueur() const {
-    return joueur;
-}
 
 void Score::calculerScore() {
-    if (!cite) {
+    if (!joueur->getCite()) {
         total = 0;
         return;
     }
@@ -42,12 +39,12 @@ void Score::calculerScore() {
 }
 
 int Score::calculerScoreType(TypeQuartier type) {
-    if (!cite) return 0;
+    if (!joueur->getCite()) return 0;
 
     int score = 0;
     int multiplicateur = 0;
 
-    for (const auto& it : cite->getCarte()) {
+    for (const auto& it : joueur->getCite()->getCarte()) {
         Hexagone* h = it.second;
         if (!h) continue;
         if (h->getType() == Type::Place) multiplicateur += h->getEtoiles();
@@ -55,7 +52,7 @@ int Score::calculerScoreType(TypeQuartier type) {
 
     if (multiplicateur == 0) return 0;
 
-    for (const auto& it : cite->getCarte()) {
+    for (const auto& it : joueur->getCite()->getCarte()) {
         Hexagone* h = it.second;
         if (!h) continue;
 
@@ -67,7 +64,7 @@ int Score::calculerScoreType(TypeQuartier type) {
             if (h->getType() == Type::Marche) {
                 int ptsAdj = 0;
                 try {
-                    auto adjacents = cite->getAdjacents(it.first);
+                    auto adjacents = joueur->getCite()->getAdjacents(it.first);
                     for (Hexagone* v : adjacents) {
                         if (!v) continue;
                         if (v->getType() != Type::Marche && v->getType() != Type::Place) ptsAdj++;
@@ -80,7 +77,7 @@ int Score::calculerScoreType(TypeQuartier type) {
             if (h->getType() == Type::Caserne) {
                 bool isIsolee = true;
                 try {
-                    auto adjacents = cite->getAdjacents(it.first);
+                    auto adjacents = joueur->getCite()->getAdjacents(it.first);
                     for (Hexagone* v : adjacents) {
                         if (!v) continue;
                         if (v->getType() == Type::Caserne) { isIsolee = false; break; }
@@ -92,7 +89,7 @@ int Score::calculerScoreType(TypeQuartier type) {
         case TypeQuartier::Temple:
             if (h->getType() == Type::Temple) {
                 try {
-                    auto adjacents = cite->getAdjacents(it.first);
+                    auto adjacents = joueur->getCite()->getAdjacents(it.first);
                     if (adjacents.size() == 6) score += 2;
                 } catch (const CiteException&) { continue; }
             }
@@ -113,12 +110,12 @@ int Score::calculerScoreType(TypeQuartier type) {
         break;
     case TypeQuartier::Marche:
         if (vars[1]) {
-            for (const auto& it : cite->getCarte()) {
+            for (const auto& it : joueur->getCite()->getCarte()) {
                 Hexagone* h = it.second;
                 if (!h) continue;
                 if (h->getType() == Type::Marche) {
                     try {
-                        auto adj = cite->getAdjacents(it.first);
+                        auto adj = joueur->getCite()->getAdjacents(it.first);
                         for (Hexagone* v : adj) {
                             if (v && v->getType() == Type::Place) { score *= 2; break; }
                         }
@@ -129,12 +126,12 @@ int Score::calculerScoreType(TypeQuartier type) {
         break;
     case TypeQuartier::Caserne:
         if (vars[2]) {
-            for (const auto& it : cite->getCarte()) {
+            for (const auto& it : joueur->getCite()->getCarte()) {
                 Hexagone* h = it.second;
                 if (!h) continue;
                 if (h->getType() == Type::Caserne) {
                     try {
-                        auto adj = cite->getAdjacents(it.first);
+                        auto adj = joueur->getCite()->getAdjacents(it.first);
                         int vides = 0;
                         for (Hexagone* v : adj) if (!v) vides++;
                         if (vides == 3 || vides == 4) { score *= 2; break; }
@@ -145,7 +142,7 @@ int Score::calculerScoreType(TypeQuartier type) {
         break;
     case TypeQuartier::Temple:
         if (vars[3]) {
-            for (const auto& it : cite->getCarte()) {
+            for (const auto& it : joueur->getCite()->getCarte()) {
                 Hexagone* h = it.second;
                 if (!h) continue;
                 if (h->getType() == Type::Temple && it.first.z > 0) { score *= 2; break; }
@@ -154,12 +151,12 @@ int Score::calculerScoreType(TypeQuartier type) {
         break;
     case TypeQuartier::Jardin:
         if (vars[4]) {
-            for (const auto& it : cite->getCarte()) {
+            for (const auto& it : joueur->getCite()->getCarte()) {
                 Hexagone* h = it.second;
                 if (!h) continue;
                 if (h->getType() == Type::Jardin) {
                     try {
-                        auto adj = cite->getAdjacents(it.first);
+                        auto adj = joueur->getCite()->getAdjacents(it.first);
                         bool lac = true;
                         for (Hexagone* v : adj) if (v) { lac = false; break; }
                         if (lac) { score *= 2; break; }
