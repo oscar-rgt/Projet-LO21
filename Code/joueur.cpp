@@ -1,4 +1,3 @@
-
 #include "joueur.h"
 #include "cite.h"
 
