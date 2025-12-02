@@ -147,6 +147,7 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
 
         // 3. Paiement des pierres
         j->utiliserPierres(coutPierre);
+        j->getScore()->calculerScore();
 
         // Gestion spécifique Solo : Si humain paie, pierres vont à l'IA
         if (niveauIllustreConstructeur > 0 && dynamic_cast<IA*>(j) == nullptr) {
@@ -239,7 +240,7 @@ Joueur* Partie::getJoueur(int index) const {
 
 
 
-bool Partie::sauvegarder(const string& nomFichier) const {
+/*bool Partie::sauvegarder(const string& nomFichier) const {
     ofstream f(nomFichier);
     if (!f.is_open()) return false;
 
@@ -386,3 +387,4 @@ bool Partie::sauvegardeExiste(const string& nomFichier) {
     ifstream f(nomFichier);
     return f.good();
 }
+*/

@@ -61,7 +61,7 @@ public:
 	bool sauvegarder(const string& nomFichier = "akropolis_save.txt") const;
     bool charger(const string& nomFichier = "akropolis_save.txt");
     static bool supprimerSauvegarde(const string& nomFichier = "akropolis_save.txt");
-	bool sauvegardeExiste(const string& nomFichier)
+    bool sauvegardeExiste(const string& nomFichier);
 private:
     Partie();
     ~Partie();
@@ -77,8 +77,8 @@ private:
     int nbJoueurs;
     int indexPileActuelle; // Pour savoir quelle pile on utilise
 
-    vector<Joueur*> joueurs;
-    vector<Pile*> piles;
+    vector<Joueur*> joueurs; //iterator ?
+    vector<Pile*> piles; //iterator ?
 
     Chantier chantier;
 

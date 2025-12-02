@@ -24,7 +24,7 @@ private:
     int total;
 
 public:
-    Score(Joueur* j);
+    Score(Joueur* j, int tot = 0);
     void calculerScore();
     int calculerScoreType(TypeQuartier type);
     int getTotal() const { return total; }

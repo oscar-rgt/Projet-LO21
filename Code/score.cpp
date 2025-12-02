@@ -4,7 +4,7 @@
 #include "cite.h"
 #include <stdexcept>
 
-Score::Score(Joueur* j)
+Score::Score(Joueur* j, int tot)
     : joueur(j), total(0)
 {
     for (auto t : {TypeQuartier::Habitation, TypeQuartier::Marche,
