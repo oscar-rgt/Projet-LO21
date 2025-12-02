@@ -202,7 +202,43 @@ void JeuConsole::jouerTour() {
 }
 
 void JeuConsole::lancer() {
-    cout << "=== AKROPOLIS CONSOLE ===" << endl;
+
+    //Ecran titre                                                                                                                                                                                            
+    
+	cout << "\n\n\n\n\n\n\n";
+    cout << "                __       __   ___   _______     ______    _______    ______    ___        __      ________  " << endl;
+    cout << "               /\"\"\\     |/\"| /  \") /\"      \\   /    \" \\  |   __ \"\\  /    \" \\  |\"  |      |\" \\    /\"       ) " << endl;
+    cout << "              /    \\    (: |/   / |:        | // ____  \\ (. |__) :)// ____  \\ ||  |      ||  |  (:   \\___/  " << endl;
+    cout << "             /' /\\  \\   |    __/  |_____/   )/  /    ) :)|:  ____//  /    ) :)|:  |      |:  |   \\___  \\    " << endl;
+    cout << "            //  __'  \\  (// _  \\   //      /(: (____/ // (|  /   (: (____/ //  \\  |___   |.  |    __/  \\\\   " << endl;
+    cout << "           /   /  \\\\  \\ |: | \\  \\ |:  __   \\ \\        / /|__/ \\   \\        /  ( \\_|:  \\  /\\  |\\  /\" \\   :)  " << endl;
+    cout << "          (___/    \\___)(__|  \\__)|__|  \\___) \\\"_____/ (_______)   \\\"_____/    \\_______)(__\\_|_)(_______/   " << endl;
+	cout << "\n\n";
+
+ 
+ 
+
+    cout << "                              ===========================================================" << endl;
+    cout << "                                         B I E N V E N U E   D A N S   L A               " << endl;
+    cout << "                                            C I T E   D E S   D I E U X                  " << endl;
+    cout << "                              ===========================================================" << endl;
+    cout << "\n\n";
+    cout << "                                        >>> APPUYEZ SUR ENTREE POUR COMMENCER <<<        " << endl;
+    cout << "\n\n\n\n\n";
+
+
+    //Crédits
+    cout << "-----------------------------------------------------------" << endl;
+    cout << " LO21 - Programmation C++ | Semestre Automne 2025          " << endl;
+    cout << " Oscar.R, Louane.R, Valentin.R, Noemie.N, Jeanne.D     " << endl;
+    cout << "-----------------------------------------------------------" << endl;
+
+    //nettoyage ecran et lancement jeu
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+	nettoyerEcran();
+
+
+
     demanderConfiguration();
 
     while (!Partie::getInstance().estFinDePartie()) {
