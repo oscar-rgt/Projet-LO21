@@ -174,3 +174,11 @@ string& Tuile::getDesign(){
     }
     return design; 
 }
+
+void Tuile::reconstruireHexagone(int index, int typeInt, int etoiles) {
+    if (index < 0 || index >= 3) return;
+    Hexagone* h = hexagones[index];
+    h->type = (Type)typeInt;
+    h->etoiles = etoiles;
+    h->place = (h->type == Type::Place);
+}

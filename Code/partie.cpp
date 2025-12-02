@@ -6,6 +6,19 @@
 
 using namespace std;
 
+//score
+void Partie::mettreAJourScores() {
+    for (auto* s : scores)
+        s->calculerScore();
+}
+
+int Partie::getScore(int indexJoueur) const {
+    if (indexJoueur < 0 || indexJoueur >= scores.size()) return 0;
+    return scores[indexJoueur]->getTotal();
+}
+
+
+
 Partie& Partie::getInstance() {
     static Partie instance;
     return instance;
@@ -25,7 +38,7 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
     joueurs.clear();
     chantier.vider();
     piles.clear();
-    
+
     nbJoueurs = nb;
     modeTuileCite = mode;
     variantes = vars;
@@ -33,24 +46,30 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
 
     for (const auto& nom : noms) joueurs.push_back(new Joueur(nom));
 
+    //score
+    scores.clear();
+    for (auto* j : joueurs)
+    scores.push_back(new Score(j));
+
+
     // Si mode solo, on ajoute l'IA
     if (nbJoueurs == 1) {
         // L'IA est toujours le 2ème "joueur" dans la liste
         joueurs.push_back(new IA("Illustre Architecte", niveauIllustreConstructeur));
         nbJoueurs = 2; // On considère qu'il y a 2 joueurs pour la logique de tour
-        
+
         // Configuration initiale spécifique Solo
         // Joueur : 1 tuile départ, 1 pierre, Pion Architecte
         // IA : 1 tuile départ, 2 pierres
-        
+
         // Le joueur humain est à l'index 0
         joueurs[0]->utiliserPierres(1); // Il commence avec 2 par défaut, on en enlève 1 -> reste 1
-        
+
         // L'IA (index 1) a déjà 2 pierres par défaut.
     }
 
     initialiserPiles();
-    
+
     if (niveauIllustreConstructeur > 0) {
         // En mode solo, le joueur humain est toujours premier joueur
         indexJoueurActuel = 0;
@@ -75,10 +94,10 @@ void Partie::initialiserPiles() {
 
     // Autres piles : nbJoueurs + 1 tuiles
     for (int i = 1; i <= nbPiles; ++i) {
-        piles.emplace_back(new Pile(i, nbJoueurs + 1)); 
+        piles.emplace_back(new Pile(i, nbJoueurs + 1));
     }
     indexPileActuelle = 0;
-    
+
     // Remplissage initial du chantier avec la première pile
     remplirChantier();
 }
@@ -86,7 +105,7 @@ void Partie::initialiserPiles() {
 void Partie::remplirChantier() {
     // Règle : Le chantier est rempli avec une pile entière uniquement lorsqu'il ne reste plus qu'une tuile dedans.
     // Exception : Au début, le chantier est vide, donc on le remplit.
-    
+
     if (chantier.estVide() || chantier.getNbTuiles() == 1) {
         if (indexPileActuelle >= piles.size()) return; // Plus de piles
 
@@ -116,11 +135,11 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
     // 1. Coût en pierres
     // Coût = index (0 pour la 1ère, 1 pour la 2ème, etc.)
     int coutPierre = index;
-    if (j->getPierres() < coutPierre) {    
+    if (j->getPierres() < coutPierre) {
         return false;
     }
 
-    // 2. Vérifier le placement 
+    // 2. Vérifier le placement
     Tuile* t = chantier.getTuile(index);
     if (!t) return false;
 
@@ -128,19 +147,19 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
     /*if (inversion) {
         t->inverser();
 	}*/
-    
+
     // Appliquer la rotation sur la tuile du chantier (temporairement)
     //for(int r=0; r<rotation; r++) t->tourner();
 
     try {
-        j->getCite()->placer(t, {x, y, z}); 
+        j->getCite()->placer(t, {x, y, z});
         ////////////////////////////////////// TEST POUR AGRANDIR LE Q/////////////////////////////////////////
-        j->getCite()->agrandirQ('S');
+/*        j->getCite()->agrandirQ('S');*/
         ////////////////////////////////////// TEST POUR AGRANDIR LE Q/////////////////////////////////////////
 
         // 3. Paiement des pierres
         j->utiliserPierres(coutPierre);
-        
+
         // Gestion spécifique Solo : Si humain paie, pierres vont à l'IA
         if (niveauIllustreConstructeur > 0 && dynamic_cast<IA*>(j) == nullptr) {
              // Trouver l'IA (c'est l'autre joueur)
@@ -151,8 +170,8 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
                  }
              }
         } else {
-            // Mode normal ou tour de l'IA 
-            
+            // Mode normal ou tour de l'IA
+
             // On dépose 1 pierre sur chaque tuile qu'on a sauté (indices 0 à index-1)
             for(int i=0; i<index; i++) {
                 chantier.getTuile(i)->setPrix(chantier.getTuile(i)->getPrix() + 1);
@@ -168,7 +187,11 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
         // 7. Remplir le chantier (si nécessaire)
         remplirChantier();
 
-		// 8. Passer au joueur suivant
+        //8. maj des scores
+        Partie::getInstance().mettreAJourScores();
+
+
+		// 9. Passer au joueur suivant
 		passerAuJoueurSuivant();
         return true;
 
@@ -184,11 +207,11 @@ int Partie::jouerTourIA() {
     IA* ia = dynamic_cast<IA*>(j);
     if (!ia) return -1;
 
-    
-	
+
+
     int indexChoisi = ia->choisirTuile(chantier);
     Tuile* t = chantier.getTuile(indexChoisi);
-    
+
 
     if (indexChoisi > 0) {
         ia->utiliserPierres(indexChoisi);
@@ -196,14 +219,14 @@ int Partie::jouerTourIA() {
             chantier.getTuile(i)->setPrix(chantier.getTuile(i)->getPrix() + 1);
         }
     }
-    
+
     // Récupération des pierres sur la tuile choisie
     int pierresGagnees = t->getPrix();
     ia->ajouterPierres(pierresGagnees);
-    
+
     ia->ajouterTuile(t);
     chantier.retirerTuile(indexChoisi);
-    
+
     remplirChantier();
     passerAuJoueurSuivant();
 
