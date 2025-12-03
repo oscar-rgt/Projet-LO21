@@ -37,17 +37,17 @@ Tuile::Tuile(unsigned int i, unsigned int p) : id(i), prix(p), inversion(0), des
 
     for (int k = 0; k < 3; k++, ++itHex) {
         int t = randomIndexAkropolis();
-        if (Type(t) == Carriere) {
-            *itHex = new Hexagone(Type(t), 0, this);
+        if (TypeQuartier(t) == Carriere) {
+            *itHex = new Hexagone(TypeQuartier(t), 0, this);
         }
         else {
             bool place = randomPlaceValue();
             if (place == true) {
                 int etoiles = randomStarValue();
-                *itHex = new Hexagone(Type(t), 0, this, etoiles, place);
+                *itHex = new Hexagone(TypeQuartier(t), 0, this, etoiles, place);
             }
             else {
-                *itHex = new Hexagone(Type(t), 0, this);
+                *itHex = new Hexagone(TypeQuartier(t), 0, this);
             }
 
         }
@@ -178,7 +178,7 @@ string& Tuile::getDesign() {
 void Tuile::reconstruireHexagone(int index, int typeInt, int etoiles) {
     if (index < 0 || index >= 3) return;
     Hexagone* h = hexagones[index];
-    h->type = (Type)typeInt;
+    h->type = (TypeQuartier)typeInt;
     h->etoiles = etoiles;
-    h->place = (h->type == Type::Place);
+    h->place = (h->estPlace());
 }

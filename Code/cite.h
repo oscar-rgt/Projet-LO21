@@ -4,6 +4,8 @@
 #include <vector>
 #include <unordered_map>
 
+class Joueur;
+
 using namespace std;
 struct InfoHexa {
 	int type;
@@ -18,6 +20,21 @@ struct Action {
 	InfoHexa hexas[3];
 };
 
+struct Coord { //Tuple de coordonnées 
+	int x, y, z;
+	Coord sud() { return { x,y - 1,z }; }
+	Coord cote(bool inversion);
+	bool operator==(const Coord& other) const noexcept { return x == other.x && y == other.y && z == other.z; }
+};
+struct CoordHash {
+	size_t operator()(const Coord& c) const noexcept {
+		size_t hx = hash<int>()(c.x);
+		size_t hy = hash<int>()(c.y);
+		size_t hz = hash<int>()(c.z);
+		// combine les trois hash
+		return hx ^ (hy << 1) ^ (hz << 2);
+	}
+};
 
 class CiteException {
 private:
@@ -29,21 +46,6 @@ public:
 
 class Cite {
 private:
-	struct Coord { //Tuple de coordonnées 
-		int x, y, z;
-		Coord sud() { return { x,y - 1,z }; }
-		Coord cote(bool inversion);
-		bool operator==(const Coord& other) const noexcept { return x == other.x && y == other.y && z == other.z; }
-	};
-	struct CoordHash {
-		size_t operator()(const Coord& c) const noexcept {
-			size_t hx = hash<int>()(c.x);
-			size_t hy = hash<int>()(c.y);
-			size_t hz = hash<int>()(c.z);
-			// combine les trois hash
-			return hx ^ (hy << 1) ^ (hz << 2);
-		}
-	};
 	unordered_map<Coord, Hexagone*, CoordHash> carte; // Espace 3D de pointeurs d'hexagones  / carte[{0, 0, 0}] = tuile0;
 	const bool toucheCite(Coord c);
 	string quadrillage;
@@ -82,15 +84,15 @@ public:
 )"), t(new TuileDepart) {
 	}
 	~Cite() { delete t; }
-	void placer(Tuile* t, Coord c);
+	void placer(Tuile* t, Coord c, Joueur* j);
 	void placerTuileDepart();
 	const bool estLibre(Coord c) const { return (carte.find(c) == carte.end()); }
 	const bool estRecouvert(Coord c) const { return (!estLibre({ c.x, c.y, c.z + 1 })); }
 	void afficher() const;
 	void remplirQuadrillage(Coord c, Tuile& t);
-	vector<Hexagone*> getAdjacents(Coord c);
+	vector<Hexagone*> getAdjacents(Coord c) const;
 	const unordered_map<Coord, Hexagone*, CoordHash>& getCarte() const { return carte; }
-	vector<Cite::Coord> getVecteursVoisins();
+	vector<Coord> getVecteursVoisins() const ;
 	void agrandirQ(char dir);
 	const vector<Action>& getHistorique() const { return historique; }
 };

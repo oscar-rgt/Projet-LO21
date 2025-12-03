@@ -2,6 +2,7 @@
 #include "cite.h"
 #include "score.h"
 #include "tuiles.h"
+#include "joueur.h"
 #include <cmath>
 using namespace std;
 
@@ -13,7 +14,7 @@ using namespace std;
 
 // On garde une vérification large (8 voisins) pour être sûr de détecter
 // les contacts quelle que soit la topologie de la grille.
-vector<Cite::Coord> Cite::getVecteursVoisins() {
+vector<Coord> Cite::getVecteursVoisins() const{
     return {
         {0, -1, 0}, {0, 1, 0},   // Vertical
         {-1, 0, 0}, {1, 0, 0},   // Horizontal bas
@@ -32,7 +33,7 @@ const bool Cite::toucheCite(Coord c) { //marche pas (jsp pk)
 // 2. MÉTHODE PLACER (Version Finale)
 // =========================================================
 
-void Cite::placer(Tuile* t, Coord c) {
+void Cite::placer(Tuile* t, Coord c, Joueur* j) {
     // A. CALCUL DES POSITIONS (SLOTS)
     // Nouvelle géométrie demandée :
     Coord pos[3];
@@ -105,6 +106,14 @@ void Cite::placer(Tuile* t, Coord c) {
 
     // E. ENREGISTREMENT
     for (int i = 0; i < 3; i++) {
+        if (c.z > 0) {
+			t->getHexagone(i)->setNiveau(c.z);
+            Coord dessous = { pos[i].x, pos[i].y, pos[i].z - 1 };
+            auto it = carte.find(dessous);
+            if (it != carte.end()) {
+                carte.erase(it);
+            }
+        }
         carte[pos[i]] = t->getHexagone(i);
     }
     // F. AFFICHAGE
@@ -144,16 +153,21 @@ void Cite::afficher() const {
 // =========================================================
 
 // Mise à jour selon votre nouvelle géométrie "Index 2"
-Cite::Coord Cite::Coord::cote(bool inversion) {
+Coord Coord::cote(bool inversion) {
     if (inversion) return { x + 1, x % 2 == 0 ? y : y - 1, z };
     return { x - 1, x % 2 == 0 ? y : y - 1, z };
 }
 
-vector<Hexagone*> Cite::getAdjacents(Coord c) {
+vector<Hexagone*> Cite::getAdjacents(Coord c) const {
     vector<Hexagone*> ret;
     for (const auto& vec : getVecteursVoisins()) {
         Coord voisin = { c.x + vec.x, c.y + vec.y, c.z };
-        if (!estLibre(voisin)) ret.push_back(carte[voisin]);
+        auto it = carte.find(voisin);
+
+        // Si l'itérateur n'est pas à la fin, c'est que l'élément existe
+        if (it != carte.end()) {
+            ret.push_back(it->second); // it->second donne la valeur (Hexagone*), obligé d'utliser ça car méthode const
+        }
     }
     return ret;
 }

@@ -20,7 +20,7 @@ bool IA::tuileContientPlace(Tuile* t) {
     if (!t) return false;
     for (size_t i = 0; i < t->getNbHexagones(); ++i) {
         Hexagone* h = t->getHexagone((int)i);
-        if (h->getType() == Place) {
+        if (h->estPlace()) {
             return true;
         }
     }
@@ -73,7 +73,7 @@ int IA::calculerScoreIA() const {
     for (Tuile* t : tuilesAcquises) {
         for (size_t i = 0; i < t->getNbHexagones(); i++) {
             Hexagone* h = t->getHexagone((int)i);
-            Type type = h->getType();
+            TypeQuartier type = h->getType();
 
             if (type == Carriere) {
                 if (difficulte == 2) {
