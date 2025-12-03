@@ -84,13 +84,23 @@ void Tuile::tourner() {
     auto it0 = hexagones.begin();
     auto it1 = hexagones.begin() + 1;
     auto it2 = hexagones.begin() + 2;
+    if (inversion) {
+        // Echange des pointeurs via les itérateurs
+        Hexagone* temp = *it0;
+        Hexagone* temp1 = *it2;
+        *it0 = *it1;
+        *it1 = temp1;
+        *it2 = temp;
+    }
+    else {
+        Hexagone* temp = *it0;
+        Hexagone* temp1 = *it1;
+        *it0 = *it2;
+        *it1 = temp;
+        *it2 = temp1;
+    }
 
-    // Echange des pointeurs via les itérateurs
-    Hexagone* temp = *it0;
-    Hexagone* temp1 = *it1;
-    *it0 = *it2;
-    *it1 = temp;
-    *it2 = temp1;
+    
 }
 
 

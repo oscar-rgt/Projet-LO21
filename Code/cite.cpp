@@ -111,6 +111,7 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j) {
             Coord dessous = { pos[i].x, pos[i].y, pos[i].z - 1 };
             auto it = carte.find(dessous);
             if (it != carte.end()) {
+				if (it->second->getType() == TypeQuartier::Carriere) j->ajouterPierres(1); //donne 1 pierre si hexagone en dessous est une place
                 carte.erase(it);
             }
         }

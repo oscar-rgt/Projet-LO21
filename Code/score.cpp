@@ -30,12 +30,9 @@ int RegleScore::compterEtoiles(Cite* cite, TypeQuartier typeQ) const {
 // =========================================================
 
 int RegleHabitation::getValeurPlusGrandGroupe(Cite* cite) const {
-    // On utilise auto& pour ne pas avoir à écrire CoordMap::const_iterator...
     const auto& carte = cite->getCarte();
     if (carte.empty()) return 0;
 
-    // On stocke les coordonnées visitées. 
-    // Attention: Cela nécessite que Coord soit accessible ou que RegleHabitation soit friend.
     vector<Coord> globalVisites;
     int maxValeur = 0;
 
@@ -43,7 +40,7 @@ int RegleHabitation::getValeurPlusGrandGroupe(Cite* cite) const {
         Coord depart = it.first;
         Hexagone* h = it.second;
 
-        // Vérifier si déjà visité (sans std::set pour faire simple)
+        // Vérification si déjà visité
         bool dejaVu = false;
         for (const auto& v : globalVisites) { if (v == depart) { dejaVu = true; break; } }
 
@@ -56,32 +53,37 @@ int RegleHabitation::getValeurPlusGrandGroupe(Cite* cite) const {
             aTraiter.push_back(depart);
             globalVisites.push_back(depart);
 
-            // On utilise un index pour parcourir le vecteur comme une file
+            // Parcours en largeur (BFS)
             for (size_t i = 0; i < aTraiter.size(); ++i) {
                 Coord actuelle = aTraiter[i];
 
-                // Valeur = niveau + 1 (selon règle)
+                // Valeur = niveau + 1
                 valeurGroupe += (actuelle.z + 1);
 
-                // ICI : On appelle la méthode d'instance de la Cité !
                 auto voisinsVecteurs = cite->getVecteursVoisins();
 
                 for (const auto& vec : voisinsVecteurs) {
-                    // On reconstruit la coordonnée voisine
-                    Coord voisinCoord = { actuelle.x + vec.x, actuelle.y + vec.y, actuelle.z };
+                    // MODIFICATION ICI : On vérifie Z, Z-1 et Z+1
+                    // Cela permet de connecter (2,1,0) avec (2,2,1)
+                    for (int dz = -1; dz <= 1; ++dz) {
 
-                    // On vérifie si ce voisin existe dans la carte
-                    auto itVoisin = carte.find(voisinCoord);
-                    if (itVoisin != carte.end()) {
-                        Hexagone* hVoisin = itVoisin->second;
+                        // On ne descend pas sous 0
+                        if (actuelle.z + dz < 0) continue;
 
-                        // Vérif déjà vu locale pour ce tour de boucle
-                        bool voisinDejaVu = false;
-                        for (const auto& v : globalVisites) { if (v == voisinCoord) { voisinDejaVu = true; break; } }
+                        Coord voisinCoord = { actuelle.x + vec.x, actuelle.y + vec.y, actuelle.z + dz };
 
-                        if (hVoisin->getType() == Habitation && !hVoisin->estPlace() && !voisinDejaVu) {
-                            aTraiter.push_back(voisinCoord);
-                            globalVisites.push_back(voisinCoord);
+                        auto itVoisin = carte.find(voisinCoord);
+                        if (itVoisin != carte.end()) {
+                            Hexagone* hVoisin = itVoisin->second;
+
+                            // Vérif déjà vu globale
+                            bool voisinDejaVu = false;
+                            for (const auto& v : globalVisites) { if (v == voisinCoord) { voisinDejaVu = true; break; } }
+
+                            if (hVoisin->getType() == Habitation && !hVoisin->estPlace() && !voisinDejaVu) {
+                                aTraiter.push_back(voisinCoord);
+                                globalVisites.push_back(voisinCoord);
+                            }
                         }
                     }
                 }
