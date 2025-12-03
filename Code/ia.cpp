@@ -52,7 +52,8 @@ int IA::choisirTuile(const Chantier& chantier) {
 
     if (meilleurIndex != -1) {
         return meilleurIndex;
-    } else {
+    }
+    else {
         // Pas de tuile avec Place ou pas assez de pierres
         return 0; // Prend la 1ère tuile
     }
@@ -83,23 +84,23 @@ int IA::calculerScoreIA() const {
 
             int pts = 0;
             switch (type) {
-                case Habitation:
-                    pts = 1; // on considère le placement correct
-                    break;
-                case Marche:
-                    pts = 1;
-                    break;
-                case Caserne:
-                    pts = 1;
-                    break;
-                case Temple:
-                    pts = 1;
-                    break;
-                case Jardin:
-                    pts = 1;
-                    break;
-                default:
-                    pts = 0;
+            case Habitation:
+                pts = 1; // on considère le placement correct
+                break;
+            case Marche:
+                pts = 1;
+                break;
+            case Caserne:
+                pts = 1;
+                break;
+            case Temple:
+                pts = 1;
+                break;
+            case Jardin:
+                pts = 1;
+                break;
+            default:
+                pts = 0;
             }
 
             totalScore += pts * multiplicateurNiveau;

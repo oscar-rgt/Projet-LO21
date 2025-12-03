@@ -21,7 +21,7 @@ string Hexagone::affiche() {
 		res += "H" + niv;
 		break;
 	case Marche:
-		res += "M"+niv;
+		res += "M" + niv;
 		break;
 	case Caserne:
 		res += "C" + niv;

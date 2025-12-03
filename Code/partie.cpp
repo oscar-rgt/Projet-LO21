@@ -61,7 +61,8 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
     if (niveauIllustreConstructeur > 0) {
         // En mode solo, le joueur humain est toujours premier joueur
         indexJoueurActuel = 0;
-    } else {
+    }
+    else {
         designerArchitecteChef();
     }
 }
@@ -103,7 +104,7 @@ void Partie::remplirChantier() {
     }
 
     for (int i = 0; i < chantier.getNbTuiles(); i++) {
-		chantier.getTuile(i)->setPrix(i);
+        chantier.getTuile(i)->setPrix(i);
     }
 }
 
@@ -131,16 +132,16 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
     Tuile* t = chantier.getTuile(index);
     if (!t) return false;
 
-	//Appliquer l'inversion si demandée
+    //Appliquer l'inversion si demandée
     /*if (inversion) {
         t->inverser();
-	}*/
+    }*/
 
     // Appliquer la rotation sur la tuile du chantier (temporairement)
     //for(int r=0; r<rotation; r++) t->tourner();
 
     try {
-        j->getCite()->placer(t, {x, y, z});
+        j->getCite()->placer(t, { x, y, z });
         ////////////////////////////////////// TEST POUR AGRANDIR LE Q/////////////////////////////////////////
 /*        j->getCite()->agrandirQ('S');*/
         ////////////////////////////////////// TEST POUR AGRANDIR LE Q/////////////////////////////////////////
@@ -151,18 +152,19 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
 
         // Gestion spécifique Solo : Si humain paie, pierres vont à l'IA
         if (niveauIllustreConstructeur > 0 && dynamic_cast<IA*>(j) == nullptr) {
-             // Trouver l'IA (c'est l'autre joueur)
-             for(auto* joueur : joueurs) {
-                 if (dynamic_cast<IA*>(joueur)) {
-                     joueur->ajouterPierres(coutPierre);
-                     break;
-                 }
-             }
-        } else {
+            // Trouver l'IA (c'est l'autre joueur)
+            for (auto* joueur : joueurs) {
+                if (dynamic_cast<IA*>(joueur)) {
+                    joueur->ajouterPierres(coutPierre);
+                    break;
+                }
+            }
+        }
+        else {
             // Mode normal ou tour de l'IA
 
             // On dépose 1 pierre sur chaque tuile qu'on a sauté (indices 0 à index-1)
-            for(int i=0; i<index; i++) {
+            for (int i = 0; i < index; i++) {
                 chantier.getTuile(i)->setPrix(chantier.getTuile(i)->getPrix() + 1);
             }
         }
@@ -177,13 +179,14 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
         remplirChantier();
 
 
-		// 8. Passer au joueur suivant
-		passerAuJoueurSuivant();
+        // 8. Passer au joueur suivant
+        passerAuJoueurSuivant();
         return true;
 
-    } catch (const CiteException& e) {
+    }
+    catch (const CiteException& e) {
         // Annuler la rotation pour remettre la tuile dans l'état initial visuel
-        for(int r=0; r < (3-rotation)%3; ++r) t->tourner();
+        for (int r = 0; r < (3 - rotation) % 3; ++r) t->tourner();
         return false;
     }
 }
@@ -201,7 +204,7 @@ int Partie::jouerTourIA() {
 
     if (indexChoisi > 0) {
         ia->utiliserPierres(indexChoisi);
-        for(int i=0; i<indexChoisi; i++) {
+        for (int i = 0; i < indexChoisi; i++) {
             chantier.getTuile(i)->setPrix(chantier.getTuile(i)->getPrix() + 1);
         }
     }
@@ -216,7 +219,7 @@ int Partie::jouerTourIA() {
     remplirChantier();
     passerAuJoueurSuivant();
 
-	return indexChoisi;
+    return indexChoisi;
 }
 
 void Partie::passerAuJoueurSuivant() {
@@ -249,13 +252,13 @@ Joueur* Partie::getJoueur(int index) const {
     f << indexJoueurActuel << endl;
     f << indexPileActuelle << endl;
 
-    // B. LE CHANTIER 
+    // B. LE CHANTIER
     f << chantier.getNbTuiles() << endl;
     for (size_t i = 0; i < chantier.getNbTuiles(); i++) {
         Tuile* t = chantier.getTuile(i);
         // On sauvegarde l'ID, l'INVERSION
         f << t->getId() << " " << t->getInversion() << endl;
-        
+
         // On sauvegarde le contenu visuel exact des 3 hexagones
         for(int k=0; k<3; k++) {
             f << (int)t->getHexagone(k)->getType() << " " << t->getHexagone(k)->getEtoiles() << " ";
@@ -281,7 +284,7 @@ Joueur* Partie::getJoueur(int index) const {
             f << endl;
         }
     }
-    
+
     return true;
 }
 
@@ -307,15 +310,15 @@ bool Partie::charger(const string& nomFichier) {
     indexPileActuelle = idxP;
 
     // C. GÉNÉRATION DU FUTUR (Nouvelles piles aléatoires)
-    initialiserPiles(); 
-	chantier.vider(); 
+    initialiserPiles();
+    chantier.vider();
     indexPileActuelle = idxP;
 
     // D. RESTAURATION DU CHANTIER (Passé immédiat)
     int nbTuilesChantier;
     f >> nbTuilesChantier;
     for (int i = 0; i < nbTuilesChantier; i++) {
-        int id, prix; 
+        int id, prix;
         bool inv;
         f >> id >> prix >> inv;
 
@@ -330,7 +333,7 @@ bool Partie::charger(const string& nomFichier) {
             f >> type >> etoiles;
             t->reconstruireHexagone(k, type, etoiles);
         }
-        
+
         // On l'ajoute au chantier
         chantier.ajouterTuileSpecifique(t);
     }
@@ -341,9 +344,9 @@ bool Partie::charger(const string& nomFichier) {
         int pts, pierres;
         f >> nom >> pts >> pierres;
 
-        // Note : ici on crée un Joueur humain par défaut. 
+        // Note : ici on crée un Joueur humain par défaut.
         // Si tu as des IA, il faudrait sauvegarder le type ("IA" ou "Humain") et faire un if/else.
-        Joueur* j = new Joueur(nom); 
+        Joueur* j = new Joueur(nom);
         j->setPoints(pts);
         j->utiliserPierres(j->getPierres()); // Reset pierres par défaut
         j->ajouterPierres(pierres);
@@ -355,7 +358,7 @@ bool Partie::charger(const string& nomFichier) {
         for (int k = 0; k < nbActions; k++) {
             Action a;
             f >> a.tuileId >> a.x >> a.y >> a.z >> a.inversion;
-            
+
             Tuile* t = new Tuile(a.tuileId);
             if (a.inversion) t->inverser();
 
@@ -368,9 +371,9 @@ bool Partie::charger(const string& nomFichier) {
             try {
                 // Le moteur Cite refait les calculs de voisins et remplit la map
                 j->getCite()->placer(t, {a.x, a.y, a.z});
-            } catch (...) { 
+            } catch (...) {
                 // Ne devrait pas arriver sur une save valide
-            } 
+            }
         }
         joueurs.push_back(j);
     }

@@ -11,7 +11,7 @@ using namespace std;
 int randomIndexAkropolis() {
     static random_device rd;
     static mt19937 gen(rd());
-    static discrete_distribution<> dist({12, 10, 10, 8, 10, 15});
+    static discrete_distribution<> dist({ 12, 10, 10, 8, 10, 15 });
     return dist(gen);
 }
 
@@ -38,16 +38,16 @@ Tuile::Tuile(unsigned int i, unsigned int p) : id(i), prix(p), inversion(0), des
     for (int k = 0; k < 3; k++, ++itHex) {
         int t = randomIndexAkropolis();
         if (Type(t) == Carriere) {
-            *itHex = new Hexagone(Type(t),0, this);
+            *itHex = new Hexagone(Type(t), 0, this);
         }
         else {
             bool place = randomPlaceValue();
             if (place == true) {
                 int etoiles = randomStarValue();
-                *itHex = new Hexagone(Type(t),0, this, etoiles, place);
+                *itHex = new Hexagone(Type(t), 0, this, etoiles, place);
             }
             else {
-                *itHex = new Hexagone(Type(t),0, this);
+                *itHex = new Hexagone(Type(t), 0, this);
             }
 
         }
@@ -63,9 +63,9 @@ TuileDepart::TuileDepart() : Tuile() {
     auto it = hexagones.begin();
     // 0: Habitation (Bleu) avec 1 étoile (Centre)
     *it = new Hexagone(Habitation, 0, this, 1, true);
-    
+
     // 1, 2, 3: Carrières (Autour)
-    *(it + 1) = new Hexagone(Carriere,0, this);
+    *(it + 1) = new Hexagone(Carriere, 0, this);
     *(it + 2) = new Hexagone(Carriere, 0, this);
     *(it + 3) = new Hexagone(Carriere, 0, this);
 }
@@ -136,7 +136,7 @@ Tuile::~Tuile() {
     hexagones.clear();
 }
 
-string& Tuile::getDesign(){
+string& Tuile::getDesign() {
     if (inversion) {
         design =
             "   _____           \n" // Ligne 0 15
@@ -148,12 +148,12 @@ string& Tuile::getDesign(){
             " /       \\_____/   \n" // Ligne 6
             " \\       /         \n" // Ligne 7
             "  \\_____/          \n";
-            
-            int positions[3] = { 44, 124, 91 };
-            auto it = hexagones.begin();
-            for (int k = 0; k < 3; k++, ++it) {
-                design.replace(positions[k], 3, (*it)->affiche());
-            }
+
+        int positions[3] = { 44, 124, 91 };
+        auto it = hexagones.begin();
+        for (int k = 0; k < 3; k++, ++it) {
+            design.replace(positions[k], 2, (*it)->affiche().substr(0,2));
+        }
     }
     else {
         design =
@@ -166,13 +166,13 @@ string& Tuile::getDesign(){
             " \\_____/       \\   \n" // Ligne 6
             "       \\       /   \n" // Ligne 7
             "        \\_____/    \n";
-            int positions[3] = { 50, 130, 83 };
-            auto it = hexagones.begin();
-            for (int k = 0; k < 3; k++, ++it) {
-                design.replace(positions[k], 3, (*it)->affiche());
-            }
+        int positions[3] = { 50, 130, 83 };
+        auto it = hexagones.begin();
+        for (int k = 0; k < 3; k++, ++it) {
+            design.replace(positions[k], 2, (*it)->affiche().substr(0, 2));
+        }
     }
-    return design; 
+    return design;
 }
 
 void Tuile::reconstruireHexagone(int index, int typeInt, int etoiles) {

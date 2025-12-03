@@ -18,7 +18,7 @@ public:
     Tuile* getTuile(unsigned int id_);
     size_t getNbTuiles() const { return tuiles.size(); }
     bool estVide() { return tuiles.empty(); }
-    
+
 private:
     friend class Partie;
     ~Pile();

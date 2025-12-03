@@ -1,4 +1,4 @@
-#include "sauvegarde.h"
+/*#include "sauvegarde.h"
 #include <fstream>
 #include <iostream>
 
@@ -182,3 +182,4 @@ bool Sauvegarde::supprimerSauvegarde(const string& nomFichier) {
     }
     return false;
 }
+*/

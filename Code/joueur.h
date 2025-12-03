@@ -21,7 +21,7 @@ public:
     Cite* getCite() const { return cite; }
     Joueur(const string& n);
     const string& getNom() const { return nom; }
-	int getPierres() const { return pierres; }
+    int getPierres() const { return pierres; }
     void ajouterPierres(int n = 1);
     bool utiliserPierres(int n = 1);
     void ajouterPierresRecouvrement(int nbRecouverts);

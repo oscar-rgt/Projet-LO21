@@ -12,7 +12,7 @@ public:
 
     // Gestion des tuiles
     void ajouterPile(Pile& p);
-    
+
     Tuile* getTuile(int index) const;
     void retirerTuile(int index);
     size_t getNbTuiles() const;

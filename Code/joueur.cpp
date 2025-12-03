@@ -8,7 +8,7 @@ using namespace std;
 Joueur::Joueur(const string& n)
     : nom(n), pierres(2) {
     cite = new Cite();
-	score = new Score(this);
+    score = new Score(this);
     cite->placerTuileDepart();
 }
 

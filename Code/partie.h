@@ -42,7 +42,7 @@ public:
     // return true si succès, false si erreur (ressources, placement, index)
     bool actionPlacerTuile(int indexTuileChantier, int x, int y, int z, int rotation, int inversion);
 
-	int jouerTourIA(); //retourne l'index de la tuile choisie par l'IA (-1 si erreur)
+    int jouerTourIA(); //retourne l'index de la tuile choisie par l'IA (-1 si erreur)
 
     void passerAuJoueurSuivant();
     bool estFinDePartie() const;
@@ -56,9 +56,9 @@ public:
     size_t getNbPiles() const { return piles.size(); }
     int getIndexPileActuelle() const { return indexPileActuelle; }
 
-    const std::array<bool,5>& getVariantes() const { return variantes; }//getter public pour les variantes
-	//Sauvegarde de la partie
-	bool sauvegarder(const string& nomFichier = "akropolis_save.txt") const;
+    const std::array<bool, 5>& getVariantes() const { return variantes; }//getter public pour les variantes
+    //Sauvegarde de la partie
+    bool sauvegarder(const string& nomFichier = "akropolis_save.txt") const;
     bool charger(const string& nomFichier = "akropolis_save.txt");
     static bool supprimerSauvegarde(const string& nomFichier = "akropolis_save.txt");
     bool sauvegardeExiste(const string& nomFichier);

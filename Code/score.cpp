@@ -7,9 +7,9 @@
 Score::Score(Joueur* j, int tot)
     : joueur(j), total(0)
 {
-    for (auto t : {TypeQuartier::Habitation, TypeQuartier::Marche,
+    for (auto t : { TypeQuartier::Habitation, TypeQuartier::Marche,
                    TypeQuartier::Caserne, TypeQuartier::Temple,
-                   TypeQuartier::Jardin}) {
+                   TypeQuartier::Jardin }) {
         pointsParType[t] = 0;
     }
 }
@@ -29,9 +29,9 @@ void Score::calculerScore() {
     }
 
     total = 0;
-    for (auto type : {TypeQuartier::Habitation, TypeQuartier::Marche,
+    for (auto type : { TypeQuartier::Habitation, TypeQuartier::Marche,
                       TypeQuartier::Caserne, TypeQuartier::Temple,
-                      TypeQuartier::Jardin}) {
+                      TypeQuartier::Jardin }) {
         int pts = calculerScoreType(type);
         pointsParType[type] = pts;
         total += pts;
@@ -69,7 +69,8 @@ int Score::calculerScoreType(TypeQuartier type) {
                         if (!v) continue;
                         if (v->getType() != Type::Marche && v->getType() != Type::Place) ptsAdj++;
                     }
-                } catch (const CiteException&) { continue; }
+                }
+                catch (const CiteException&) { continue; }
                 score += ptsAdj;
             }
             break;
@@ -82,7 +83,8 @@ int Score::calculerScoreType(TypeQuartier type) {
                         if (!v) continue;
                         if (v->getType() == Type::Caserne) { isIsolee = false; break; }
                     }
-                } catch (const CiteException&) { continue; }
+                }
+                catch (const CiteException&) { continue; }
                 if (isIsolee) score += 1;
             }
             break;
@@ -91,7 +93,8 @@ int Score::calculerScoreType(TypeQuartier type) {
                 try {
                     auto adjacents = joueur->getCite()->getAdjacents(it.first);
                     if (adjacents.size() == 6) score += 2;
-                } catch (const CiteException&) { continue; }
+                }
+                catch (const CiteException&) { continue; }
             }
             break;
         case TypeQuartier::Jardin:
@@ -119,7 +122,8 @@ int Score::calculerScoreType(TypeQuartier type) {
                         for (Hexagone* v : adj) {
                             if (v && v->getType() == Type::Place) { score *= 2; break; }
                         }
-                    } catch (const CiteException&) { continue; }
+                    }
+                    catch (const CiteException&) { continue; }
                 }
             }
         }
@@ -135,7 +139,8 @@ int Score::calculerScoreType(TypeQuartier type) {
                         int vides = 0;
                         for (Hexagone* v : adj) if (!v) vides++;
                         if (vides == 3 || vides == 4) { score *= 2; break; }
-                    } catch (const CiteException&) { continue; }
+                    }
+                    catch (const CiteException&) { continue; }
                 }
             }
         }
@@ -160,7 +165,8 @@ int Score::calculerScoreType(TypeQuartier type) {
                         bool lac = true;
                         for (Hexagone* v : adj) if (v) { lac = false; break; }
                         if (lac) { score *= 2; break; }
-                    } catch (const CiteException&) { continue; }
+                    }
+                    catch (const CiteException&) { continue; }
                 }
             }
         }

@@ -12,7 +12,7 @@ using namespace std;
 
 // On garde une vérification large (8 voisins) pour être sûr de détecter
 // les contacts quelle que soit la topologie de la grille.
-vector<Cite::Coord> Cite::getVecteursVoisins() { 
+vector<Cite::Coord> Cite::getVecteursVoisins() {
     return {
         {0, -1, 0}, {0, 1, 0},   // Vertical
         {-1, 0, 0}, {1, 0, 0},   // Horizontal bas
@@ -85,7 +85,7 @@ void Cite::placer(Tuile* t, Coord c) {
     }
     // Temporaire : sortie du cadrillage
     for (Coord h : pos) if (h.x > 7 || h.x < -7 || h.y>3 || h.y < -2 || h.z < 0) throw CiteException("Placement impossible : Quadrillage trop petit (WIP)");
-    
+
     //D.Sauvegarde
     Action act;
     act.tuileId = t->getId();
@@ -93,9 +93,9 @@ void Cite::placer(Tuile* t, Coord c) {
     act.y = c.y;
     act.z = c.z;
     act.inversion = t->getInversion();
-    
+
     // On sauvegarde l'état VISUEL actuel des hexagones (après rotation éventuelle)
-    for(int k=0; k<3; k++) {
+    for (int k = 0; k < 3; k++) {
         Hexagone* h = t->getHexagone(k);
         act.hexas[k].type = (int)h->getType();
         act.hexas[k].etoiles = h->getEtoiles();
@@ -116,11 +116,11 @@ void Cite::placer(Tuile* t, Coord c) {
 
 void Cite::placerTuileDepart() {
     if (t->getNbHexagones() != 4) throw CiteException("La tuile de départ doit avoir 4 hexagones.");
-    
+
     // Centre (Habitation) en (0,0,0)
     Coord c0 = { 0, 0, 0 };
-    
-    
+
+
     // placer autour de (0,0,0)    
     Coord c1 = { -1, 0, 0 };
     Coord c2 = { 1, 0, 0 };
@@ -171,10 +171,10 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
         else {
             h = c;
         }
-        
-        int l = h.y*-4 + 14;
-        int c = h.x*7 + 56;
-        j = c + l*110;
+
+        int l = h.y * -4 + 14;
+        int c = h.x * 7 + 56;
+        j = c + l * 110;
         if ((h.x % 2)) j += 220;
         if (j<0 || j > quadrillage.length()) throw CiteException("Placement impossible : sortie du quadrillage");
         quadrillage.replace(j, 3, t.getHexagone(i)->affiche());
@@ -187,8 +187,8 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
 
 void Cite::agrandirQ(char dir) {
     if (dir == 'S') {
-        string rep = to_string(lround(quadrillage.length() / 110)-30);
-        rep+= R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
+        string rep = to_string(lround(quadrillage.length() / 110) - 30);
+        rep += R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
         quadrillage.replace(quadrillage.length() - 110, 110, rep);
         quadrillage += R"(
  /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
