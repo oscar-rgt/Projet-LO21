@@ -71,7 +71,7 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
 
 void Partie::initialiserPiles() {
     // Création des piles selon les règles
-    int nbPiles = 1; // Standard
+    int nbPiles = 11; // Standard
     if (modeTuileCite == TuileCite::AUGMENTE) {
         if (nbJoueurs == 2) nbPiles = 19;
         else if (nbJoueurs == 3) nbPiles = 15;
