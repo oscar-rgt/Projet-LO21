@@ -168,9 +168,7 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
                 chantier.getTuile(i)->setPrix(chantier.getTuile(i)->getPrix() + 1);
             }
         }
-        // 4. Récupération des pierres sur la tuile choisie
-        int pierresGagnees = chantier.getTuile(index)->getPrix();
-        j->ajouterPierres(pierresGagnees);
+
 
         // 6. Mise à jour du chantier
         chantier.retirerTuile(index);
