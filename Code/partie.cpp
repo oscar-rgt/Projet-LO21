@@ -124,7 +124,6 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
     if (index < 0 || index >= chantier.getNbTuiles()) return false;
     Joueur* j = getJoueurActuel();
     if (!j) return false;
-    cout << "Est fin partie ?" << (indexPileActuelle >= piles.size()) << " et " << (chantier.getNbTuiles() <= 1) << endl;
 
     // 1. Coût en pierres
     // Coût = index (0 pour la 1ère, 1 pour la 2ème, etc.)
