@@ -152,7 +152,7 @@ string& Tuile::getDesign() {
         int positions[3] = { 44, 124, 91 };
         auto it = hexagones.begin();
         for (int k = 0; k < 3; k++, ++it) {
-            design.replace(positions[k], 3, (*it)->affiche());
+            design.replace(positions[k], 2, (*it)->affiche().substr(0,2));
         }
     }
     else {
@@ -169,7 +169,7 @@ string& Tuile::getDesign() {
         int positions[3] = { 50, 130, 83 };
         auto it = hexagones.begin();
         for (int k = 0; k < 3; k++, ++it) {
-            design.replace(positions[k], 3, (*it)->affiche());
+            design.replace(positions[k], 2, (*it)->affiche().substr(0, 2));
         }
     }
     return design;
