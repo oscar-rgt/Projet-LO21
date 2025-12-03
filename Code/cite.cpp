@@ -2,6 +2,7 @@
 #include "cite.h"
 #include "score.h"
 #include "tuiles.h"
+#include <cmath>
 using namespace std;
 
 
