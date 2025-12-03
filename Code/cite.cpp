@@ -12,7 +12,7 @@ using namespace std;
 
 // On garde une vérification large (8 voisins) pour être sûr de détecter
 // les contacts quelle que soit la topologie de la grille.
-vector<Cite::Coord> Cite::getVecteursVoisins() {
+vector<Coord> Cite::getVecteursVoisins() const{
     return {
         {0, -1, 0}, {0, 1, 0},   // Vertical
         {-1, 0, 0}, {1, 0, 0},   // Horizontal bas
@@ -143,16 +143,21 @@ void Cite::afficher() const {
 // =========================================================
 
 // Mise à jour selon votre nouvelle géométrie "Index 2"
-Cite::Coord Cite::Coord::cote(bool inversion) {
+Coord Coord::cote(bool inversion) {
     if (inversion) return { x + 1, x % 2 == 0 ? y : y - 1, z };
     return { x - 1, x % 2 == 0 ? y : y - 1, z };
 }
 
-vector<Hexagone*> Cite::getAdjacents(Coord c) {
+vector<Hexagone*> Cite::getAdjacents(Coord c) const {
     vector<Hexagone*> ret;
     for (const auto& vec : getVecteursVoisins()) {
         Coord voisin = { c.x + vec.x, c.y + vec.y, c.z };
-        if (!estLibre(voisin)) ret.push_back(carte[voisin]);
+        auto it = carte.find(voisin);
+
+        // Si l'itérateur n'est pas à la fin, c'est que l'élément existe
+        if (it != carte.end()) {
+            ret.push_back(it->second); // it->second donne la valeur (Hexagone*), obligé d'utliser ça car méthode const
+        }
     }
     return ret;
 }
