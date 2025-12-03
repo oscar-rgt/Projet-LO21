@@ -13,7 +13,7 @@ class Joueur {
 private:
     Score* score;
     string nom;
-    int pierres;
+    unsigned int pierres;
     Cite* cite;
 
 public:
@@ -22,9 +22,8 @@ public:
     Joueur(const string& n);
     const string& getNom() const { return nom; }
     int getPierres() const { return pierres; }
-    void ajouterPierres(int n = 1);
-    bool utiliserPierres(int n = 1);
-    void ajouterPierresRecouvrement(int nbRecouverts);
+    void ajouterPierres(unsigned int n = 0);
+    bool utiliserPierres(unsigned int n = 1);
     virtual ~Joueur();
 };
 

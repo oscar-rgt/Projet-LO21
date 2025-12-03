@@ -13,12 +13,12 @@ Joueur::Joueur(const string& n)
 }
 
 
-void Joueur::ajouterPierres(int n) {
+void Joueur::ajouterPierres(unsigned int n) {
     pierres += n;
     if (pierres < 0) pierres = 0;
 }
 
-bool Joueur::utiliserPierres(int n) {
+bool Joueur::utiliserPierres(unsigned int n) {
     if (pierres >= n) {
         pierres -= n;
         return true;
@@ -26,11 +26,6 @@ bool Joueur::utiliserPierres(int n) {
     return false;
 }
 
-void Joueur::ajouterPierresRecouvrement(int nbRecouverts) {
-    if (nbRecouverts > 0) {
-        ajouterPierres(nbRecouverts);
-    }
-}
 
 Joueur::~Joueur() {
     delete cite;

@@ -19,8 +19,6 @@ class Joueur;
 class RegleScore {
 public:
     virtual ~RegleScore() = default;
-
-    // Prend un pointeur non-const pour pouvoir appeler getVecteursVoisins()
     virtual int calculer(Cite* cite) const = 0;
     virtual string getNom() const = 0;
 

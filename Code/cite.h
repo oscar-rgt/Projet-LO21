@@ -4,6 +4,8 @@
 #include <vector>
 #include <unordered_map>
 
+class Joueur;
+
 using namespace std;
 struct InfoHexa {
 	int type;
@@ -82,7 +84,7 @@ public:
 )"), t(new TuileDepart) {
 	}
 	~Cite() { delete t; }
-	void placer(Tuile* t, Coord c);
+	void placer(Tuile* t, Coord c, Joueur* j);
 	void placerTuileDepart();
 	const bool estLibre(Coord c) const { return (carte.find(c) == carte.end()); }
 	const bool estRecouvert(Coord c) const { return (!estLibre({ c.x, c.y, c.z + 1 })); }

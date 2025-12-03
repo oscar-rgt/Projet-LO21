@@ -141,7 +141,7 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
     //for(int r=0; r<rotation; r++) t->tourner();
 
     try {
-        j->getCite()->placer(t, { x, y, z });
+        j->getCite()->placer(t, { x, y, z }, j);
         ////////////////////////////////////// TEST POUR AGRANDIR LE Q/////////////////////////////////////////
 /*        j->getCite()->agrandirQ('S');*/
         ////////////////////////////////////// TEST POUR AGRANDIR LE Q/////////////////////////////////////////

@@ -2,6 +2,7 @@
 #include "cite.h"
 #include "score.h"
 #include "tuiles.h"
+#include "joueur.h"
 using namespace std;
 
 
@@ -31,7 +32,7 @@ const bool Cite::toucheCite(Coord c) { //marche pas (jsp pk)
 // 2. MÉTHODE PLACER (Version Finale)
 // =========================================================
 
-void Cite::placer(Tuile* t, Coord c) {
+void Cite::placer(Tuile* t, Coord c, Joueur* j) {
     // A. CALCUL DES POSITIONS (SLOTS)
     // Nouvelle géométrie demandée :
     Coord pos[3];
@@ -104,6 +105,14 @@ void Cite::placer(Tuile* t, Coord c) {
 
     // E. ENREGISTREMENT
     for (int i = 0; i < 3; i++) {
+        if (c.z > 0) {
+			t->getHexagone(i)->setNiveau(c.z);
+            Coord dessous = { pos[i].x, pos[i].y, pos[i].z - 1 };
+            auto it = carte.find(dessous);
+            if (it != carte.end()) {
+                carte.erase(it);
+            }
+        }
         carte[pos[i]] = t->getHexagone(i);
     }
     // F. AFFICHAGE

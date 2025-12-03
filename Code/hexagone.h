@@ -37,6 +37,7 @@ public:
 	TypeQuartier getType() const { return type; }
 	unsigned int getEtoiles() const { return etoiles; }
 	string affiche();
+	void setNiveau(unsigned int n) { niveau = n; }
 	const bool estPlace() const { return place; }
 };
 
