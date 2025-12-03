@@ -37,7 +37,7 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
     variantes = vars;
     niveauIllustreConstructeur = nivIC;
 
-    for (const auto& nom : noms) joueurs.push_back(new Joueur(nom));
+    if (nbJoueurs > 1) for (const auto& nom : noms) joueurs.push_back(new Joueur(nom));
 
 
     // Si mode solo, on ajoute l'IA
@@ -51,7 +51,7 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
         // IA : 1 tuile départ, 2 pierres
 
         // Le joueur humain est à l'index 0
-        joueurs[0]->utiliserPierres(1); // Il commence avec 2 par défaut, on en enlève 1 -> reste 1
+        for (const auto& nom : noms) joueurs.push_back(new Joueur(nom,1)); // Il commence avec 2 par défaut, on en enlève 1 -> reste 1
 
         // L'IA (index 1) a déjà 2 pierres par défaut.
     }
