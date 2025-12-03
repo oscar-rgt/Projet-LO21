@@ -14,9 +14,10 @@ void Chantier::vider() {
 void Chantier::ajouterPile(Pile& p) {
     for (int j = 0; j < p.getNbTuiles(); j++) {
         try {
-                Tuile* t = p.getTuile(p.getId()*10+j);
-                tuiles.push_back(t);
-        } catch (const PileException& e) {
+            Tuile* t = p.getTuile(p.getId() * 10 + j);
+            tuiles.push_back(t);
+        }
+        catch (const PileException& e) {
             cout << "erreur ; " << e.getInfo();
             break;
         }
@@ -43,4 +44,8 @@ bool Chantier::estVide() const {
     return tuiles.empty();
 }
 
-
+void Chantier::ajouterTuileSpecifique(Tuile* t) {
+    if (t) {
+        tuiles.push_back(t);
+    }
+}

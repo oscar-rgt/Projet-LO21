@@ -74,14 +74,15 @@ void JeuConsole::afficherEtatJeu() {
     cout << "\n##########################################" << endl;
     cout << "TOUR DE : " << j->getNom() << endl;
     cout << "Pierres : " << j->getPierres() << endl;
-    cout << "Score : " << Partie::getInstance().getScore(Partie::getInstance().getIndexJoueurActuel()) << endl;
+    cout << "Score : " << j->getScore()->getTotal() << endl;
     cout << "##########################################" << endl;
 
     cout << "\n--- CITE ---" << endl;
 
     if (dynamic_cast<IA*>(j)) {
         cout << "(Cite de l'IA - Gestion virtuelle)" << endl;
-    } else {
+    }
+    else {
         j->getCite()->afficher();
         afficherChantier();
     }
@@ -100,16 +101,17 @@ void JeuConsole::jouerTour() {
     if (dynamic_cast<IA*>(j)) {
         cout << "\n\n--- TOUR DE L'IA ---" << endl;
         cout << "\nL'Illustre Constructeur reflechit..." << endl;
-		int indexChoisi = Partie::getInstance().jouerTourIA();
         afficherChantier();
+        int indexChoisi = Partie::getInstance().jouerTourIA();
         try {
             cout << "\n\nL'IA choisit la tuile " << indexChoisi << endl;
             cout << "Appuyez sur une touche pour continuer...";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cin.get();
-        } catch (const PartieException& e) {
+        }
+        catch (const PartieException& e) {
             cout << "L'IA a rencontre une erreur en choisissant une tuile : " << e.getInfo() << endl;
-		}
+        }
         return;
     }
 
@@ -150,9 +152,9 @@ void JeuConsole::jouerTour() {
         else if (choix == "A" || choix == "a") {
             // Annuler le choix de la tuile, on recommence le tour
             if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser(); // Remettre l'état initial
-            for(int i = 0; i < (3 - rotationCompteur) % 3; ++i) {
+            for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) {
                 tuileAffichee->tourner(); // Remettre l'orientation initiale
-			}
+            }
             jouerTour();
             return;
         }
@@ -168,8 +170,8 @@ void JeuConsole::jouerTour() {
     int z = saisieNombre("Coord Z (Niveau)", 0, 10);
 
 
-	cout << "\n\nLa tuile\n\n" << tuileAffichee->getDesign() << "\n\nva etre placee en (" << x << ", " << y << ", " << z << ").\n" <<endl;
-    if(saisieOuiNon("Valider ce choix ?")){
+    cout << "\n\nLa tuile\n\n" << tuileAffichee->getDesign() << "\n\nva etre placee en (" << x << ", " << y << ", " << z << ").\n" << endl;
+    if (saisieOuiNon("Valider ce choix ?")) {
 
         try {
             bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, rotationCompteur, inversionEtat);
@@ -202,7 +204,66 @@ void JeuConsole::jouerTour() {
 }
 
 void JeuConsole::lancer() {
-    cout << "=== AKROPOLIS CONSOLE ===" << endl;
+
+    //Ecran titre                                                                                                                                                                                            
+
+    cout << "\n\n\n\n\n\n\n";
+    cout << "                __       __   ___   _______     ______    _______    ______    ___        __      ________  " << endl;
+    cout << "               /\"\"\\     |/\"| /  \") /\"      \\   /    \" \\  |   __ \"\\  /    \" \\  |\"  |      |\" \\    /\"       ) " << endl;
+    cout << "              /    \\    (: |/   / |:        | // ____  \\ (. |__) :)// ____  \\ ||  |      ||  |  (:   \\___/  " << endl;
+    cout << "             /' /\\  \\   |    __/  |_____/   )/  /    ) :)|:  ____//  /    ) :)|:  |      |:  |   \\___  \\    " << endl;
+    cout << "            //  __'  \\  (// _  \\   //      /(: (____/ // (|  /   (: (____/ //  \\  |___   |.  |    __/  \\\\   " << endl;
+    cout << "           /   /  \\\\  \\ |: | \\  \\ |:  __   \\ \\        / /|__/ \\   \\        /  ( \\_|:  \\  /\\  |\\  /\" \\   :)  " << endl;
+    cout << "          (___/    \\___)(__|  \\__)|__|  \\___) \\\"_____/ (_______)   \\\"_____/    \\_______)(__\\_|_)(_______/   " << endl;
+    cout << "\n\n";
+
+
+
+
+    cout << "                              ===========================================================" << endl;
+    cout << "                                         B I E N V E N U E   D A N S   L A               " << endl;
+    cout << "                                            C I T E   D E S   D I E U X                  " << endl;
+    cout << "                              ===========================================================" << endl;
+    cout << "\n\n";
+    cout << "                                        >>> APPUYEZ SUR ENTREE POUR COMMENCER <<<        " << endl;
+    cout << "\n\n\n\n\n";
+
+
+    //Crédits
+    cout << "-----------------------------------------------------------" << endl;
+    cout << " LO21 - Programmation C++ | Semestre Automne 2025          " << endl;
+    cout << " Oscar.R, Louane.R, Valentin.R, Noemie.N, Jeanne.D     " << endl;
+    cout << "-----------------------------------------------------------" << endl;
+
+    //nettoyage ecran et lancement jeu
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    nettoyerEcran();
+
+
+    unsigned int choixMenu;
+    do {
+        nettoyerEcran();
+        std::cout << "1. JOUER UNE PARTIE                     " << std::endl;
+        std::cout << "2. REGLES DU JEU                        " << std::endl;
+        std::cout << "3. QUITTER                              " << std::endl;
+        std::cout << "\n\n";
+        choixMenu = saisieNombre("Choisissez une option", 1, 3);
+
+        switch (choixMenu)
+        {
+        case 1:
+            break;
+        case 2:
+            afficherRegles();
+            break;
+        case 3:
+            exit(0);
+        default:
+            break;
+        }
+    } while (choixMenu != 1);
+
+    nettoyerEcran();
     demanderConfiguration();
 
     while (!Partie::getInstance().estFinDePartie()) {
@@ -222,9 +283,9 @@ void JeuConsole::lancer() {
             //j->setPoints(ia->calculerScoreIA());
             int scoreIA = ia->calculerScoreIA();
         }
-    cout << i + 1 << ". " << j->getNom()
-     << " : " << Partie::getInstance().getScore(i)
-     << " points" << endl;
+        cout << i + 1 << ". " << j->getNom()
+            << " : " << j->getScore()->getTotal()
+            << " points" << endl;
 
 
     }
@@ -233,14 +294,14 @@ void JeuConsole::lancer() {
     int gagnant = 0;
     for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
         Joueur* j = Partie::getInstance().getJoueur(i);
-        int scoreJoueur = Partie::getInstance().getScore(i);
+        int scoreJoueur = j->getScore()->getTotal();
         if (scoreJoueur > maxPoints) {
             maxPoints = scoreJoueur;
             gagnant = i;
         }
 
     }
-    cout << Partie::getInstance().getJoueur(gagnant)->getNom()<< " a remporte la partie avec " << maxPoints << " points !" << endl;
+    cout << Partie::getInstance().getJoueur(gagnant)->getNom() << " a remporte la partie avec " << maxPoints << " points !" << endl;
 
 }
 
@@ -255,7 +316,7 @@ void JeuConsole::demanderConfiguration() {
         nomsJoueurs.push_back(nom);
     }
     int niveauIllustreConstructeur = 0;
-    if(nbJoueurs == 1){
+    if (nbJoueurs == 1) {
         cout << "Mode solo active" << endl;
         niveauIllustreConstructeur = saisieNombre("Niveau Illustre Constructeur", 1, 3);
     }
@@ -263,15 +324,39 @@ void JeuConsole::demanderConfiguration() {
     bool modeTuileCite = saisieOuiNon("Mode tuile cite augmente ?");
     Partie::TuileCite mode = modeTuileCite ? Partie::TuileCite::AUGMENTE : Partie::TuileCite::STANDARD;
 
-    if(saisieOuiNon("Activer les variantes ?")){
+    if (saisieOuiNon("Activer les variantes ?")) {
         cout << "Selection des variantes :\n" << endl;
         variantesActives[0] = saisieOuiNon("Variante habitations active ?");
         variantesActives[1] = saisieOuiNon("Variante marches active ?");
         variantesActives[2] = saisieOuiNon("Variante casernes active ?");
         variantesActives[3] = saisieOuiNon("Variante temples active ?");
         variantesActives[4] = saisieOuiNon("Variante jardins active ?");
-	}
+    }
 
 
     Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIllustreConstructeur);
+}
+
+void JeuConsole::afficherRegles() {
+    nettoyerEcran();
+    cout << "===========================================================" << endl;
+    cout << "                  REGLES D'AKROPOLIS                       " << endl;
+    cout << "===========================================================" << endl;
+    cout << "1. LE BUT : Construisez la cite la plus prestigieuse." << endl;
+    cout << "   Les points sont marques grace aux Quartiers (couleurs)" << endl;
+    cout << "   multiplies par les Places (etoiles) correspondantes." << endl;
+    cout << "\n";
+    cout << "2. LES QUARTIERS :" << endl;
+    cout << "   - Bleu (Habitation) : Points pour le plus grand groupe." << endl;
+    cout << "   - Jaune (Marche)    : Points si pas adjacent a un autre marche." << endl;
+    cout << "   - Rouge (Caserne)   : Points si en peripherie (bord)." << endl;
+    cout << "   - Violet (Temple)   : Points si completement entoure." << endl;
+    cout << "   - Vert (Jardin)     : Points sans condition." << endl;
+    cout << "\n";
+    cout << "3. LA PIERRE :" << endl;
+    cout << "   Payez des pierres pour prendre une tuile plus loin dans le chantier." << endl;
+    cout << "\n";
+    cout << "Appuyez sur Entree pour revenir au menu.";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.get();
 }

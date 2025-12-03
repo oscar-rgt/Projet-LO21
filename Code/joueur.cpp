@@ -1,22 +1,17 @@
+
 #include "joueur.h"
 #include "cite.h"
+#include "score.h"
 
 using namespace std;
 
 Joueur::Joueur(const string& n)
     : nom(n), pierres(2) {
     cite = new Cite();
+    score = new Score(this);
     cite->placerTuileDepart();
 }
 
-const string& Joueur::getNom() const {
-    return nom;
-}
-
-
-int Joueur::getPierres() const {
-    return pierres;
-}
 
 void Joueur::ajouterPierres(int n) {
     pierres += n;
@@ -39,4 +34,5 @@ void Joueur::ajouterPierresRecouvrement(int nbRecouverts) {
 
 Joueur::~Joueur() {
     delete cite;
+    delete score;
 }

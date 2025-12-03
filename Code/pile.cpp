@@ -3,7 +3,7 @@
 #include <string>
 #include<vector>
 
-Pile::Pile(unsigned int id_, unsigned int nb): id(id_)
+Pile::Pile(unsigned int id_, unsigned int nb) : id(id_)
 {
     tuiles.reserve(nb);
     for (unsigned int i = 0; i < nb; i++) {

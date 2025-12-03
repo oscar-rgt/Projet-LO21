@@ -1,22 +1,21 @@
 #pragma once
 #include "tuiles.h"
 #include "hexagone.h"
-#include "score.h"
 #include <vector>
 #include <unordered_map>
 
 using namespace std;
 struct InfoHexa {
-    int type;     
-    int etoiles;
-    bool estPlace;
+	int type;
+	int etoiles;
+	bool estPlace;
 };
 
 struct Action {
-    int tuileId;
-    int x, y, z;
-    bool inversion;
-    InfoHexa hexas[3]; 
+	int tuileId;
+	int x, y, z;
+	bool inversion;
+	InfoHexa hexas[3];
 };
 
 
@@ -29,7 +28,7 @@ public:
 };
 
 class Cite {
-private :
+private:
 	struct Coord { //Tuple de coordonnées 
 		int x, y, z;
 		Coord sud() { return { x,y - 1,z }; }
@@ -45,13 +44,12 @@ private :
 			return hx ^ (hy << 1) ^ (hz << 2);
 		}
 	};
-	unordered_map<Coord, Hexagone*, CoordHash> carte; // Espace 3D de pointeurs d'hexagones 
-	//  carte[{0, 0, 0}] = tuile0;
+	unordered_map<Coord, Hexagone*, CoordHash> carte; // Espace 3D de pointeurs d'hexagones  / carte[{0, 0, 0}] = tuile0;
 	const bool toucheCite(Coord c);
 	string quadrillage;
-	TuileDepart *t;
+	TuileDepart* t;
 	vector<Action> historique;
-public :
+public:
 	Cite() : quadrillage(R"(
           _____         _____         _____         _____         _____         _____         _____          
          /     \       /     \       /     \       /     \       /     \       /     \       /     \          
@@ -81,10 +79,11 @@ public :
  \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
   \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
      -7     -6     -5    -4     -3     -2     -1      0      1      2      3      4      5      6      7     
-)"), t(new TuileDepart) {}
+)"), t(new TuileDepart) {
+	}
 	~Cite() { delete t; }
 	void placer(Tuile* t, Coord c);
-    void placerTuileDepart();
+	void placerTuileDepart();
 	const bool estLibre(Coord c) const { return (carte.find(c) == carte.end()); }
 	const bool estRecouvert(Coord c) const { return (!estLibre({ c.x, c.y, c.z + 1 })); }
 	void afficher() const;
@@ -94,5 +93,4 @@ public :
 	vector<Cite::Coord> getVecteursVoisins();
 	void agrandirQ(char dir);
 	const vector<Action>& getHistorique() const { return historique; }
-    void forcerHistorique(const Action& a) { historique.push_back(a); }
 };
