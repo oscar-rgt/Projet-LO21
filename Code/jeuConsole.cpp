@@ -275,37 +275,39 @@ void JeuConsole::lancer() {
 
     cout << "=== FIN DE PARTIE ===" << endl;
 
-    //Classement final
-    cout << "\n--- CLASSEMENT ---" << endl;
+    cout << "\n--- SCORES ---" << endl;
     for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
         Joueur* j = Partie::getInstance().getJoueur(i);
+        int score = 0;
 
-        // Calcul du score IA si n�cessaire
-        IA* ia = dynamic_cast<IA*>(j);
-        if (ia) {
-            //j->setPoints(ia->calculerScoreIA());
-            int scoreIA = ia->calculerScoreIA();
+        if (IA* ia = dynamic_cast<IA*>(j)) {
+            score = ia->calculerScoreIA();
         }
-        cout << i + 1 << ". " << j->getNom()
-            << " : " << j->getScore()->getTotal()
-            << " points" << endl;
-
-
-    }
-    cout << "\n--- GAGNANT ---" << endl;
-    int maxPoints = 0;
-    int gagnant = 0;
-    for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
-        Joueur* j = Partie::getInstance().getJoueur(i);
-        int scoreJoueur = j->getScore()->getTotal();
-        if (scoreJoueur > maxPoints) {
-            maxPoints = scoreJoueur;
-            gagnant = i;
+        else {
+            j->getScore()->calculerScore();
+            score = j->getScore()->getTotal();
         }
 
+        cout << j->getNom() << " : " << score << " points (" << j->getPierres() << " pierres)" << endl;
     }
-    cout << Partie::getInstance().getJoueur(gagnant)->getNom() << " a remporte la partie avec " << maxPoints << " points !" << endl;
-    
+
+    cout << "\n--- RESULTAT ---" << endl;
+    vector<int> gagnants = Partie::getInstance().determinerGagnants();
+
+    if (gagnants.size() == 1) {
+        Joueur* winner = Partie::getInstance().getJoueur(gagnants[0]);
+        cout << ">>> LE VAINQUEUR EST : " << winner->getNom() << " !!! <<<" << endl;
+    }
+    else if (gagnants.size() > 1) {
+        cout << ">>> EGALITE PARFAITE ENTRE : ";
+        for (size_t k = 0; k < gagnants.size(); ++k) {
+            cout << Partie::getInstance().getJoueur(gagnants[k])->getNom();
+            if (k < gagnants.size() - 1) cout << " ET ";
+        }
+        cout << " ! <<<" << endl;
+    }
+
+
     cout << "\n\n\n";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();

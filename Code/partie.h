@@ -49,6 +49,7 @@ public:
     int getNbJoueurs() const { return nbJoueurs; }
     Joueur* getJoueurActuel() const;
     Joueur* getJoueur(int index) const;
+    vector<int> determinerGagnants();
 
     // Accès au chantier pour l'affichage
     const Chantier& getChantier() const { return chantier; }
@@ -70,6 +71,7 @@ private:
     void initialiserPiles();
     void designerArchitecteChef();
     void remplirChantier(); // Pour compléter le chantier à la fin du tour
+    
 
     array<bool, 5> variantes;
     int indexJoueurActuel;

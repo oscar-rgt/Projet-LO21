@@ -69,7 +69,7 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
 
 void Partie::initialiserPiles() {
     // Création des piles selon les règles
-    int nbPiles = 11; // Standard
+    int nbPiles = 1; // Standard
     if (modeTuileCite == TuileCite::AUGMENTE) {
         if (nbJoueurs == 2) nbPiles = 19;
         else if (nbJoueurs == 3) nbPiles = 15;
@@ -245,6 +245,59 @@ Joueur* Partie::getJoueur(int index) const {
     return joueurs[index];
 }
 
+vector<int> Partie::determinerGagnants() {
+    int maxScore = -1;
+    vector<int> scoresCalculs;
+
+    //calcul des scores
+    for (int i = 0; i < nbJoueurs; i++) {
+        Joueur* j = joueurs[i];
+        int s = 0;
+
+        if (IA* ia = dynamic_cast<IA*>(j)) {
+            s = ia->calculerScoreIA();
+        }
+        else {
+            j->getScore()->calculerScore(); //Màj
+            s = j->getScore()->getTotal();
+        }
+        scoresCalculs.push_back(s);
+
+        if (s > maxScore) {
+            maxScore = s;
+        }
+    }
+
+    //chercher egalites
+    vector<int> candidats;
+    for (int i = 0; i < nbJoueurs; i++) {
+        if (scoresCalculs[i] == maxScore) {
+            candidats.push_back(i);
+        }
+    }
+
+    //on departage en fonction des pierres cf regles
+    if (candidats.size() > 1) {
+        int maxPierres = -1;
+        // Trouver le max de pierres parmi les candidats
+        for (int idx : candidats) {
+            if (joueurs[idx]->getPierres() > maxPierres) {
+                maxPierres = joueurs[idx]->getPierres();
+            }
+        }
+
+        //garder ceux qui ont ce max de pierres
+        vector<int> gagnantsFinaux;
+        for (int idx : candidats) {
+            if (joueurs[idx]->getPierres() == maxPierres) {
+                gagnantsFinaux.push_back(idx);
+            }
+        }
+        return gagnantsFinaux;
+    }
+
+    return candidats;
+}
 
 
 /*bool Partie::sauvegarder(const string& nomFichier) const {
