@@ -47,7 +47,8 @@ void JeuConsole::afficherChantier() {
     const int hauteur = 9;
     const int largeur_reelle = 20;
     const int largeur_visuelle = 19;
-    cout << "\n=== CHANTIER === " << Partie::getInstance().getNbPiles() - Partie::getInstance().getIndexPileActuelle() << " pile(s) restante(s)" << endl;
+    size_t pilesRestantes = 0;
+    cout << "\n=== CHANTIER === " << Partie::getInstance().getNbPiles() - (Partie::getInstance().getIndexPileActuelle()) << " pile(s) restante(s)" << endl;
     for (int i = 0; i < chantier.getNbTuiles(); ++i) {
         Tuile* t = chantier.getTuile(i);
         string designTuile = t->getDesign();
@@ -270,6 +271,8 @@ void JeuConsole::lancer() {
         jouerTour();
     }
 
+	nettoyerEcran();
+
     cout << "=== FIN DE PARTIE ===" << endl;
 
     //Classement final
@@ -302,7 +305,11 @@ void JeuConsole::lancer() {
 
     }
     cout << Partie::getInstance().getJoueur(gagnant)->getNom() << " a remporte la partie avec " << maxPoints << " points !" << endl;
-
+    
+    cout << "\n\n\n";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
+    cin.get();
+	exit(0);
 }
 
 void JeuConsole::demanderConfiguration() {

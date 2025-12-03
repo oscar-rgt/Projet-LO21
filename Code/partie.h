@@ -29,7 +29,6 @@ class Partie {
 public:
     int getIndexJoueurActuel() const { return indexJoueurActuel; }
 
-
     enum class TuileCite { STANDARD, AUGMENTE };
     static Partie& getInstance();
 

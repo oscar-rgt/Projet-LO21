@@ -3,6 +3,7 @@
 #include "score.h"
 #include "tuiles.h"
 #include "joueur.h"
+#include <cmath>
 using namespace std;
 
 

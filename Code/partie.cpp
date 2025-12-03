@@ -76,16 +76,16 @@ void Partie::initialiserPiles() {
         else if (nbJoueurs == 4) nbPiles = 11;
     }
 
-    piles.reserve(nbPiles + 1); // +1 pour la pile de départ
+    piles.reserve(nbPiles); 
 
     // Pile de départ : nbJoueurs + 2 tuiles
     piles.emplace_back(new Pile(0, nbJoueurs + 2));
 
     // Autres piles : nbJoueurs + 1 tuiles
-    for (int i = 1; i <= nbPiles; ++i) {
+    for (int i = 1; i <= nbPiles; i++) {
         piles.emplace_back(new Pile(i, nbJoueurs + 1));
     }
-    indexPileActuelle = 0;
+    indexPileActuelle = 1;
 
     // Remplissage initial du chantier avec la première pile
     remplirChantier();
@@ -95,10 +95,12 @@ void Partie::remplirChantier() {
     // Règle : Le chantier est rempli avec une pile entière uniquement lorsqu'il ne reste plus qu'une tuile dedans.
     // Exception : Au début, le chantier est vide, donc on le remplit.
 
+	if (estFinDePartie()) return;
+
     if (chantier.estVide() || chantier.getNbTuiles() == 1) {
         if (indexPileActuelle >= piles.size()) return; // Plus de piles
 
-        Pile* p = piles[indexPileActuelle];
+        Pile* p = piles[indexPileActuelle-1];
         chantier.ajouterPile(*p);
         indexPileActuelle++;
     }
@@ -120,6 +122,7 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
     if (index < 0 || index >= chantier.getNbTuiles()) return false;
     Joueur* j = getJoueurActuel();
     if (!j) return false;
+    cout << "Est fin partie ?" << (indexPileActuelle >= piles.size()) << " et " << (chantier.getNbTuiles() <= 1) << endl;
 
     // 1. Coût en pierres
     // Coût = index (0 pour la 1ère, 1 pour la 2ème, etc.)
@@ -174,8 +177,9 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
         chantier.retirerTuile(index);
 
         // 7. Remplir le chantier (si nécessaire)
-        remplirChantier();
-
+        if (!estFinDePartie()) {
+            remplirChantier();
+        }
 
         // 8. Passer au joueur suivant
         passerAuJoueurSuivant();
@@ -214,7 +218,10 @@ int Partie::jouerTourIA() {
     ia->ajouterTuile(t);
     chantier.retirerTuile(indexChoisi);
 
-    remplirChantier();
+
+    if (!estFinDePartie()) {
+        remplirChantier();
+    }
     passerAuJoueurSuivant();
 
     return indexChoisi;
@@ -225,8 +232,7 @@ void Partie::passerAuJoueurSuivant() {
 }
 
 bool Partie::estFinDePartie() const {
-    // Lorsque le chantier est vide, la partie s'arrête.
-    return chantier.estVide();
+    return (indexPileActuelle == piles.size() && chantier.getNbTuiles() == 1);
 }
 
 Joueur* Partie::getJoueurActuel() const {
