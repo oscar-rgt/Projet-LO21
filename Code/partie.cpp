@@ -42,6 +42,9 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
 
     // Si mode solo, on ajoute l'IA
     if (nbJoueurs == 1) {
+
+        joueurs.push_back(new Joueur(noms[0], 1)); // Il commence avec 2 par défaut, on en enlève 1 -> reste 1
+
         // L'IA est toujours le 2ème "joueur" dans la liste
         joueurs.push_back(new IA("Illustre Architecte", niveauIllustreConstructeur));
         nbJoueurs = 2; // On considère qu'il y a 2 joueurs pour la logique de tour
@@ -51,7 +54,6 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
         // IA : 1 tuile départ, 2 pierres
 
         // Le joueur humain est à l'index 0
-        joueurs.push_back(new Joueur(noms[0], 1)); // Il commence avec 2 par défaut, on en enlève 1 -> reste 1
 
         // L'IA (index 1) a déjà 2 pierres par défaut.
     }
