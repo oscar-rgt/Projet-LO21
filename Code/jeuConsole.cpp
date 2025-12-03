@@ -233,7 +233,7 @@ void JeuConsole::lancer() {
     //Crédits
     cout << "-----------------------------------------------------------" << endl;
     cout << " LO21 - Programmation C++ | Semestre Automne 2025          " << endl;
-    cout << " Oscar.R, Louane.R, Valentin.R, Noemie.N, Jeanne.D     " << endl;
+    cout << " Oscar.R, Louane.R, Valentin.R, Noemie.M, Jeanne.D     " << endl;
     cout << "-----------------------------------------------------------" << endl;
 
     //nettoyage ecran et lancement jeu
