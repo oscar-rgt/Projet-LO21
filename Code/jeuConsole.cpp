@@ -43,6 +43,7 @@ bool JeuConsole::saisieOuiNon(const string& prompt) {
 
 void JeuConsole::afficherChantier() {
     const auto& chantier = Partie::getInstance().getChantier();
+    if (chantier.getNbTuiles() == 0) return;
     vector<string> lignes(9, "");
     const int hauteur = 9;
     const int largeur_reelle = 20;
