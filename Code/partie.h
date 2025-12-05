@@ -38,30 +38,63 @@ public:
         unsigned int niveauIC = 0);
 
     // ACTION PRINCIPALE
-    // return true si succès, false si erreur (ressources, placement, index)
     bool actionPlacerTuile(int indexTuileChantier, int x, int y, int z, int rotation, int inversion);
 
-    int jouerTourIA(); //retourne l'index de la tuile choisie par l'IA (-1 si erreur)
+    int jouerTourIA();
 
     void passerAuJoueurSuivant();
     bool estFinDePartie() const;
 
-    int getNbJoueurs() const { return nbJoueurs; }
+    int getNbJoueurs() const { return joueurs.size(); }
     Joueur* getJoueurActuel() const;
-    Joueur* getJoueur(int index) const;
-    vector<int> determinerGagnants();
 
-    // Accès au chantier pour l'affichage
+
+    vector<Joueur*> determinerGagnants(); // Retourne maintenant des Joueur*
+
+    // Accès au chantier
     const Chantier& getChantier() const { return chantier; }
+
     size_t getNbPiles() const { return piles.size(); }
     int getIndexPileActuelle() const { return indexPileActuelle; }
 
-    const std::array<bool, 5>& getVariantes() const { return variantes; }//getter public pour les variantes
-    //Sauvegarde de la partie
+    const std::array<bool, 5>& getVariantes() const { return variantes; }
+
+    // Sauvegarde (méthodes inchangées)
     bool sauvegarder(const string& nomFichier = "akropolis_save.txt") const;
     bool charger(const string& nomFichier = "akropolis_save.txt");
     static bool supprimerSauvegarde(const string& nomFichier = "akropolis_save.txt");
     bool sauvegardeExiste(const string& nomFichier);
+
+    // ==========================================
+    // ITERATORS
+    // ==========================================
+    class JoueurIterator {
+        friend class Partie;
+        vector<Joueur*>::iterator current;
+        JoueurIterator(vector<Joueur*>::iterator it) : current(it) {}
+    public:
+        JoueurIterator() {}
+        JoueurIterator& operator++() { ++current; return *this; }
+        bool operator!=(const JoueurIterator& other) const { return current != other.current; }
+        Joueur* operator*() const { return *current; }
+    };
+    JoueurIterator debutJoueurs() { return JoueurIterator(joueurs.begin()); }
+    JoueurIterator finJoueurs() { return JoueurIterator(joueurs.end()); }
+
+    class PileIterator {
+        friend class Partie;
+        vector<Pile*>::const_iterator current;
+        PileIterator(vector<Pile*>::const_iterator it) : current(it) {}
+    public:
+        PileIterator() {}
+        PileIterator& operator++() { ++current; return *this; }
+        bool operator!=(const PileIterator& other) const { return current != other.current; }
+        Pile* operator*() const { return *current; }
+        Pile* operator->() const { return *current; }
+    };
+    PileIterator debutPiles() const { return PileIterator(piles.begin()); }
+    PileIterator finPiles() const { return PileIterator(piles.end()); }
+
 private:
     Partie();
     ~Partie();
@@ -70,23 +103,21 @@ private:
 
     void initialiserPiles();
     void designerArchitecteChef();
-    void remplirChantier(); // Pour compléter le chantier à la fin du tour
-    
+    void remplirChantier();
 
     array<bool, 5> variantes;
     int indexJoueurActuel;
-    int nbJoueurs;
-    int indexPileActuelle; // Pour savoir quelle pile on utilise
+    int indexPileActuelle;
 
-    vector<Joueur*> joueurs; //iterator ?
-    vector<Pile*> piles; //iterator ?
+    vector<Joueur*> joueurs;
+    vector<Pile*> piles;
 
     Chantier chantier;
 
     TuileCite modeTuileCite;
     unsigned int niveauIllustreConstructeur;
 
-    vector<Tuile*> tuilesDepart; // Pour gérer la mémoire des tuiles de départ
+    vector<Tuile*> tuilesDepart;
 };
 
 #endif

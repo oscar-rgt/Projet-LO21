@@ -47,10 +47,15 @@ void JeuConsole::afficherChantier() {
     const int hauteur = 9;
     const int largeur_reelle = 20;
     const int largeur_visuelle = 19;
-    size_t pilesRestantes = 0;
-    cout << "\n=== CHANTIER === " << Partie::getInstance().getNbPiles() - (Partie::getInstance().getIndexPileActuelle()) << " pile(s) restante(s)" << endl;
-    for (int i = 0; i < chantier.getNbTuiles(); ++i) {
-        Tuile* t = chantier.getTuile(i);
+
+
+    // Calcul : Total piles - Index pile actuelle
+    size_t pilesRestantes = Partie::getInstance().getNbPiles() - Partie::getInstance().getIndexPileActuelle();
+    cout << "\n=== CHANTIER === " << pilesRestantes << " pile(s) restante(s)" << endl;
+
+    // --- 2. AFFICHAGE DES TUILES VIA ITÉRATEUR ---
+    for (auto it = chantier.begin(); it != chantier.end(); ++it) {
+        Tuile* t = *it; // Accès à la tuile via l'itérateur
         string designTuile = t->getDesign();
         for (int j = 0; j < hauteur; j++) {
             string segment = designTuile.substr(j * largeur_reelle, largeur_visuelle);
@@ -62,12 +67,16 @@ void JeuConsole::afficherChantier() {
         cout << lignes[j] << endl;
     }
     cout << "\n\n";
-    for (int i = 0; i < chantier.getNbTuiles(); i++) {
-        int pierres = chantier.getTuile(i)->getPrix();
+
+    // --- 3. AFFICHAGE DES PRIX VIA ITÉRATEUR ---
+    for (auto it = chantier.begin(); it != chantier.end(); ++it) {
+        // (*it) donne le pointeur Tuile*, donc (*it)->getPrix() donne le prix
+        int pierres = (*it)->getPrix();
         cout << "    ";
         cout << pierres << " pierres";
         cout << "               ";
     }
+    cout << endl;
 }
 
 void JeuConsole::afficherEtatJeu() {
@@ -118,12 +127,20 @@ void JeuConsole::jouerTour() {
 
     //Tour humain
 
-    size_t maxChoix = Partie::getInstance().getChantier().getNbTuiles() - 1;
+    // 1. Calculer le nombre de tuiles disponibles avec les itérateurs
+    const auto& chantier = Partie::getInstance().getChantier();
+
+    size_t maxChoix = chantier.getNbTuiles() - 1;
 
     cout << "\n--- ACTION ---" << endl;
-    int index = saisieNombre("Quelle tuile choisir ?", 0, maxChoix);
+    int index = saisieNombre("Quelle tuile choisir ?", 0, (int)maxChoix);
 
-    Tuile* tuileAffichee = Partie::getInstance().getChantier().getTuile(index);
+    // 2. Récupérer la tuile choisie (On avance l'itérateur jusqu'à l'index)
+    auto itTuile = chantier.begin();
+    for (int k = 0; k < index; ++k) {
+        ++itTuile;
+    }
+    Tuile* tuileAffichee = *itTuile;
 
     // --- MODE PREVISUALISATION ---
 
@@ -165,15 +182,15 @@ void JeuConsole::jouerTour() {
         }
     }
 
-    //Placement
+    // Placement
     int x = saisieNombre("Coord X", -10, 10);
     int y = saisieNombre("Coord Y", -10, 10);
     int z = saisieNombre("Coord Z (Niveau)", 0, 10);
 
 
     cout << "\n\nLa tuile\n\n" << tuileAffichee->getDesign() << "\n\nva etre placee en (" << x << ", " << y << ", " << z << ").\n" << endl;
-    if (saisieOuiNon("Valider ce choix ?")) {
 
+    if (saisieOuiNon("Valider ce choix ?")) {
         try {
             bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, rotationCompteur, inversionEtat);
 
@@ -194,20 +211,18 @@ void JeuConsole::jouerTour() {
         }
     }
     else {
+        // Annulation finale
         if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser(); // Remettre l'état initial
         for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) {
             tuileAffichee->tourner(); // Remettre l'orientation initiale
         }
         jouerTour();
     }
-
-
 }
 
 void JeuConsole::lancer() {
 
-    //Ecran titre                                                                                                                                                                                            
-
+    // --- ECRAN TITRE --- (identique à avant)
     cout << "\n\n\n\n\n\n\n";
     cout << "                __       __   ___   _______     ______    _______    ______    ___        __      ________  " << endl;
     cout << "               /\"\"\\     |/\"| /  \") /\"      \\   /    \" \\  |   __ \"\\  /    \" \\  |\"  |      |\" \\    /\"       ) " << endl;
@@ -276,12 +291,16 @@ void JeuConsole::lancer() {
     cout << "=== FIN DE PARTIE ===" << endl;
 
     cout << "\n--- SCORES ---" << endl;
-    for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
-        Joueur* j = Partie::getInstance().getJoueur(i);
-        int score = 0;
+	int score = 0;
 
-        if (IA* ia = dynamic_cast<IA*>(j)) {
-            score = ia->calculerScoreIA();
+    // Utilisation de debutJoueurs() et finJoueurs() au lieu de l'index
+    for (auto it = Partie::getInstance().debutJoueurs(); it != Partie::getInstance().finJoueurs(); ++it) {
+        Joueur* j = *it;
+
+        // Calcul du score IA si nécessaire
+        IA* ia = dynamic_cast<IA*>(j);
+        if (ia) {
+            ia->calculerScoreIA(); // Mise à jour score interne
         }
         else {
             j->getScore()->calculerScore();
@@ -292,16 +311,17 @@ void JeuConsole::lancer() {
     }
 
     cout << "\n--- RESULTAT ---" << endl;
-    vector<int> gagnants = Partie::getInstance().determinerGagnants();
+
+    // determinerGagnants renvoie maintenant un vector<Joueur*> directement
+    vector<Joueur*> gagnants = Partie::getInstance().determinerGagnants();
 
     if (gagnants.size() == 1) {
-        Joueur* winner = Partie::getInstance().getJoueur(gagnants[0]);
-        cout << ">>> LE VAINQUEUR EST : " << winner->getNom() << " !!! <<<" << endl;
+        cout << ">>> LE VAINQUEUR EST : " << gagnants[0]->getNom() << " !!! <<<" << endl;
     }
     else if (gagnants.size() > 1) {
         cout << ">>> EGALITE PARFAITE ENTRE : ";
         for (size_t k = 0; k < gagnants.size(); ++k) {
-            cout << Partie::getInstance().getJoueur(gagnants[k])->getNom();
+            cout << gagnants[k]->getNom();
             if (k < gagnants.size() - 1) cout << " ET ";
         }
         cout << " ! <<<" << endl;
@@ -387,7 +407,7 @@ void JeuConsole::afficherRegles() {
     cout << "   Lorsqu'un hexagone est place en hauteur, son nombre de points est multiplie par son niveau d'elevation." << endl;
 	cout << "   Par exemple, un quartier Jardin place au niveau 3 rapporte 3 points." << endl;
     cout << "   A vous de trouver le bon equilibre pour devenir le plus prestigieux des architectes !" << endl;
-	cout << "===========================================================" << endl;
+    cout << "===========================================================" << endl;
     cout << "Appuyez sur Entree pour revenir au menu.";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();

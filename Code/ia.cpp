@@ -33,30 +33,26 @@ int IA::choisirTuile(const Chantier& chantier) {
     // l’Illustre Architecte prend la 1ère tuile Cité du Chantier.
 
     int meilleurIndex = -1;
+    int currentIndex = 0;
 
-    for (int i = 0; i < chantier.getNbTuiles(); ++i) {
-        Tuile* t = chantier.getTuile(i);
+    for (auto it = chantier.begin(); it != chantier.end(); ++it) {
+        Tuile* t = *it;
         int coutTuile = t->getPrix();
 
         if (tuileContientPlace(t)) {
             // C'est une tuile avec Place
             // Comme on parcourt par index croissant (donc prix croissant),
             // la première qu'on trouve est forcément la moins chère.
-
             if (getPierres() >= coutTuile) {
-                meilleurIndex = i;
-                break; // On a trouvé la moins chère abordable
+                meilleurIndex = currentIndex;
+                break;
             }
         }
+        currentIndex++;
     }
 
-    if (meilleurIndex != -1) {
-        return meilleurIndex;
-    }
-    else {
-        // Pas de tuile avec Place ou pas assez de pierres
-        return 0; // Prend la 1ère tuile
-    }
+    if (meilleurIndex != -1) return meilleurIndex;
+    return 0;
 }
 
 

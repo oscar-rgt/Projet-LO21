@@ -1,10 +1,10 @@
 #include "score.h"
 #include "partie.h"
 #include "joueur.h"
-#include "cite.h" // Nécessaire ici pour voir la définition complète de Cite
+#include "cite.h" 
 #include <vector>
 #include <iostream>
-#include <algorithm> // pour std::find
+#include <algorithm>
 
 using namespace std;
 
@@ -14,10 +14,9 @@ using namespace std;
 
 int RegleScore::compterEtoiles(Cite* cite, TypeQuartier typeQ) const {
     int etoiles = 0;
-    // On parcourt la carte
-    // Note : On utilise auto car on ne connait pas forcément le type exact de l'itérateur si Coord est privé
-    for (const auto& it : cite->getCarte()) {
-        Hexagone* h = it.second;
+    // Boucle via itérateur
+    for (auto it = cite->begin(); it != cite->end(); ++it) {
+        Hexagone* h = it->second;
         if (h && h->estPlace() && h->getType() == typeQ) {
             etoiles += h->getEtoiles();
         }
@@ -26,19 +25,18 @@ int RegleScore::compterEtoiles(Cite* cite, TypeQuartier typeQ) const {
 }
 
 // =========================================================
-// 1. HABITATIONS (Bleu) - Algorithme Itératif
+// 1. HABITATIONS (Bleu)
 // =========================================================
 
 int RegleHabitation::getValeurPlusGrandGroupe(Cite* cite) const {
-    const auto& carte = cite->getCarte();
-    if (carte.empty()) return 0;
+    if (cite->begin() == cite->end()) return 0; // Test vide
 
     vector<Coord> globalVisites;
     int maxValeur = 0;
 
-    for (const auto& it : carte) {
-        Coord depart = it.first;
-        Hexagone* h = it.second;
+    for (auto it = cite->begin(); it != cite->end(); ++it) {
+        Coord depart = it->first;
+        Hexagone* h = it->second;
 
         // Vérification si déjà visité
         bool dejaVu = false;
@@ -56,27 +54,20 @@ int RegleHabitation::getValeurPlusGrandGroupe(Cite* cite) const {
             // Parcours en largeur (BFS)
             for (size_t i = 0; i < aTraiter.size(); ++i) {
                 Coord actuelle = aTraiter[i];
-
-                // Valeur = niveau + 1
                 valeurGroupe += (actuelle.z + 1);
 
                 auto voisinsVecteurs = cite->getVecteursVoisins();
 
                 for (const auto& vec : voisinsVecteurs) {
-                    // MODIFICATION ICI : On vérifie Z, Z-1 et Z+1
-                    // Cela permet de connecter (2,1,0) avec (2,2,1)
                     for (int dz = -1; dz <= 1; ++dz) {
-
-                        // On ne descend pas sous 0
                         if (actuelle.z + dz < 0) continue;
 
                         Coord voisinCoord = { actuelle.x + vec.x, actuelle.y + vec.y, actuelle.z + dz };
 
-                        auto itVoisin = carte.find(voisinCoord);
-                        if (itVoisin != carte.end()) {
-                            Hexagone* hVoisin = itVoisin->second;
+                        
+                        const Hexagone* hVoisin = cite->getHexagone(voisinCoord);
 
-                            // Vérif déjà vu globale
+                        if (hVoisin) {
                             bool voisinDejaVu = false;
                             for (const auto& v : globalVisites) { if (v == voisinCoord) { voisinDejaVu = true; break; } }
 
@@ -88,11 +79,7 @@ int RegleHabitation::getValeurPlusGrandGroupe(Cite* cite) const {
                     }
                 }
             }
-            // --- FIN GROUPE ---
-
-            if (valeurGroupe > maxValeur) {
-                maxValeur = valeurGroupe;
-            }
+            if (valeurGroupe > maxValeur) maxValeur = valeurGroupe;
         }
     }
     return maxValeur;
@@ -115,20 +102,19 @@ int RegleHabitationVariante::calculer(Cite* cite) const {
 
 int RegleMarche::calculer(Cite* cite) const {
     int valeur = 0;
-    for (const auto& it : cite->getCarte()) {
-        Hexagone* h = it.second;
+    for (auto it = cite->begin(); it != cite->end(); ++it) {
+        Hexagone* h = it->second;
         if (h->getType() == Marche && !h->estPlace()) {
             bool isole = true;
-            // On utilise la méthode publique getAdjacents de Cite
             try {
-                auto voisins = cite->getAdjacents(it.first);
+                auto voisins = cite->getAdjacents(it->first);
                 for (Hexagone* v : voisins) {
                     if (v->getType() == Marche) { isole = false; break; }
                 }
             }
             catch (...) {}
 
-            if (isole) valeur += (it.first.z + 1);
+            if (isole) valeur += (it->first.z + 1);
         }
     }
     return valeur * compterEtoiles(cite, Marche);
@@ -138,13 +124,13 @@ int RegleMarcheVariante::calculer(Cite* cite) const {
     int total = 0;
     int etoiles = compterEtoiles(cite, Marche);
 
-    for (const auto& it : cite->getCarte()) {
-        Hexagone* h = it.second;
+    for (auto it = cite->begin(); it != cite->end(); ++it) {
+        Hexagone* h = it->second;
         if (h->getType() == Marche && !h->estPlace()) {
             bool isole = true;
             bool adjacentPlace = false;
             try {
-                auto voisins = cite->getAdjacents(it.first);
+                auto voisins = cite->getAdjacents(it->first);
                 for (Hexagone* v : voisins) {
                     if (v->getType() == Marche) isole = false;
                     if (v->estPlace() && v->getType() == Marche) adjacentPlace = true;
@@ -153,7 +139,7 @@ int RegleMarcheVariante::calculer(Cite* cite) const {
             catch (...) {}
 
             if (isole) {
-                int pts = (it.first.z + 1) * etoiles;
+                int pts = (it->first.z + 1) * etoiles;
                 if (adjacentPlace) pts *= 2;
                 total += pts;
             }
@@ -168,13 +154,12 @@ int RegleMarcheVariante::calculer(Cite* cite) const {
 
 int RegleCaserne::calculer(Cite* cite) const {
     int valeur = 0;
-    for (const auto& it : cite->getCarte()) {
-        Hexagone* h = it.second;
+    for (auto it = cite->begin(); it != cite->end(); ++it) {
+        Hexagone* h = it->second;
         if (h->getType() == Caserne && !h->estPlace()) {
             try {
-                // Moins de 6 voisins = périphérie
-                if (cite->getAdjacents(it.first).size() < 6) {
-                    valeur += (it.first.z + 1);
+                if (cite->getAdjacents(it->first).size() < 6) {
+                    valeur += (it->first.z + 1);
                 }
             }
             catch (...) {}
@@ -187,14 +172,13 @@ int RegleCaserneVariante::calculer(Cite* cite) const {
     int total = 0;
     int etoiles = compterEtoiles(cite, Caserne);
 
-    for (const auto& it : cite->getCarte()) {
-        Hexagone* h = it.second;
+    for (auto it = cite->begin(); it != cite->end(); ++it) {
+        Hexagone* h = it->second;
         if (h->getType() == Caserne && !h->estPlace()) {
             try {
-                size_t nbVoisins = cite->getAdjacents(it.first).size();
+                size_t nbVoisins = cite->getAdjacents(it->first).size();
                 if (nbVoisins < 6) {
-                    int pts = (it.first.z + 1) * etoiles;
-                    // Variante : 3 ou 4 vides
+                    int pts = (it->first.z + 1) * etoiles;
                     int vides = 6 - (int)nbVoisins;
                     if (vides == 3 || vides == 4) pts *= 2;
                     total += pts;
@@ -212,12 +196,12 @@ int RegleCaserneVariante::calculer(Cite* cite) const {
 
 int RegleTemple::calculer(Cite* cite) const {
     int valeur = 0;
-    for (const auto& it : cite->getCarte()) {
-        Hexagone* h = it.second;
+    for (auto it = cite->begin(); it != cite->end(); ++it) {
+        Hexagone* h = it->second;
         if (h->getType() == Temple && !h->estPlace()) {
             try {
-                if (cite->getAdjacents(it.first).size() == 6) {
-                    valeur += (it.first.z + 1);
+                if (cite->getAdjacents(it->first).size() == 6) {
+                    valeur += (it->first.z + 1);
                 }
             }
             catch (...) {}
@@ -230,13 +214,13 @@ int RegleTempleVariante::calculer(Cite* cite) const {
     int total = 0;
     int etoiles = compterEtoiles(cite, Temple);
 
-    for (const auto& it : cite->getCarte()) {
-        Hexagone* h = it.second;
+    for (auto it = cite->begin(); it != cite->end(); ++it) {
+        Hexagone* h = it->second;
         if (h->getType() == Temple && !h->estPlace()) {
             try {
-                if (cite->getAdjacents(it.first).size() == 6) {
-                    int pts = (it.first.z + 1) * etoiles;
-                    if (it.first.z > 0) pts *= 2;
+                if (cite->getAdjacents(it->first).size() == 6) {
+                    int pts = (it->first.z + 1) * etoiles;
+                    if (it->first.z > 0) pts *= 2;
                     total += pts;
                 }
             }
@@ -252,10 +236,10 @@ int RegleTempleVariante::calculer(Cite* cite) const {
 
 int RegleJardin::calculer(Cite* cite) const {
     int valeur = 0;
-    for (const auto& it : cite->getCarte()) {
-        Hexagone* h = it.second;
+    for (auto it = cite->begin(); it != cite->end(); ++it) {
+        Hexagone* h = it->second;
         if (h->getType() == Jardin && !h->estPlace()) {
-            valeur += (it.first.z + 1);
+            valeur += (it->first.z + 1);
         }
     }
     return valeur * compterEtoiles(cite, Jardin);
@@ -267,7 +251,7 @@ int RegleJardinVariante::calculer(Cite* cite) const {
 
 
 // =========================================================
-// CLASSE SCORE (Le Chef d'orchestre)
+// CLASSE SCORE
 // =========================================================
 
 Score::Score(Joueur* j) : joueur(j) {
@@ -314,16 +298,11 @@ void Score::calculerScore() {
     }
 
     total = 0;
-    // Version classique (compatible vieux C++)
     for (auto const& pair : strategies) {
-        TypeQuartier type = pair.first;       // La clé (TypeQuartier)
-        RegleScore* strategie = pair.second;  // La valeur (La règle)
-
+        TypeQuartier type = pair.first;
+        RegleScore* strategie = pair.second;
         if (strategie) {
-            // Attention : ici on passe *maCite (valeur) car la méthode attend "const Cite&"
-            // Si votre méthode attend "Cite*", mettez juste "maCite"
             int pts = strategie->calculer(maCite);
-
             pointsParType[type] = pts;
             total += pts;
         }
