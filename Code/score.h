@@ -7,13 +7,13 @@
 #include "hexagone.h" 
 using namespace std;
 // Pas d'include de cite.h ici si on utilise seulement des pointeurs, 
-// mais nécessaire si on utilise Cite::Coord dans les méthodes protégées.
+// mais nÃ©cessaire si on utilise Cite::Coord dans les mÃ©thodes protÃ©gÃ©es.
 // On assume une forward declaration pour Cite.
 class Cite;
 class Joueur;
 
 // =========================================================
-// INTERFACE STRATÉGIE
+// INTERFACE STRATÃ‰GIE
 // =========================================================
 
 class RegleScore {
@@ -41,7 +41,7 @@ public:
     string getNom() const override { return "Habitation (Variante)"; }
 };
 
-// --- MARCHÉS ---
+// --- MARCHÃ‰S ---
 class RegleMarche : public RegleScore {
 public:
     int calculer(Cite* cite) const override;
@@ -94,6 +94,7 @@ public:
 // =========================================================
 
 class Score {
+    friend class Partie;
 private:
     Joueur* joueur;
     int total;
