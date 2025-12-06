@@ -214,16 +214,6 @@ struct CoordHash{
   operator()(Coord&) : size_t 
 }
 
-enum TypeHexa{
-  Carriere
-  Habitation
-  Marche
-  Caserne
-  Temple
-  Jardin
-  Place
-}
-
 enum TypeQuartier{
   Habitation
   Marche
@@ -363,7 +353,6 @@ class Score {
 ' =============================
 ' Relations
 ' =============================
-Hexagone ..> TypeHexa
 Score ..> TypeQuartier
 Cite ..> Coord
 Cite ..> CoordHash
@@ -423,6 +412,14 @@ Score "1" o-- "0..*" RegleScore : strategies
 
 ' R3: Dépendance (Les méthodes calculent en utilisant Cite)
 RegleScore .> Cite : utilise
-Score .> TypeQuartier : utilise/map
+
+TuileDepart <|-- Tuile
+
+ConstIterator *-- Cite 
+Iterator *-- Chantier 
+
+Action <-- InfoHexa
+
+Action *-- Cite
 
 @enduml
