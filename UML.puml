@@ -355,12 +355,9 @@ class Score {
     - total : int
     - strategies : map<TypeQuartier, RegleScore*>
     - pointsParType : map<TypeQuartier, int>
-
-    + Score(j: Joueur*)
-    + ~Score()
     + calculerScore() : void
     + getTotal() : int
-    + getScoreType(type: TypeQuartier) : int
+    + getScoreType(TypeQuartier) : int
 }
 
 ' =============================
