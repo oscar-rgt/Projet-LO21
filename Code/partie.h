@@ -5,12 +5,12 @@
 #include <string>
 #include <array>
 #include "chantier.h"
+#include "partie.h"
 #include "joueur.h"
 #include "pile.h"
 #include "tuiles.h"
 #include "cite.h"
 #include "score.h"
-#
 
 using namespace std;
 
