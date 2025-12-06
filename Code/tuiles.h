@@ -16,7 +16,6 @@ public:
 };
 
 class Tuile {
-	friend class Partie;
 protected: // Changed to protected for inheritance
 	friend class Pile;
 	unsigned int id;
