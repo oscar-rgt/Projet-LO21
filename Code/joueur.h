@@ -10,7 +10,6 @@ class Score;
 class Cite;
 
 class Joueur {
-    friend class Partie;
 private:
     Score* score;
     string nom;
