@@ -255,114 +255,100 @@ void JeuConsole::lancer() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     nettoyerEcran();
 
-    unsigned int choixMenu;
-    bool partieChargeeSucces = false;
 
-    // --- BOUCLE MENU ---
+    unsigned int choixMenu;
     do {
         nettoyerEcran();
-        cout << "1. JOUER UNE PARTIE" << endl;
-        cout << "2. CHARGER UNE PARTIE" << endl;
-        cout << "3. REGLES DU JEU" << endl;
-        cout << "4. QUITTER" << endl;
-        cout << "\n";
-        
-        choixMenu = saisieNombre("Choisissez une option", 1, 4);
+        std::cout << "1. JOUER UNE PARTIE                     " << std::endl;
+        std::cout << "2. REGLES DU JEU                        " << std::endl;
+        std::cout << "3. QUITTER                              " << std::endl;
+        std::cout << "\n\n";
+        choixMenu = saisieNombre("Choisissez une option", 1, 3);
 
         switch (choixMenu)
         {
         case 1:
-            // Nouvelle partie : on sort juste de la boucle
-            // partieChargeeSucces reste à false
             break;
-
-        case 2: {
-            cout << "\nChargement..." << endl;
-            if (Partie::getInstance().charger("akropolis_save.txt")) {
-                cout << ">> Succes !" << endl;
-                partieChargeeSucces = true; // On retient qu'on a chargé
-                choixMenu = 1; // On force la sortie du menu
-                
-                cout << "Appuyez sur Entree pour reprendre...";
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cin.get();
-            } else {
-                cerr << ">> Echec du chargement." << endl;
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cin.get();
-            }
-            break;
-        }
-
-        case 3:
+        case 2:
             afficherRegles();
             break;
-
-        case 4:
+        case 3:
             exit(0);
-
         default:
             break;
         }
     } while (choixMenu != 1);
 
-    // --- GESTION DE LA CONFIGURATION ---
     nettoyerEcran();
+    demanderConfiguration();
 
-    // C'EST ICI LA CORRECTION PRINCIPALE :
-    if (partieChargeeSucces) {
-        // Si on a chargé une partie, ON NE FAIT RIEN DE PLUS.
-        cout << ">> Reprise de la partie sauvegardee..." << endl;
-        // On laisse une pause
-        cout << "Appuyez sur Entree...";
-    } 
-    else {
-        // Si c'est une nouvelle partie (pas chargée) : ON CONFIGURE
-        demanderConfiguration();
-    }
-
-    // --- BOUCLE DE JEU ---
     while (!Partie::getInstance().estFinDePartie()) {
         jouerTour();
     }
-    Partie::getInstance().supprimerSauvegarde("akropolis_save.txt");
-    // --- FIN DE PARTIE ---
-    nettoyerEcran();
+
+	nettoyerEcran();
+
     cout << "=== FIN DE PARTIE ===" << endl;
 
-    cout << "\n--- CLASSEMENT ---" << endl;
-    for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
-        Joueur* j = Partie::getInstance().getJoueur(i);
+    cout << "\n--- SCORES ---" << endl;
+	int score = 0;
 
+    // Utilisation de debutJoueurs() et finJoueurs() au lieu de l'index
+    for (auto it = Partie::getInstance().debutJoueurs(); it != Partie::getInstance().finJoueurs(); ++it) {
+        Joueur* j = *it;
+
+        // Calcul du score IA si nécessaire
         IA* ia = dynamic_cast<IA*>(j);
-        if (ia) ia->calculerScoreIA(); // Mise à jour score IA
-        else j->getScore()->calculerScore(); // Mise à jour score Humain
+        if (ia) {
+            ia->calculerScoreIA(); // Mise à jour score interne
+        }
+        else {
+            j->getScore()->calculerScore();
+            score = j->getScore()->getTotal();
+        }
 
-        cout << i + 1 << ". " << j->getNom() << " : " << j->getScore()->getTotal() << " points" << endl;
+        cout << j->getNom() << " : " << score << " points (" << j->getPierres() << " pierres)" << endl;
     }
 
-    cout << "\n\nAppuyez sur Entree pour quitter.";
+    cout << "\n--- RESULTAT ---" << endl;
+
+    // determinerGagnants renvoie maintenant un vector<Joueur*> directement
+    vector<Joueur*> gagnants = Partie::getInstance().determinerGagnants();
+
+    if (gagnants.size() == 1) {
+        cout << ">>> LE VAINQUEUR EST : " << gagnants[0]->getNom() << " !!! <<<" << endl;
+    }
+    else if (gagnants.size() > 1) {
+        cout << ">>> EGALITE PARFAITE ENTRE : ";
+        for (size_t k = 0; k < gagnants.size(); ++k) {
+            cout << gagnants[k]->getNom();
+            if (k < gagnants.size() - 1) cout << " ET ";
+        }
+        cout << " ! <<<" << endl;
+    }
+
+
+    cout << "\n\n\n";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
-    exit(0);
+	exit(0);
 }
 
 void JeuConsole::demanderConfiguration() {
     cout << "\n--- CONFIGURATION DE LA PARTIE ---" << endl;
     int nbJoueurs = saisieNombre("Combien de joueurs ?", 1, 4);
-    
     nomsJoueurs.clear();
     for (int i = 0; i < nbJoueurs; ++i) {
         string nom;
         cout << "Nom du joueur " << i + 1 << " : ";
         cin >> nom;
-        
-        // IMPORTANT : On remplace les espaces par des '_' pour éviter les bugs de sauvegarde
-        std::replace(nom.begin(), nom.end(), ' ', '_');
-        
         nomsJoueurs.push_back(nom);
     }
+<<<<<<< HEAD
     int niveauIA = 0;
+=======
+    int niveauIllustreConstructeur = 0;
+>>>>>>> parent of f970473 (Update game menu options and loading functionality)
     if (nbJoueurs == 1) {
         cout << "Mode solo active" << endl;
         niveauIA = saisieNombre("Niveau Illustre Constructeur", 1, 3);
@@ -378,12 +364,14 @@ void JeuConsole::demanderConfiguration() {
         variantesActives[2] = saisieOuiNon("Variante casernes active ?");
         variantesActives[3] = saisieOuiNon("Variante temples active ?");
         variantesActives[4] = saisieOuiNon("Variante jardins active ?");
-    } else {
-        variantesActives.fill(false);
     }
 
 
+<<<<<<< HEAD
     Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIA);
+=======
+    Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIllustreConstructeur);
+>>>>>>> parent of f970473 (Update game menu options and loading functionality)
 }
 
 void JeuConsole::afficherRegles() {
@@ -402,30 +390,30 @@ void JeuConsole::afficherRegles() {
     cout << "   - Caserne (C)   : 1 point si votre caserne n'est pas completement entouree par d'autres hexagones." << endl;
     cout << "   - Temple (T)   : 1 point si votre temple est completement entoure par d'autres hexagones." << endl;
     cout << "   - Jardin (J)     : 1 point pour chaque jardin pose sans condition." << endl;
-    cout << "   - Carriere (X)  : Permet d'agrandir votre cite mais ne donne pas de points." << endl;
+	cout << "   - Carriere (X)  : Permet d'agrandir votre cite mais ne donne pas de points." << endl;
     cout << "\n";
     cout << "3. LES PLACES :" << endl;
-    cout << "   Les places de chaque type vous permettent de multiplier vos points" << endl;
-    cout << "   en fonction du chiffre qui est ecrit dessus." << endl;
+	cout << "   Les places de chaque type vous permettent de multiplier vos points" << endl;
+	cout << "   en fonction du chiffre qui est ecrit dessus." << endl;
     cout << "   Par exemple, un hexagone 2H est une place Habitation a 2 etoiles." << endl;
     cout << "   Elle multiplie donc par 2 les points gagnes par vos quartiers Habitation." << endl;
     cout << "   /!\\ ATTENTION : Si vous n'avez aucune place d'un certain type," << endl;
-    cout << "       vous ne marquez aucun point pour ses quartiers correspondants." << endl;
+	cout << "       vous ne marquez aucun point pour ses quartiers correspondants." << endl;
     cout << "\n";
     cout << "4. LA PIERRE :" << endl;
     cout << "   Vous commencez avec un nombre de 2 pierres." << endl;
     cout << "   Ces dernieres vous permettront d'acheter des tuiles." << endl;
-    cout << "   Les pierres influent aussi sur votre score." << endl;
+	cout << "   Les pierres influent aussi sur votre score." << endl;
     cout << "   En effet, chaque pierre vous rapporte un point." << endl;
     cout << "   De plus, en cas d'egalite en fin de partie," << endl;
-    cout << "   le joueur avec le plus de pierres l'emporte." << endl;
+	cout << "   le joueur avec le plus de pierres l'emporte." << endl;
     cout << "   Les pierres s'obtiennent en construisant au dessus d'une carriere." << endl;
     cout << "   Chaque carriere recouverte donne une pierre." << endl;
     cout << "\n";
-    cout << "5. PLACEMENT :" << endl;
-    cout << "   Vous l'aurez compris, votre cite peut s'etendre aussi bien en surface qu'en hauteur." << endl;
+	cout << "5. PLACEMENT :" << endl;
+	cout << "   Vous l'aurez compris, votre cite peut s'etendre aussi bien en surface qu'en hauteur." << endl;
     cout << "   Lorsqu'un hexagone est place en hauteur, son nombre de points est multiplie par son niveau d'elevation." << endl;
-    cout << "   Par exemple, un quartier Jardin place au niveau 3 rapporte 3 points." << endl;
+	cout << "   Par exemple, un quartier Jardin place au niveau 3 rapporte 3 points." << endl;
     cout << "   A vous de trouver le bon equilibre pour devenir le plus prestigieux des architectes !" << endl;
     cout << "===========================================================" << endl;
     cout << "Appuyez sur Entree pour revenir au menu.";
