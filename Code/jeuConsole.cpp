@@ -344,10 +344,10 @@ void JeuConsole::demanderConfiguration() {
         cin >> nom;
         nomsJoueurs.push_back(nom);
     }
-    int niveauIllustreConstructeur = 0;
+    int niveauIA = 0;
     if (nbJoueurs == 1) {
         cout << "Mode solo active" << endl;
-        niveauIllustreConstructeur = saisieNombre("Niveau Illustre Constructeur", 1, 3);
+        niveauIA = saisieNombre("Niveau Illustre Constructeur", 1, 3);
     }
 
     bool modeTuileCite = saisieOuiNon("Mode tuile cite augmente ?");
@@ -363,7 +363,7 @@ void JeuConsole::demanderConfiguration() {
     }
 
 
-    Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIllustreConstructeur);
+    Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIA);
 }
 
 void JeuConsole::afficherRegles() {
