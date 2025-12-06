@@ -344,11 +344,7 @@ void JeuConsole::demanderConfiguration() {
         cin >> nom;
         nomsJoueurs.push_back(nom);
     }
-<<<<<<< HEAD
     int niveauIA = 0;
-=======
-    int niveauIllustreConstructeur = 0;
->>>>>>> parent of f970473 (Update game menu options and loading functionality)
     if (nbJoueurs == 1) {
         cout << "Mode solo active" << endl;
         niveauIA = saisieNombre("Niveau Illustre Constructeur", 1, 3);
@@ -367,11 +363,7 @@ void JeuConsole::demanderConfiguration() {
     }
 
 
-<<<<<<< HEAD
     Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIA);
-=======
-    Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIllustreConstructeur);
->>>>>>> parent of f970473 (Update game menu options and loading functionality)
 }
 
 void JeuConsole::afficherRegles() {
