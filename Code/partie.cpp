@@ -280,12 +280,12 @@ vector<Joueur*> Partie::determinerGagnants() {
 }
 
 
-bool Partie::sauvegarder(const string& nomFichier) const {
+/*bool Partie::sauvegarder(const string& nomFichier) const {
     ofstream f(nomFichier);
     if (!f.is_open()) return false;
 
     // A. ETAT GLOBAL
-    f << nbJoueurs << endl;
+    f << joueurs.size() << endl;
     f << indexJoueurActuel << endl;
     f << indexPileActuelle << endl;
 
@@ -293,8 +293,8 @@ bool Partie::sauvegarder(const string& nomFichier) const {
     f << chantier.getNbTuiles() << endl;
     for (size_t i = 0; i < chantier.getNbTuiles(); i++) {
         Tuile* t = chantier.getTuile(i);
-        // On sauvegarde l'ID, le prix actuel et l'INVERSION
-        f << t->getId() << " " << t->getPrix() << " " << t->getInversion() << endl;
+        // On sauvegarde l'ID, l'INVERSION
+        f << t->getId() << " " << t->getInversion() << endl;
 
         // On sauvegarde le contenu visuel exact des 3 hexagones
         for(int k=0; k<3; k++) {
@@ -305,14 +305,8 @@ bool Partie::sauvegarder(const string& nomFichier) const {
 
     // C. LES JOUEURS ET LEURS CITÉS
     for (Joueur* j : joueurs) {
-        // CORRECTION CRITIQUE : Remplacer les espaces par des '_'
-        // Sinon "Illustre Architecte" fait planter la lecture au chargement
-        string nomSauve = j->getNom();
-        std::replace(nomSauve.begin(), nomSauve.end(), ' ', '_');
-
-        f << nomSauve << endl;
-        // On sauvegarde le score total actuel (juste pour info, il sera recalculé)
-        f << j->getScore()->getTotal() << endl; 
+        f << j->getNom() << endl;
+        f << j->getPoints() << endl;
         f << j->getPierres() << endl;
 
         // On écrit l'historique des coups pour rejouer la partie
@@ -320,7 +314,6 @@ bool Partie::sauvegarder(const string& nomFichier) const {
         f << hist.size() << endl;
 
         for (const auto& a : hist) {
-            // On sauvegarde l'action complète + l'état visuel de la tuile jouée
             f << a.tuileId << " " << a.x << " " << a.y << " " << a.z << " " << a.inversion << " ";
             for(int k=0; k<3; k++) {
                 f << a.hexas[k].type << " " << a.hexas[k].etoiles << " ";
@@ -333,99 +326,77 @@ bool Partie::sauvegarder(const string& nomFichier) const {
 }
 
 
+
 bool Partie::charger(const string& nomFichier) {
-
     ifstream f(nomFichier);
-    if (!f.is_open()) {
-        return false;
-    }
+    if (!f.is_open()) return false;
 
-    for (auto j : joueurs) {
-        if (j) delete j; // Verification de securité
-    }
+    // A. NETTOYAGE COMPLET (Reset)
+    for (auto j : joueurs) delete j;
     joueurs.clear();
     chantier.vider();
-
-    for(auto p : piles) {
-        if (p) delete p;
-    }
+    for(auto p : piles) delete p;
     piles.clear();
 
-
+    // B. LECTURE GLOBAL
     int nbJ, idxJ, idxP;
-    // On lit les 3 premières valeurs
-    if (!(f >> nbJ >> idxJ >> idxP)) {
-        return false;
-    }
-    
-    nbJoueurs = nbJ;
+    if (!(f >> nbJ >> idxJ >> idxP)) return false;
+
+    joueurs.size() = nbJ;
     indexJoueurActuel = idxJ;
     indexPileActuelle = idxP;
 
-    initialiserPiles(); 
-    chantier.vider(); 
-    
-    // On remet le curseur de pile au bon endroit
+    // C. GÉNÉRATION DU FUTUR (Nouvelles piles aléatoires)
+    initialiserPiles();
+    chantier.vider();
     indexPileActuelle = idxP;
 
-    // --- RESTAURATION DU CHANTIER ---
+    // D. RESTAURATION DU CHANTIER (Passé immédiat)
     int nbTuilesChantier;
-    if (!(f >> nbTuilesChantier)) {
-        return false;
-    }
-
+    f >> nbTuilesChantier;
     for (int i = 0; i < nbTuilesChantier; i++) {
         int id, prix;
         bool inv;
-        
-        if (!(f >> id >> prix >> inv)) {
-            return false;
-        }
+        f >> id >> prix >> inv;
 
-        Tuile* t = new Tuile(id, prix); // <--- CA PEUT PLANTER ICI SI LE CONSTRUCTEUR EST MAUVAIS
+        // Nouvelle tuile (générée aléatoirement via new Tuile)
+        Tuile* t = new Tuile(id);
+        t->setPrix(prix);
         if (inv) t->inverser();
 
+        // On force son apparence pour qu'elle soit identique à la sauvegarde
         for(int k=0; k<3; k++) {
             int type, etoiles;
-            if (!(f >> type >> etoiles)) return false;
-
-            // <--- CA VA SUREMENT PLANTER ICI :
-            t->reconstruireHexagone(k, type, etoiles); 
+            f >> type >> etoiles;
+            t->reconstruireHexagone(k, type, etoiles);
         }
+
+        // On l'ajoute au chantier
         chantier.ajouterTuileSpecifique(t);
     }
 
-    // --- RESTAURATION DES JOUEURS ---
-    for (int i = 0; i < nbJoueurs; i++) {
+    // E. RESTAURATION DES JOUEURS (Passé lointain)
+    for (int i = 0; i < joueurs.size(); i++) {
         string nom;
         int pts, pierres;
-        if (!(f >> nom >> pts >> pierres)) {
-            return false;
-        }
+        f >> nom >> pts >> pierres;
 
-        // On remet les espaces à la place des '_'
-        std::replace(nom.begin(), nom.end(), '_', ' ');
-
-        Joueur* j;
-        // Detection IA
-        if (nbJoueurs == 2 && i == 1) {
-             j = new IA(nom, niveauIllustreConstructeur);
-        } else {
-             j = new Joueur(nom);
-        }
-
-        j->ajouterPierres(pierres - j->getPierres()); 
+        // Note : ici on crée un Joueur humain par défaut.
+        // Si tu as des IA, il faudrait sauvegarder le type ("IA" ou "Humain") et faire un if/else.
+        Joueur* j = new Joueur(nom);
+        j->setPoints(pts);
+        j->utiliserPierres(j->getPierres()); // Reset pierres par défaut
+        j->ajouterPierres(pierres);
 
         int nbActions;
         f >> nbActions;
 
+        // REPLAY : On rejoue tous les coups
         for (int k = 0; k < nbActions; k++) {
             Action a;
-            if (!(f >> a.tuileId >> a.x >> a.y >> a.z >> a.inversion)) {
-                 return false;
-            }
+            f >> a.tuileId >> a.x >> a.y >> a.z >> a.inversion;
 
-            Tuile* t = new Tuile(a.tuileId, 0);
+            Tuile* t = new Tuile(a.tuileId);
             if (a.inversion) t->inverser();
 
             for(int h=0; h<3; h++) {
@@ -435,13 +406,12 @@ bool Partie::charger(const string& nomFichier) {
             }
 
             try {
-                j->getCite()->placer(t, {a.x, a.y, a.z}, j);
+                // Le moteur Cite refait les calculs de voisins et remplit la map
+                j->getCite()->placer(t, {a.x, a.y, a.z});
             } catch (...) {
-                // On ignore les erreurs de placement au chargement
+                // Ne devrait pas arriver sur une save valide
             }
         }
-        
-        j->getScore()->calculerScore();
         joueurs.push_back(j);
     }
 
@@ -451,9 +421,10 @@ bool Partie::charger(const string& nomFichier) {
 bool Partie::supprimerSauvegarde(const string& nomFichier) {
     return std::remove(nomFichier.c_str()) == 0;
 }
-
+// À la fin du fichier Code/partie.cpp
 
 bool Partie::sauvegardeExiste(const string& nomFichier) {
     ifstream f(nomFichier);
     return f.good();
 }
+*/
