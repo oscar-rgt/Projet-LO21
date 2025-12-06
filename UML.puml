@@ -1,40 +1,49 @@
 @startuml
-skinparam classAttributeIconSize 0
-
-' =============================
-' Classes conceptuelles
-' =============================
-
-class Chantier {
-  -tuiles : vector<Tuile*>
-  +ajouterPile(Pile&) : void
-  +retirerTuile(Tuile*) : void
-  +getNbTuiles() : size_t
-  +estVide : bool
-  +vider() : void
-  +ajouterTuileSpecifique(Tuile*) : void
-  +getNbTuiles() : size_t
-  +begin() : Iterator
-  +end() : Iterator
+' Configuration Générale
+skinparam ClassAttributeIconStyle none
+skinparam enum {
+    BackgroundColor palegreen
+    BorderColor darkgreen
 }
-class Iterator{
-  -current : vector<Tuile*>::const_iterator
-  +operator++() : Iterator&
-  +operator!=(Iterator&) : bool
-  +operator==(Iterator&) : bool
-  +operator*() : Tuile*
+
+' =========================================================
+' 1. STRUCTS, ENUMS et CLASSES FONDAMENTALES
+' =========================================================
+
+struct Coord {
+    + x : int
+    + y : int
+    + z : int
+    + sud() : Coord 
+    + cote(bool) : Coord
+    + operator==(Coord&) : bool
 }
+
+struct CoordHash {
+    + operator()(Coord&) : size_t 
+}
+
 struct InfoHexa {
-  type : int
-  etoiles : int
-  estPlace : int
+    + type : int
+    + etoiles : int
+    + estPlace : int
 }
 
 struct Action {
-  tuileId : int
-  x, y, z : int
-  inversion : bool
-  hexas[3] : InfoHexa
+    + tuileId : int
+    + x, y, z : int
+    + inversion : bool
+    + hexas[3] : InfoHexa ' Relation de Composition implicite
+}
+Action "1" *-- "3" InfoHexa
+
+enum TypeQuartier {
+    Habitation
+    Marche
+    Caserne
+    Temple
+    Jardin
+    Carriere
 }
 
 enum TuileCite {
@@ -42,132 +51,19 @@ enum TuileCite {
     AUGMENTE
 }
 
-class Partie << (S, #FF7777) Singleton >> {
-  -tuilesDepart : vector<Tuile*>
-  -niveauIA : int
-  -modeTuileCite : TuileCite
-  -chantier : Chantier
-  -piles vector<Pile*>
-  -joueurs : vector<Joueur*>
-  -indexPileActuelle : int
-  -indexJoueurActuel : int
-  -variantes : array<bool,5>
-  -remplirChantier() : void
-  -designerArchitecteChef() : void
-  -initialiserPiles() : void
-  +mode : enum = {solo,multi}
-  -nbJoueurs : int 
-  -pileTuiles : Pile*
-  ' Méthodes Statiques
-  {static} + getInstance() : Partie&
-  {static} + supprimerSauvegarde(string) : bool
-  ' Méthodes Publiques
-  + initialiser(int, vector<string>&, TuileCite, array<bool, 5>&, int) : void
-  + actionPlacerTuile(int, int, int, int, int, int) : bool
-  + jouerTourIA() : int
-  + passerAuJoueurSuivant() : void
-  + estFinDePartie() : bool
-  + determinerGagnants() : vector<Joueur*>
-  ' Getters (const)
-  + getIndexJoueurActuel() : int
-  + getNbJoueurs() : int
-  + getJoueurActuel() : Joueur*
-  + getChantier() : Chantier&
-  + getNbPiles() : size_t
-  + getIndexPileActuelle() : int
-  + getVariantes() : array<bool, 5>&
-  + sauvegardeExiste(string) : bool
-  ' Sauvegarde
-  + sauvegarder(string) : bool
-  + charger(string) : bool
+class Hexagone {
+    - niveau : int
+    - etoiles : int
+    - type : TypeQuartier
+    - tuile : Tuile*
+    - place : bool
+    + getType() : TypeQuartier
+    + getNiveau() : int
+    + getTuile() : Tuile* + getEtoiles() : int
+    + affiche() : string  
+    + setNiveau(int) : void
+    + estPlace() : bool
 }
-
-class JoueurIterator {
-  - current : vector<Joueur*>::iterator
-  + operator++() : JoueurIterator&
-  + operator!=(other: const JoueurIterator&) : bool
-  + operator*() : Joueur*
-}
-
-class PileIterator {
-  ' Attribut d'état
-  - current : vector<Pile*>::const_iterator
-  ' Relation d'amitié (friend) non représentée en UML
-  ' Méthodes Publiques
-  + operator++() : PileIterator&
-  + operator!=(PileIterator&) : bool
-  + operator*() : Pile*
-  + operator->() : Pile*
-}
-
-class Pile {
-    ' Attributs Privés
-    - id : unsigned int
-    - tuiles : vector<Tuile*>
-    ' Méthodes Publiques (Getters)
-    + getId() : unsigned int
-    + getNbTuiles() : size_t
-    + estVide() : bool
-
-    ' Méthodes d'accès aux Itérateurs
-    + begin() : Iterator
-    + end() : Iterator
-}
-
-class Pile::Iterator {
-    ' Attributs Privés
-    - current : vector<Tuile*>::const_iterator
-    ' Méthodes Publiques
-    + operator++() : Iterator&
-    + operator!=(Iterator&) : bool
-    + operator==(Iterator&) : bool
-    + operator*() : Tuile*
-    + operator->() : Tuile*
-}
-
-class Joueur {
-  -nom : string
-  -score : Score*
-  -pierres : int
-  -cite : Cite*
-  +getScore() : Score*
-  +getCite() : Cite*
-  +getNom() : string&
-  +getPierres() : int
-  +ajouterPierres(int) : void
-  +utiliserPierres(int) : bool
-}
-
-class Cite {
-  -carte: map<Coord, Hexagone*, CoordHash>
-  -quadrillage : string
-  -t : TuileDepart*
-  -historique : vector<Action>
-  -toucheCite(Coord) : bool
-  -voisinsTuile(c : Coord) : vector<Coord>
-  +begin() : ConstIterator
-  +end() : ConstIterator
-  +getHexagone(Coord) : Hexagone*
-  +placer(Tuile*, Coord, Joueur*)
-  +placerTuileDepart() : void
-  +estLibre(Coord) : bool
-  +estRecouvert(Coord) : bool
-  +afficher() : void
-  +remplirQuadrillage(Coord, Tuile&) : void
-  +getAdjacents(Coord) : vector<Hexagone*>
-  +getVecteursVoisins() : vector<Coord>
-  +agrandirQ(char) : void
-  +getHistorique() : vector<Action>&
-}
-
-class ConstIterator {
-  -current : unordered_map<Coord, Hexagone*, CoordHash>::const_iterator
-  +operator!=(ConstIterator&) : bool
-  +operator==(ConstIterator&) : bool
-  +operator*() : pair<const Coord, Hexagone*>&
-  +operator-> : pair<const Coord, Hexagone*>*
-}
-
 
 class Tuile {
   #inversion : bool
@@ -187,239 +83,207 @@ class Tuile {
   +reconstruireHexagone(int, int, int) : void
 }
 
-class TuileDepart
+class TuileDepart 
 
-class Hexagone {
-  -niveau : int
-  -etoiles : int
-  -type : TypeQuartier
-  -tuile : Tuile*
-  -place : bool
-  +getType() : TypeQuartier
-  +getNiveau() : int
-  +getTuile() : Tuile* 
-  +getEtoiles() : int
-  +affiche() : string  
-  +setNiveau(int) : void
-  +estPlace() : bool
-}
-struct Coord{
-  x, y, z : int
-  sud() : Coord 
-  cote(bool) : Coord
-  operator==(Coord&) : bool
+Tuile <|-- TuileDepart
+Tuile "1" *-- "1..4" Hexagone : hexagones
+
+' =========================================================
+' 2. CLASSES D'ORGANISATION (Jeu)
+' =========================================================
+
+class Chantier {
+    - tuiles : vector<Tuile*>
+    ' ... méthodes ...
+    + begin() : Iterator
+    + end() : Iterator
 }
 
-struct CoordHash{
-  operator()(Coord&) : size_t 
+class Pile {
+    - id : unsigned int
+    - tuiles : vector<Tuile*>
+    ' ... méthodes ...
+    + begin() : Iterator
+    + end() : Iterator
 }
 
-enum TypeQuartier{
-  Habitation
-  Marche
-  Caserne
-  Temple
-  Jardin
-  Carriere
+class Cite {
+    - carte : map<Coord, Hexagone*, CoordHash>
+    - quadrillage : string
+    - t : TuileDepart*
+    - historique : vector<Action>
+    ' ... méthodes ...
+    + begin() : ConstIterator
+    + end() : ConstIterator
 }
+Cite "1" *-- "0..*" Action : historique
+Cite "1" o-- "0..*" Hexagone : carte
+Cite "1" *-- "1" TuileDepart : tuileDepart
+Cite ..> Coord
+Cite ..> CoordHash
 
-class Variante {
-  nom : str
-  regle : str
+' Classes pour les Itérateurs de classes non imbriquées
+class ChantierIterator {
+    ' Remplacé par Chantier::Iterator pour la cohérence des noms de classes
+    - current : vector<Tuile*>::const_iterator
+    ' ... méthodes ...
+}
+Chantier "1" *-- "1" ChantierIterator : <<crée>>
+ChantierIterator .> Tuile : accède à
+
+class CiteConstIterator {
+    ' Remplacé par ConstIterator pour la cohérence des noms de classes
+    - current : unordered_map<Coord, Hexagone*, CoordHash>::const_iterator
+    ' ... méthodes ...
+}
+Cite "1" *-- "1" CiteConstIterator : <<crée>>
+CiteConstIterator .> Hexagone : accède à
+
+' =========================================================
+' 3. CLASSES IMBRIQUÉES / ITÉRATEURS
+' =========================================================
+' Chantier::Iterator -> Renommé en ChantierIterator (voir ci-dessus pour éviter confusion)
+
+' Pile::Iterator (Utilisation du nom complet pour l'imbrication si on ne veut pas de namespace)
+class Pile_Iterator {
+    - current : vector<Tuile*>::const_iterator
+    + operator++() : Pile_Iterator&
+    + operator!=(Pile_Iterator&) : bool
+    + operator*() : Tuile*
+}
+Pile "1" *-- "1" Pile_Iterator : <<crée>>
+Pile_Iterator .> Tuile : accède à
+
+
+' =========================================================
+' 4. CLASSES JOUEUR ET CONTEXTE
+' =========================================================
+class Joueur {
+    - nom : string
+    - score : Score*
+    - pierres : int
+    - cite : Cite*
+    ' ... méthodes ...
 }
 
 class IA {
-  -difficulte : int
-  -tuilesAcquises : vector<Tuile*>
-  +choisirTuiles(Chantier&) : int
-  +ajouterTuile(Tuile*) : void
-  +calculerScoreIA() : int
-  {static}+tuileContientPlace(Tuile*) : bool 
+    - difficulte : int
+    - tuilesAcquises : vector<Tuile*>
+    ' ... méthodes ...
 }
 
-class JeuConsole {
-  -modeTuileCite : Partie::TuileCite
-  -nomsJoueurs : vector<string>
-  -variantesActives : array<bool,5>
-  -demanderConfiguration() : void
-  -afficherEtatJeu() : void
-  -jouerTour() : void
-  -afficherChantier() : void
-  -nettoyerEcran() : void
-  -afficherRegles() : void
-  -saisieNombre(string&, int, int) : int
-  -saisieOuiNon(string&) : bool
-  +lancer() : void
-}
-
-class Sauvegarde {
-  {static} + savePartie(string&) : bool
-  {static} + chargerPartie(string&) : bool
-  {static} + saveTrue(string&) : bool
-  {static} + delSave(string&) : bool
-
-}
-
-' =========================================================
-' INTERFACE STRATÉGIE
-' =========================================================
-abstract class RegleScore <<interface>> {
-    ' Méthodes Pures Virtuelles (doivent être implémentées)
-    + {abstract} calculer(Cite*) : int
-    + {abstract} getNom() : string
-
-    ' Méthode Protégée
-    # compterEtoiles(Cite*, TypeQuartier) : int
-}
-
-' =========================================================
-' IMPLÉMENTATIONS DES STRATÉGIES
-' =========================================================
-
-' --- HABITATIONS ---
-RegleScore <|-- RegleHabitation
-class RegleHabitation {
-    + calculer(Cite*) : int
-    + getNom() : string
-    # getValeurPlusGrandGroupe(Cite*) : int
-}
-RegleHabitation <|-- RegleHabitationVariante
-class RegleHabitationVariante {
-    + calculer(Cite*) : int
-    + getNom() : string
-}
-
-' --- MARCHÉS ---
-RegleScore <|-- RegleMarche
-class RegleMarche {
-    + calculer(Cite*) : int
-    + getNom() : string
-}
-RegleMarche <|-- RegleMarcheVariante
-class RegleMarcheVariante {
-    + calculer(Cite*) : int
-    + getNom() : string
-}
-
-' --- CASERNES ---
-RegleScore <|-- RegleCaserne
-class RegleCaserne {
-    + calculer(Cite*) : int
-    + getNom() : string
-}
-RegleCaserne <|-- RegleCaserneVariante
-class RegleCaserneVariante {
-    + calculer(Cite*) : int
-    + getNom() : string
-}
-
-' --- TEMPLES ---
-RegleScore <|-- RegleTemple
-class RegleTemple {
-    + calculer(Cite*) : int
-    + getNom() : string
-}
-RegleTemple <|-- RegleTempleVariante
-class RegleTempleVariante {
-    + calculer(Cite*) : int
-    + getNom() : string
-}
-
-' --- JARDINS ---
-RegleScore <|-- RegleJardin
-class RegleJardin {
-    + calculer(Cite*) : int
-    + getNom() : string
-}
-RegleJardin <|-- RegleJardinVariante
-class RegleJardinVariante {
-    + calculer(Cite*) : int
-    + getNom() : string
-}
-
-' =========================================================
-' CLASSE CONTEXTE (SCORE)
-' =========================================================
 class Score {
     - joueur : Joueur*
     - total : int
     - strategies : map<TypeQuartier, RegleScore*>
     - pointsParType : map<TypeQuartier, int>
-    + calculerScore() : void
-    + getTotal() : int
-    + getScoreType(TypeQuartier) : int
+    ' ... méthodes ...
 }
 
-' =============================
-' Relations
-' =============================
+Joueur "1" *-- "1" Cite : possède
+Joueur "1" -- "1" Score : calculé par
 Score ..> TypeQuartier
-Cite ..> Coord
-Cite ..> CoordHash
-CoordHash ..> Coord
+Joueur --|> IA
 
+' =========================================================
+' 5. PATTERN STRATÉGIE (SCORE)
+' =========================================================
+abstract class RegleScore <<interface>> {
+    + {abstract} calculer(Cite*) : int
+    + {abstract} getNom() : string
+    # compterEtoiles(Cite*, TypeQuartier) : int
+}
 
-Partie *-right- "1..*" Pile : est composée de >
-Partie o-down- "1..4" Joueur : est jouée par >
-Partie o-left- "0..*" Variante : est jouée avec >
-Partie o-up- "0..1" IA : utilise >
-
-Joueur  *-- "1" Cite : possede >
-Cite "1" -- "0..*" Hexagone : contient >
-Score -left-*Joueur
-Hexagone "3"-left-*"1"Tuile : est composé de <
-
-Partie "1" *-- "0..*" Joueur : joueurs
-Partie "1" *-- "0..*" Pile : piles
-Partie "1" *-- "1" Chantier : chantier
-Partie "1" *-- "0..*" Tuile : tuilesDepart
-
-' Relation d'imbrication pour les Iterators (Composition/Dépendance forte)
-' La classe Partie contient et utilise les itérateurs.
-Partie *-- JoueurIterator
-Partie *-- PileIterator
-' La classe JoueurIterator a une dépendance forte envers Joueur
-JoueurIterator .> Joueur
-' La classe PileIterator a une dépendance forte envers Pile
-PileIterator .> Pile
-' La classe Partie utilise l'énumération TuileCite
-Partie ..> TuileCite : utilise <
-
-' RELATIONS DÉDUITES
-' R1: Imbrication / Composition (Utilisation de la classe interne)
-' La classe Pile utilise et "possède" conceptuellement l'itérateur.
-Pile "1" *-- "0..*" Pile::Iterator : <<crée/contient>>
-
-' R2: Agrégation/Composition (Contient des Tuiles)
-' Une Pile est composée de Tuiles.
-Pile "1" *-- "0..*" Tuile : tuiles
-
-' R3: Dépendance (La classe Iterator pointe sur des Tuiles)
-' L'itérateur permet d'accéder aux Tuiles.
-Pile::Iterator .> Tuile : accède à
-
-' R4: Dépendance/Amitié (Partie gère la création de Pile)
-' Le 'friend class Partie' en C++ indique une forte dépendance.
-Pile ..> Partie : friend / géré par
-
-' RELATIONS
-' R1: Association (Score est associé à un Joueur)
-Score "1" -- "1" Joueur
-
-' R2: Agrégation (Score contient les stratégies)
-' Score connaît et utilise l'interface RegleScore (Strategy Pattern)
 Score "1" o-- "0..*" RegleScore : strategies
-
-' R3: Dépendance (Les méthodes calculent en utilisant Cite)
 RegleScore .> Cite : utilise
 
-TuileDepart <|-- Tuile
+' Hiérarchie complète
+RegleScore <|-- RegleHabitation
+RegleHabitation <|-- RegleHabitationVariante
+RegleScore <|-- RegleMarche
+RegleMarche <|-- RegleMarcheVariante
+RegleScore <|-- RegleCaserne
+RegleCaserne <|-- RegleCaserneVariante
+RegleScore <|-- RegleTemple
+RegleTemple <|-- RegleTempleVariante
+RegleScore <|-- RegleJardin
+RegleJardin <|-- RegleJardinVariante
 
-ConstIterator *-- Cite 
-Iterator *-- Chantier 
+' Classes concrètes de règles (simples, sans contenu pour la concision)
+class RegleHabitation
+class RegleHabitationVariante
+class RegleMarche
+class RegleMarcheVariante
+class RegleCaserne
+class RegleCaserneVariante
+class RegleTemple
+class RegleTempleVariante
+class RegleJardin
+class RegleJardinVariante
 
-Action <-- InfoHexa
+' =========================================================
+' 6. CLASSE PARTIE (SINGLETON) et UTILS
+' =========================================================
+class Partie << (S, #FF7777) Singleton >> {
+    - tuilesDepart : vector<Tuile*>
+    - niveauIA : int
+    - modeTuileCite : TuileCite
+    - chantier : Chantier
+    - piles : vector<Pile*>
+    - joueurs : vector<Joueur*>
+    - indexPileActuelle : int
+    - indexJoueurActuel : int
+    - variantes : array<bool,5>
+    ' ... méthodes privées ...
+    {static} + getInstance() : Partie&
+    ' ... méthodes publiques ...
+}
 
-Action *-- Cite
+class Variante {
+    + nom : string
+    + regle : string
+}
 
-@enduml
+class JeuConsole {
+    - modeTuileCite : TuileCite
+    - nomsJoueurs : vector<string>
+    - variantesActives : array<bool,5>
+    ' ... méthodes ...
+}
+
+class Sauvegarde {
+    {static} + savePartie(string&) : bool
+    ' ... méthodes statiques ...
+}
+
+' =========================================================
+' 7. RELATIONS PARTIE
+' =========================================================
+
+' Relations d'Agrégation / Composition
+Partie "1" *-- "1" Chantier : chantier
+Partie "1" *-- "0..*" Pile : piles
+Partie "1" *-- "0..*" Joueur : joueurs
+Partie "1" o-- "0..*" Tuile : tuilesDepart
+
+' Dépendances
+Partie ..> TuileCite : mode
+Partie ..> Sauvegarde
+JeuConsole ..> Partie
+JeuConsole ..> TuileCite
+
+' Itérateurs de Partie
+class PartieJoueurIterator {
+    - current : vector<Joueur*>::iterator
+    ' ... méthodes ...
+}
+class PartiePileIterator {
+    - current : vector<Pile*>::const_iterator
+    ' ... méthodes ...
+}
+
+Partie "1" *-- "1" PartieJoueurIterator : <<crée>>
+Partie "1" *-- "1" PartiePileIterator : <<crée>>
+PartieJoueurIterator .> Joueur : accède à
+PartiePileIterator .> Pile : accède à
+@endumlal
