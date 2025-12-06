@@ -35,7 +35,7 @@ public:
     // Configuration
     void initialiser(int nbJoueurs, const std::vector<std::string>& nomsJoueurs,
         TuileCite mode, const std::array<bool, 5>& variantesActives,
-        unsigned int niveauIC = 0);
+        unsigned int niveauIA = 0);
 
     // ACTION PRINCIPALE
     bool actionPlacerTuile(int indexTuileChantier, int x, int y, int z, int rotation, int inversion);
@@ -115,7 +115,7 @@ private:
     Chantier chantier;
 
     TuileCite modeTuileCite;
-    unsigned int niveauIllustreConstructeur;
+    unsigned int niveauIA;
 
     vector<Tuile*> tuilesDepart;
 };

@@ -31,7 +31,7 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
 
     modeTuileCite = mode;
     variantes = vars;
-    niveauIllustreConstructeur = nivIC;
+    niveauIA = nivIC;
 
     if (nb > 1) for (const auto& nom : noms) joueurs.push_back(new Joueur(nom));
 
@@ -42,7 +42,7 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
         joueurs.push_back(new Joueur(noms[0], 1)); // Il commence avec 2 par défaut, on en enlève 1 -> reste 1
 
         // L'IA est toujours le 2ème "joueur" dans la liste
-        joueurs.push_back(new IA("Illustre Architecte", niveauIllustreConstructeur));
+        joueurs.push_back(new IA("Illustre Architecte", niveauIA));
 
         // Configuration initiale spécifique Solo
         // Joueur : 1 tuile départ, 1 pierre, Pion Architecte
@@ -55,7 +55,7 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
 
     initialiserPiles();
 
-    if (niveauIllustreConstructeur > 0) {
+    if (niveauIA > 0) {
         // En mode solo, le joueur humain est toujours premier joueur
         indexJoueurActuel = 0;
     }
@@ -141,7 +141,7 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
 
         // --- LOGIQUE SPÉCIFIQUE SOLO ---
         // Si c'est un humain qui joue en mode solo (contre l'IA), les pierres vont à l'IA.
-        if (niveauIllustreConstructeur > 0 && dynamic_cast<IA*>(j) == nullptr) {
+        if (niveauIA > 0 && dynamic_cast<IA*>(j) == nullptr) {
             // On cherche l'IA parmi les joueurs avec notre nouvel ITÉRATEUR
             for (auto itJ = debutJoueurs(); itJ != finJoueurs(); ++itJ) {
                 if (dynamic_cast<IA*>(*itJ)) {

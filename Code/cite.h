@@ -46,7 +46,7 @@ public:
 
 class Cite {
 private:
-	unordered_map<Coord, Hexagone*, CoordHash> carte; // Espace 3D de pointeurs d'hexagones  / carte[{0, 0, 0}] = tuile0;
+	unordered_map<Coord, Hexagone*, CoordHash> carte; // Espace 3D de pointeurs d'hexagones  / carte[{0, 0, 0}] = hexa0;
     const bool toucheCite(Coord c);
     string quadrillage;
     TuileDepart* t;
