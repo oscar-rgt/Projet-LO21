@@ -184,7 +184,7 @@ void JeuConsole::jouerTour() {
 
     // Placement
     int x = saisieNombre("Coord X", -10, 10);
-    int y = saisieNombre("Coord Y", -10, 10);
+    int y = saisieNombre("Coord Y", -99, 999);
     int z = saisieNombre("Coord Z (Niveau)", 0, 10);
 
 

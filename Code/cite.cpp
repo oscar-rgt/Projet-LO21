@@ -95,7 +95,7 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j) {
             throw CiteException("Placement impossible : La tuile recouvre une seule et même tuile.");
     }
     // Temporaire : sortie du cadrillage
-    for (Coord h : pos) if (h.x > 7 || h.x < -7 || h.y>3 || h.y < -99 || h.z < 0) throw CiteException("Placement impossible : Quadrillage trop petit (WIP)");
+    for (Coord h : pos) if (h.x > 7 || h.x < -7 || h.y>999 || h.y < -99 || h.z < 0) throw CiteException("Placement impossible : Quadrillage trop petit (WIP)");
 
     //D.Sauvegarde
     Action act;
@@ -127,8 +127,10 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j) {
         carte[pos[i]] = t->getHexagone(i);
     }
     // F. AFFICHAGE
-    if (pos[0].y < (-lround((quadrillage.length() / 111) / 4) + 5)) agrandirQ('S');
-    if (pos[1].y<( - lround((quadrillage.length() / 111) / 4) + 5)) agrandirQ('S');
+    if (pos[0].y >= (quadrillage.maxY)) agrandirQ('N');
+    if (pos[1].y >= (quadrillage.maxY)) agrandirQ('N');
+    if (pos[0].y <= (quadrillage.minY)) agrandirQ('S');
+    if (pos[1].y <= (quadrillage.minY)) agrandirQ('S');
     remplirQuadrillage(c, *t);
 }
 
@@ -155,7 +157,7 @@ void Cite::placerTuileDepart() {
 }
 
 void Cite::afficher() const {
-    cout << quadrillage << endl;
+    cout << quadrillage.txt << endl;
 }
 
 
@@ -198,16 +200,15 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
         else {
             h = c;
         }
-        int line_offset = 14;
-        int hex_height = 4;
-        int hex_width = 7;
-        int col_offset = 56;
-        int l = h.y * - hex_height + line_offset;
-        int c = h.x * hex_width + col_offset;
-        j = c + l * 111 - lround(h.y/1.5);
-        if ((h.x % 2)) j += 222;
-        if (j<0 || j > quadrillage.length()) throw CiteException("Placement impossible : sortie du quadrillage");
-        quadrillage.replace(j, 3, t.getHexagone(i)->affiche());
+
+        int l = h.y * - quadrillage.hex_height + quadrillage.line_offset;
+        int c = h.x * quadrillage.hex_width + quadrillage.col_offset;
+        j = c + l * quadrillage.line_length;
+        j += abs(h.y)-3;
+        if (h.y < -1) j-=2;
+        if ((h.x % 2)) j += 2*quadrillage.line_length;
+        if (j<0 || j > quadrillage.txt.length()) throw CiteException("Placement impossible : sortie du quadrillage");
+        quadrillage.txt.replace(j, 3, t.getHexagone(i)->affiche());
     }
 }
 
@@ -217,15 +218,29 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
 
 void Cite::agrandirQ(char dir) {
     if (dir == 'S') {
-        int row_num = -lround((quadrillage.length() / 111)/4) +4;
-        string rep = to_string(row_num);
-        if (row_num > -10) rep += " ";
-        rep += R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \   )";
-        quadrillage.replace(quadrillage.length() - 111, 111, rep);
-        quadrillage += R"(
+        quadrillage.minY--;
+        string extension = to_string(quadrillage.minY);
+        if (quadrillage.minY > -10) extension += " ";
+        extension += R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \   )";
+        quadrillage.txt.replace(quadrillage.txt.length() - quadrillage.line_length, quadrillage.line_length, extension);
+        quadrillage.txt += R"(
   /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
   \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
    \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
     -7     -6     -5     -4     -3     -2     -1      0      1      2      3      4      5      6      7       )";
+    }
+    if (dir == 'N') {
+        quadrillage.maxY++;
+        string extension = R"(  /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
+  \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
+   \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
+)";
+        extension += to_string(quadrillage.maxY);
+        if (quadrillage.maxY < 10) extension += "  ";
+        else if (quadrillage.maxY < 100) extension += " ";
+        extension+=R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \   
+)";
+        quadrillage.txt = extension + quadrillage.txt;
+        quadrillage.line_offset += 4;
     }
 }
