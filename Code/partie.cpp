@@ -173,7 +173,7 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
     catch (const CiteException& e) {
         // Annuler la rotation pour remettre la tuile dans l'état initial visuel
         for (int r = 0; r < (3 - rotation) % 3; ++r) t->tourner();
-        return false;
+        throw CiteException(e);
     }
 }
 

@@ -56,7 +56,7 @@ int RegleHabitation::getValeurPlusGrandGroupe(Cite* cite) const {
                 Coord actuelle = aTraiter[i];
                 valeurGroupe += (actuelle.z + 1);
 
-                auto voisinsVecteurs = cite->getVecteursVoisins();
+                auto voisinsVecteurs = cite->getVecteursVoisins(actuelle.x%2);
 
                 for (const auto& vec : voisinsVecteurs) {
                     for (int dz = -1; dz <= 1; ++dz) {

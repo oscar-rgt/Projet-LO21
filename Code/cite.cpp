@@ -18,16 +18,21 @@ const Hexagone* Cite::getHexagone(Coord c) const {
 
 // On garde une vérification large (8 voisins) pour être sûr de détecter
 // les contacts quelle que soit la topologie de la grille.
-vector<Coord> Cite::getVecteursVoisins() const{
-    return {
+vector<Coord> Cite::getVecteursVoisins(bool isXOdd) const{
+    if (!isXOdd) return {
         {0, -1, 0}, {0, 1, 0},   // Vertical
-        {-1, 0, 0}, {1, 0, 0},   // Horizontal bas
-        {-1, 1, 0}, {1, 1, 0}  // Horizontal haut
+        {-1, 0, 0}, {1, 0, 0},   // Horizontal même ligne
+        {-1, 1, 0}, {1, 1, 0}  // Horizontal autre ligne
+    };
+    return {
+            {0, -1, 0}, {0, 1, 0},   // Vertical
+            {-1, 0, 0}, {1, 0, 0},   // Horizontal même ligne
+            {-1, -1, 0}, {1, -1, 0}  // Horizontal autre ligne
     };
 }
 
 const bool Cite::toucheCite(Coord c) { //marche pas (jsp pk)
-    for (const auto& vec : getVecteursVoisins()) {
+    for (const auto& vec : getVecteursVoisins((c.x)%2)) {
         if (!estLibre({ c.x + vec.x, c.y + vec.y, c.z })) return true;
     }
     return false;
@@ -67,7 +72,7 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j) {
                 break;
             }
         }
-        if (!contact) throw CiteException("Placement impossible : La tuile ne touche pas la cité.");
+        if (!contact) throw CiteException("Placement impossible : La tuile ne touche pas la cite.");
     }
     else {
         // Niveau Z > 0 : Support requis sous CHAQUE hexagone
@@ -90,7 +95,7 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j) {
             throw CiteException("Placement impossible : La tuile recouvre une seule et même tuile.");
     }
     // Temporaire : sortie du cadrillage
-    for (Coord h : pos) if (h.x > 7 || h.x < -7 || h.y>3 || h.y < -2 || h.z < 0) throw CiteException("Placement impossible : Quadrillage trop petit (WIP)");
+    for (Coord h : pos) if (h.x > 7 || h.x < -7 || h.y>3 || h.y < -99 || h.z < 0) throw CiteException("Placement impossible : Quadrillage trop petit (WIP)");
 
     //D.Sauvegarde
     Action act;
@@ -122,6 +127,8 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j) {
         carte[pos[i]] = t->getHexagone(i);
     }
     // F. AFFICHAGE
+    if (pos[0].y < (-lround((quadrillage.length() / 111) / 4) + 5)) agrandirQ('S');
+    if (pos[1].y<( - lround((quadrillage.length() / 111) / 4) + 5)) agrandirQ('S');
     remplirQuadrillage(c, *t);
 }
 
@@ -165,7 +172,7 @@ Coord Coord::cote(bool inversion) {
 
 vector<Hexagone*> Cite::getAdjacents(Coord c) const {
     vector<Hexagone*> ret;
-    for (const auto& vec : getVecteursVoisins()) {
+    for (const auto& vec : getVecteursVoisins(c.x%2)) {
         Coord voisin = { c.x + vec.x, c.y + vec.y, c.z };
         auto it = carte.find(voisin);
 
@@ -194,8 +201,8 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
 
         int l = h.y * -4 + 14;
         int c = h.x * 7 + 56;
-        j = c + l * 110;
-        if ((h.x % 2)) j += 220;
+        j = c + l * 111 - h.y;
+        if ((h.x % 2)) j += 222;
         if (j<0 || j > quadrillage.length()) throw CiteException("Placement impossible : sortie du quadrillage");
         quadrillage.replace(j, 3, t.getHexagone(i)->affiche());
     }
@@ -207,14 +214,15 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
 
 void Cite::agrandirQ(char dir) {
     if (dir == 'S') {
-        string rep = to_string(lround(quadrillage.length() / 110) - 30);
-        rep += R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
-        quadrillage.replace(quadrillage.length() - 110, 110, rep);
+        int row_num = -lround((quadrillage.length() / 111)/4) +4;
+        string rep = to_string(row_num);
+        if (row_num > -10) rep += " ";
+        rep += R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \   )";
+        quadrillage.replace(quadrillage.length() - 111, 111, rep);
         quadrillage += R"(
- /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
- \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
-  \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
-     -7     -6     -5    -4     -3     -2     -1      0      1      2      3      4      5      6      7     
-)";
+  /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
+  \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
+   \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
+    -7     -6     -5     -4     -3     -2     -1      0      1      2      3      4      5      6      7       )";
     }
 }
