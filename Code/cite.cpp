@@ -198,10 +198,13 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
         else {
             h = c;
         }
-
-        int l = h.y * -4 + 14;
-        int c = h.x * 7 + 56;
-        j = c + l * 111 - h.y;
+        int line_offset = 14;
+        int hex_height = 4;
+        int hex_width = 7;
+        int col_offset = 56;
+        int l = h.y * - hex_height + line_offset;
+        int c = h.x * hex_width + col_offset;
+        j = c + l * 111 - lround(h.y/1.5);
         if ((h.x % 2)) j += 222;
         if (j<0 || j > quadrillage.length()) throw CiteException("Placement impossible : sortie du quadrillage");
         quadrillage.replace(j, 3, t.getHexagone(i)->affiche());
