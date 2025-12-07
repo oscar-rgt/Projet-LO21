@@ -204,7 +204,7 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
         int l = h.y * - quadrillage.hex_height + quadrillage.line_offset;
         int c = h.x * quadrillage.hex_width + quadrillage.col_offset;
         j = c + l * quadrillage.line_length;
-        j += abs(h.y)-3;
+        if (h.y<0) j -= h.y+3;
         if (h.y < -1) j-=2;
         if ((h.x % 2)) j += 2*quadrillage.line_length;
         if (j<0 || j > quadrillage.txt.length()) throw CiteException("Placement impossible : sortie du quadrillage");
