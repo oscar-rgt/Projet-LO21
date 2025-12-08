@@ -95,8 +95,8 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j) {
         if (memeSupportPartout)
             throw CiteException("Placement impossible : La tuile recouvre une seule et même tuile.");
     }
-    // Temporaire : sortie du cadrillage
-    for (Coord h : pos) if (h.x > 7 || h.x < -7 || h.y>999 || h.y < -99 || h.z < 0) throw CiteException("Placement impossible : Quadrillage trop petit (WIP)");
+    // Sortie du cadrillage
+    for (Coord h : pos) if (h.y>999 || h.y < -99 || h.z < 0) throw CiteException("Placement impossible : Quadrillage trop petit (WIP)");
 
     //D.Sauvegarde
     Action act;
@@ -132,7 +132,19 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j) {
     if (pos[1].y >= (quadrillage.maxY)) agrandirQ('N');
     if (pos[0].y <= (quadrillage.minY)) agrandirQ('S');
     if (pos[1].y <= (quadrillage.minY)) agrandirQ('S');
-    remplirQuadrillage(c, *t);
+    if (pos[0].x > (quadrillage.maxX) || pos[0].x < (quadrillage.minX) || pos[2].x >(quadrillage.maxX) || pos[2].x < (quadrillage.minX)) {
+        for (auto h : pos) {
+            quadrillage.hors_txt += " [";
+            quadrillage.hors_txt += to_string(h.x);
+            quadrillage.hors_txt += ", ";
+            quadrillage.hors_txt += to_string(h.y);
+            quadrillage.hors_txt += ", ";
+            quadrillage.hors_txt += to_string(h.z);
+            quadrillage.hors_txt += "] : ";
+            quadrillage.hors_txt += carte.at(h)->affiche();
+            quadrillage.hors_txt += "\n";
+        }
+    } else remplirQuadrillage(c, *t);
 }
 
 // =========================================================
@@ -159,6 +171,7 @@ void Cite::placerTuileDepart() {
 
 void Cite::afficher() const {
     cout << quadrillage.txt << endl;
+    if (quadrillage.hors_txt != "") cout << quadrillage.hors_txt << endl;
 }
 
 
@@ -204,12 +217,11 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
 
         int l = h.y * - quadrillage.hex_height + quadrillage.line_offset;
         int c = h.x * quadrillage.hex_width + quadrillage.col_offset;
-        j = c + l * quadrillage.line_length - 1;
+        j = c + l * quadrillage.line_length;
         if ((h.x % 2)) j += 2*quadrillage.line_length;
         if (j<0 || j > quadrillage.txt.length()) throw CiteException("Placement impossible : sortie du quadrillage");
         //replace(quadrillage.txt.begin(), quadrillage.txt.end(), ' ', '.'); //debug ascii
         quadrillage.txt.replace(j, 3, t.getHexagone(i)->affiche());
-
     }
 }
 
@@ -222,27 +234,28 @@ void Cite::agrandirQ(char dir) {
         quadrillage.minY--;
         string extension = to_string(quadrillage.minY);
         if (quadrillage.minY > -10) extension += " ";
-        extension += R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
+        extension += R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
         quadrillage.txt.replace(quadrillage.txt.length() - quadrillage.line_length, quadrillage.line_length, extension);
         quadrillage.txt += R"(
-  /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
-  \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
-   \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
-    -7     -6     -5     -4     -3     -2     -1      0      1      2      3      4      5      6      7      
+  /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
+  \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
+   \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
+     -9     -8     -7     -6     -5     -4     -3     -2     -1      0      1      2      3      4      5      6      7       8      9    
 )";
     }
     if (dir == 'N') {
         quadrillage.maxY++;
         string extension = R"(
-  /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
-  \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
-   \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
+  /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
+  \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
+   \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
 )";
         extension += to_string(quadrillage.maxY);
         if (quadrillage.maxY < 10) extension += "  ";
         else if (quadrillage.maxY < 100) extension += " ";
-        extension+=R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
+        extension+=R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
         quadrillage.txt = extension + quadrillage.txt;
         quadrillage.line_offset += 4;
     }
+
 }

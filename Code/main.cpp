@@ -6,7 +6,6 @@
 using namespace std;
 
 
-
 int main() {
 	try {
 		/*		Tuile t1(0);
