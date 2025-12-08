@@ -71,12 +71,8 @@ TuileDepart::TuileDepart() : Tuile() {
 }
 
 void Tuile::setPrix(unsigned int p) {
-    if (p >= 0 && p <= 3) {
-        prix = p;
-    }
-    else {
-        throw TuileException("Le prix n'est pas correct");
-    }
+    if (p > 3) prix = 3;
+    else prix = p;
 }
 
 void Tuile::tourner() {

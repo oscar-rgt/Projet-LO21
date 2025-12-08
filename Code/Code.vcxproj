@@ -47,6 +47,7 @@
     <ClInclude Include="save.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="tuiles.h" />
+    <ClInclude Include="except.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>17.0</VCProjectVersion>

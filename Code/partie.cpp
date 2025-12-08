@@ -76,11 +76,11 @@ void Partie::initialiserPiles() {
     piles.reserve(nbPiles); 
 
     // Pile de départ : nbJoueurs + 2 tuiles
-    piles.emplace_back(new Pile(0, joueurs.size() + 2));
+    piles.emplace_back(new Pile(0, static_cast<int>(joueurs.size()) + 2));
 
     // Autres piles : nbJoueurs + 1 tuiles
     for (int i = 1; i <= nbPiles; i++) {
-        piles.emplace_back(new Pile(i, joueurs.size() + 1));
+        piles.emplace_back(new Pile(i, static_cast<int>(joueurs.size()) + 1));
     }
     indexPileActuelle = 1;
 
@@ -131,7 +131,7 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
     // 1. Coût en pierres
     // Coût = index (0 pour la 1ère, 1 pour la 2ème, etc.)
     int coutPierre = index;
-    if (j->getPierres() < coutPierre) return false;
+    if (j->getPierres() < coutPierre) throw PartieException("Pas assez de pierres !");
 
     try {
         j->getCite()->placer(t, { x, y, z }, j);
@@ -173,7 +173,7 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
     catch (const CiteException& e) {
         // Annuler la rotation pour remettre la tuile dans l'état initial visuel
         for (int r = 0; r < (3 - rotation) % 3; ++r) t->tourner();
-        throw CiteException(e);
+        throw;
     }
 }
 
@@ -329,7 +329,7 @@ vector<Joueur*> Partie::determinerGagnants() {
 
 bool Partie::charger(const string& nomFichier) {
     ifstream f(nomFichier);
-    if (!f.is_open()) return false;
+    if (!f.is_open()) throw SauvegardeException("Fichier introuvable ou impossible a ouvrir.");
 
     // A. NETTOYAGE COMPLET (Reset)
     for (auto j : joueurs) delete j;
@@ -340,7 +340,7 @@ bool Partie::charger(const string& nomFichier) {
 
     // B. LECTURE GLOBAL
     int nbJ, idxJ, idxP;
-    if (!(f >> nbJ >> idxJ >> idxP)) return false;
+    if (!(f >> nbJ >> idxJ >> idxP)) throw SauvegardeException("Format de fichier invalide (En-tete corrompu).");
 
     joueurs.size() = nbJ;
     indexJoueurActuel = idxJ;

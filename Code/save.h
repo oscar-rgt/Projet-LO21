@@ -3,6 +3,12 @@
 
 #include <string>
 #include "partie.h"
+#include "except.h"
+
+class SauvegardeException : public AkropolisException {
+public:
+    SauvegardeException(const std::string& msg) : AkropolisException(msg) {}
+};
 
 class Sauvegarde {
 public:

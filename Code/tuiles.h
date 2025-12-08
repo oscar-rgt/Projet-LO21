@@ -8,12 +8,7 @@ using namespace std;
 
 class Pile;
 
-class TuileException {
-	string info;
-public:
-	TuileException(const string& s) :info(s) {}
-	const string& getInfo() const { return info; }
-};
+
 
 class Tuile {
 protected: // Changed to protected for inheritance
@@ -32,8 +27,8 @@ public:
 	unsigned int getId() const { return id; }
 	bool getInversion() const { return inversion; }
 	void inverser() { inversion = !inversion; }
-	Hexagone* getHexagone(int i) { return *(hexagones.begin() + i); } // pas possible -> iterator
-	size_t getNbHexagones() const { return hexagones.size(); }
+	Hexagone* getHexagone(int i) { return hexagones[i]; }
+	size_t getNbHexagones() const { return static_cast<int>(hexagones.size()); }
 	unsigned int getPrix() const { return prix; }
 	void tourner();
 	void setPrix(unsigned int p);

@@ -13,7 +13,7 @@ public:
     // Gestion des tuiles
     void ajouterPile(Pile& p);
 
-    size_t getNbTuiles() const { return tuiles.size(); }
+    int getNbTuiles() const { return static_cast<int>(tuiles.size()); }
 
     void retirerTuile(Tuile* t); // Modifié pour prendre un pointeur
     bool estVide() const;

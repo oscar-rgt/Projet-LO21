@@ -67,7 +67,7 @@ int IA::calculerScoreIA() const {
     int multiplicateurNiveau = (difficulte == 3) ? 2 : 1;
 
     for (Tuile* t : tuilesAcquises) {
-        for (size_t i = 0; i < t->getNbHexagones(); i++) {
+        for (int i = 0; i < t->getNbHexagones(); i++) {
             Hexagone* h = t->getHexagone((int)i);
             TypeQuartier type = h->getType();
 

@@ -3,22 +3,15 @@
 #include "tuiles.h"
 #include <vector>
 
+
 class Partie;
 
-class PileException {
-    string info;
-public:
-    PileException(const string& s) :info(s) {}
-    const string& getInfo() const { return info; }
-};
 
 class Pile {
 public:
     unsigned int getId() const { return id; }
-    size_t getNbTuiles() const { return tuiles.size(); }
-    bool estVide() const { return tuiles.empty(); } // const ajouté
-
-    // SUPPRIMÉ : Tuile* getTuile(unsigned int id_);
+    int getNbTuiles() const { return static_cast<int>(tuiles.size()); }
+    bool estVide() const { return tuiles.empty(); }
 
     // =========================================================
     // ITÉRATEUR POUR LA PILE

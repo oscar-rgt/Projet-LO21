@@ -106,14 +106,10 @@ int RegleMarche::calculer(Cite* cite) const {
         Hexagone* h = it->second;
         if (h->getType() == Marche && !h->estPlace()) {
             bool isole = true;
-            try {
-                auto voisins = cite->getAdjacents(it->first);
-                for (Hexagone* v : voisins) {
-                    if (v->getType() == Marche) { isole = false; break; }
-                }
+            auto voisins = cite->getAdjacents(it->first);
+            for (Hexagone* v : voisins) {
+                if (v->getType() == Marche) { isole = false; break; }
             }
-            catch (...) {}
-
             if (isole) valeur += (it->first.z + 1);
         }
     }
@@ -129,15 +125,11 @@ int RegleMarcheVariante::calculer(Cite* cite) const {
         if (h->getType() == Marche && !h->estPlace()) {
             bool isole = true;
             bool adjacentPlace = false;
-            try {
-                auto voisins = cite->getAdjacents(it->first);
-                for (Hexagone* v : voisins) {
-                    if (v->getType() == Marche) isole = false;
-                    if (v->estPlace() && v->getType() == Marche) adjacentPlace = true;
-                }
+            auto voisins = cite->getAdjacents(it->first);
+            for (Hexagone* v : voisins) {
+                if (v->getType() == Marche) isole = false;
+                if (v->estPlace() && v->getType() == Marche) adjacentPlace = true;
             }
-            catch (...) {}
-
             if (isole) {
                 int pts = (it->first.z + 1) * etoiles;
                 if (adjacentPlace) pts *= 2;
@@ -157,12 +149,9 @@ int RegleCaserne::calculer(Cite* cite) const {
     for (auto it = cite->begin(); it != cite->end(); ++it) {
         Hexagone* h = it->second;
         if (h->getType() == Caserne && !h->estPlace()) {
-            try {
-                if (cite->getAdjacents(it->first).size() < 6) {
-                    valeur += (it->first.z + 1);
-                }
+            if (cite->getAdjacents(it->first).size() < 6) {
+                valeur += (it->first.z + 1);
             }
-            catch (...) {}
         }
     }
     return valeur * compterEtoiles(cite, Caserne);
@@ -175,16 +164,13 @@ int RegleCaserneVariante::calculer(Cite* cite) const {
     for (auto it = cite->begin(); it != cite->end(); ++it) {
         Hexagone* h = it->second;
         if (h->getType() == Caserne && !h->estPlace()) {
-            try {
-                size_t nbVoisins = cite->getAdjacents(it->first).size();
-                if (nbVoisins < 6) {
-                    int pts = (it->first.z + 1) * etoiles;
-                    int vides = 6 - (int)nbVoisins;
-                    if (vides == 3 || vides == 4) pts *= 2;
+            size_t nbVoisins = cite->getAdjacents(it->first).size();
+            if (nbVoisins < 6) {
+                int pts = (it->first.z + 1) * etoiles;
+                int vides = 6 - (int)nbVoisins;
+                if (vides == 3 || vides == 4) pts *= 2;
                     total += pts;
                 }
-            }
-            catch (...) {}
         }
     }
     return total;
@@ -199,12 +185,9 @@ int RegleTemple::calculer(Cite* cite) const {
     for (auto it = cite->begin(); it != cite->end(); ++it) {
         Hexagone* h = it->second;
         if (h->getType() == Temple && !h->estPlace()) {
-            try {
-                if (cite->getAdjacents(it->first).size() == 6) {
-                    valeur += (it->first.z + 1);
-                }
+            if (cite->getAdjacents(it->first).size() == 6) {
+                valeur += (it->first.z + 1);
             }
-            catch (...) {}
         }
     }
     return valeur * compterEtoiles(cite, Temple);
@@ -217,14 +200,11 @@ int RegleTempleVariante::calculer(Cite* cite) const {
     for (auto it = cite->begin(); it != cite->end(); ++it) {
         Hexagone* h = it->second;
         if (h->getType() == Temple && !h->estPlace()) {
-            try {
-                if (cite->getAdjacents(it->first).size() == 6) {
-                    int pts = (it->first.z + 1) * etoiles;
-                    if (it->first.z > 0) pts *= 2;
-                    total += pts;
-                }
+            if (cite->getAdjacents(it->first).size() == 6) {
+                int pts = (it->first.z + 1) * etoiles;
+                if (it->first.z > 0) pts *= 2;
+                total += pts;
             }
-            catch (...) {}
         }
     }
     return total;

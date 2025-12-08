@@ -1,10 +1,17 @@
 #pragma once
+#include "partie.h"
 #include "tuiles.h"
 #include "hexagone.h"
 #include <vector>
 #include <unordered_map>
+#include "except.h"
 
 class Joueur;
+
+class CiteException : public AkropolisException {
+public:
+    CiteException(const string& i) : AkropolisException(i) {}
+};
 
 using namespace std;
 struct InfoHexa {
@@ -36,13 +43,7 @@ struct CoordHash {
     }
 };
 
-class CiteException {
-private:
-    string infos;
-public:
-    const string getInfos() const { return infos; }
-    CiteException(string i) : infos(i) {}
-};
+
 
 class Cite {
 private:
@@ -94,7 +95,7 @@ private:
 
 public:
     // ==========================================
-    // ITERATOR
+    // ITERATOR CONST 
     // ==========================================
     class ConstIterator {
         friend class Cite;

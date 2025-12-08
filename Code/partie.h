@@ -11,6 +11,7 @@
 #include "tuiles.h"
 #include "cite.h"
 #include "score.h"
+#include "except.h"
 
 using namespace std;
 
@@ -18,11 +19,12 @@ class Joueur;
 class Pile;
 class Tuile;
 
-class PartieException {
-    string info;
+
+
+
+class PartieException : public AkropolisException {
 public:
-    PartieException(const string& s) :info(s) {}
-    const string& getInfo() const { return info; }
+    PartieException(const string& i) : AkropolisException(i) {}
 };
 
 class Partie {
@@ -45,7 +47,7 @@ public:
     void passerAuJoueurSuivant();
     bool estFinDePartie() const;
 
-    int getNbJoueurs() const { return joueurs.size(); }
+    int getNbJoueurs() const { return static_cast<int>(joueurs.size()); }
     Joueur* getJoueurActuel() const;
 
 
@@ -54,7 +56,7 @@ public:
     // Accès au chantier
     const Chantier& getChantier() const { return chantier; }
 
-    size_t getNbPiles() const { return piles.size(); }
+    int getNbPiles() const { return static_cast<int>(piles.size()); }
     int getIndexPileActuelle() const { return indexPileActuelle; }
 
     const std::array<bool, 5>& getVariantes() const { return variantes; }

@@ -120,7 +120,7 @@ void JeuConsole::jouerTour() {
             cin.get();
         }
         catch (const PartieException& e) {
-            cout << "L'IA a rencontre une erreur en choisissant une tuile : " << e.getInfo() << endl;
+            cout << "L'IA a rencontre une erreur en choisissant une tuile : " << e.what() << endl;
         }
         return;
     }
@@ -202,13 +202,27 @@ void JeuConsole::jouerTour() {
                 jouerTour();
             }
         }
-        catch (CiteException& e) {
-            cout << ">> ECHEC : " << e.getInfos() << endl;
+        catch (const CiteException& e) {
+            cout << ">> ECHEC : " << e.what() << endl;
             cout << "Appuyez sur Entree pour reessayer...";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cin.get();
             jouerTour();
         }
+        catch (const PartieException& e) {
+            cout << ">> ECHEC : " << e.what() << endl;
+            cout << "Appuyez sur Entree pour reessayer...";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.get();
+            jouerTour();
+        }
+        catch(const exception& e) {
+            cout << ">> ECHEC INATTENDU : " << e.what() << endl;
+            cout << "Appuyez sur Entree pour reessayer...";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.get();
+            jouerTour();
+		}
     }
     else {
         // Annulation finale
