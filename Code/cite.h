@@ -49,7 +49,8 @@ private:
 	unordered_map<Coord, Hexagone*, CoordHash> carte; // Espace 3D de pointeurs d'hexagones  / carte[{0, 0, 0}] = hexa0;
     const bool toucheCite(Coord c);
     typedef struct Quadrillage {
-        string txt = R"(  /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
+        string txt = R"(
+  /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
   \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
    \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
 3  /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  
@@ -76,7 +77,8 @@ private:
   /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
   \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
    \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
-     -7     -6     -5     -4     -3     -2     -1      0      1      2      3      4      5      6      7      )";
+     -7     -6     -5     -4     -3     -2     -1      0      1      2      3      4      5      6      7     
+)";
         int  maxX = 7, minX = -7, maxY = 3, minY = -2;
         int line_offset = 14;
         int hex_height = 4;

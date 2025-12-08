@@ -1,4 +1,5 @@
 #include <iostream>
+#include <algorithm>
 #include "cite.h"
 #include "score.h"
 #include "tuiles.h"
@@ -203,12 +204,12 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
 
         int l = h.y * - quadrillage.hex_height + quadrillage.line_offset;
         int c = h.x * quadrillage.hex_width + quadrillage.col_offset;
-        j = c + l * quadrillage.line_length;
-        if (h.y<0) j -= h.y+3;
-        if (h.y < -1) j-=2;
+        j = c + l * quadrillage.line_length - 1;
         if ((h.x % 2)) j += 2*quadrillage.line_length;
         if (j<0 || j > quadrillage.txt.length()) throw CiteException("Placement impossible : sortie du quadrillage");
+        //replace(quadrillage.txt.begin(), quadrillage.txt.end(), ' ', '.'); //debug ascii
         quadrillage.txt.replace(j, 3, t.getHexagone(i)->affiche());
+
     }
 }
 
@@ -221,25 +222,26 @@ void Cite::agrandirQ(char dir) {
         quadrillage.minY--;
         string extension = to_string(quadrillage.minY);
         if (quadrillage.minY > -10) extension += " ";
-        extension += R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \   )";
+        extension += R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
         quadrillage.txt.replace(quadrillage.txt.length() - quadrillage.line_length, quadrillage.line_length, extension);
         quadrillage.txt += R"(
   /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
   \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
    \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
-    -7     -6     -5     -4     -3     -2     -1      0      1      2      3      4      5      6      7       )";
+    -7     -6     -5     -4     -3     -2     -1      0      1      2      3      4      5      6      7      
+)";
     }
     if (dir == 'N') {
         quadrillage.maxY++;
-        string extension = R"(  /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
+        string extension = R"(
+  /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
   \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
    \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
 )";
         extension += to_string(quadrillage.maxY);
         if (quadrillage.maxY < 10) extension += "  ";
         else if (quadrillage.maxY < 100) extension += " ";
-        extension+=R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \   
-)";
+        extension+=R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
         quadrillage.txt = extension + quadrillage.txt;
         quadrillage.line_offset += 4;
     }
