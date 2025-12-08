@@ -7,8 +7,7 @@
 
 class Chantier {
 public:
-    Chantier();
-    ~Chantier();
+    
 
     // Gestion des tuiles
     void ajouterPile(Pile& p);
@@ -44,6 +43,9 @@ public:
     Iterator end() const { return Iterator(tuiles.end()); }
 
 private:
+    friend class Partie;
+    Chantier();
+    ~Chantier();
     std::vector<Tuile*> tuiles;
 };
 
