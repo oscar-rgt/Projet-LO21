@@ -1,42 +1,37 @@
 #include <iostream>
 #include <string>
 #include <cstdio>
-#include"tuiles.h"
 #ifndef HEXAGONE_H
 #define HEXAGONE_H
 using namespace std;
 
-class HexaException {
-	string info;
-public:
-	HexaException(const string& s) :info(s){}
-	const string& getInfo() const { return info; }
-};
+class Tuile;
 
 
-typedef enum { Habitation, Marche, Caserne, Temple, Jardin, Carriere} Type;
+typedef enum { Habitation, Marche, Caserne, Temple, Jardin, Carriere} TypeQuartier;
 
 
 class Hexagone {
 private:
 	friend class Tuile;
+	friend class TuileDepart;
 	unsigned int niveau, etoiles;
 	Tuile* tuile;
-	Type type;
-	bool recouvert, place;
-	void recouvrir(bool r);
-	Hexagone(Type t, unsigned int n = 1, Tuile* tu = nullptr, unsigned int e = 0, bool p = false, bool r = false ): type(t), niveau(n), tuile(tu), etoiles(e), place(p), recouvert(r) {}
+	TypeQuartier type;
+	bool place;
+	Hexagone(TypeQuartier t, unsigned int n = 0, Tuile* tu = nullptr, unsigned int e = 0, bool p = false) : type(t), niveau(n), tuile(tu), etoiles(e), place(p) {}
 	~Hexagone() {}
 	Hexagone() = default;
 	Hexagone(const Hexagone& h) = default;
 	Hexagone& operator=(const Hexagone& h) = default;
 public:
+	unsigned int getNiveau() const { return niveau; }
 	Tuile* getTuile() const { return tuile; }
-	Type getType() const { return type; }
-	int getNiveau() const { return niveau; }
-	bool est_recouvert() const { return recouvert; }
-	int getEtoiles() const { return etoiles; }
-    string affiche();
+	TypeQuartier getType() const { return type; }
+	unsigned int getEtoiles() const { return etoiles; }
+	string affiche();
+	void setNiveau(unsigned int n) { niveau = n; }
+	const bool estPlace() const { return place; }
 };
 
 #endif // HEXAGONE_H

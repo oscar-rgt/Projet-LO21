@@ -1,29 +1,45 @@
 #pragma once
 
+#include <vector>
 #include <iostream>
 #include <cstring>
 #include "hexagone.h"
-
 using namespace std;
 
-enum Orientation {N, SE, SO};
+class Pile;
 
-class Tuile{
-private :
+
+
+class Tuile {
+protected: // Changed to protected for inheritance
+	friend class Pile;
 	unsigned int id;
-	unsigned int niveau;
-	Orientation orientation;
-	Hexagone hexagones[3]; // faire une méthode qui tourne la tuile pour que l'hexagone au nord soit tjrs le 0, on tourne dans le sens des aiguilles d'une montre (SE = 1, SO =2)
+	bool inversion;
+	string design;
+	vector<Hexagone*> hexagones;
 	unsigned int prix;
-	Tuile(const Tuile& t) = delete;
-	Tuile& operator=(const Tuile& t) = delete;
+	Tuile(const Tuile& t);
+	Tuile& operator=(const Tuile& t);
+	Tuile() = default;
+	Tuile(unsigned int i, unsigned int p = 0);
+	virtual ~Tuile();
 public:
 	unsigned int getId() const { return id; }
-	Orientation getOrientation() const { return orientation; }
-	Hexagone& getHexagone(int i) { return hexagones[i]; }
+	bool getInversion() const { return inversion; }
+	void inverser() { inversion = !inversion; }
+	Hexagone* getHexagone(int i) { return hexagones[i]; }
+	size_t getNbHexagones() const { return static_cast<int>(hexagones.size()); }
 	unsigned int getPrix() const { return prix; }
-	Tuile(unsigned int i, unsigned int p=0, unsigned int n=1);
-	~Tuile() {}
+	void tourner();
+	void setPrix(unsigned int p);
+	string& getDesign();
+	void reconstruireHexagone(int index, int typeInt, int etoiles);
+};
+
+class TuileDepart : public Tuile {
+private:
+	friend class Cite;
+	TuileDepart();
 };
 
 

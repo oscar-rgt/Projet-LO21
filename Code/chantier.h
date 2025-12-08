@@ -1,23 +1,34 @@
-#ifndef PILE_H
-#define PILE_H
-#include "tuiles.h"
+#ifndef CHANTIER_H
+#define CHANTIER_H
+
 #include <vector>
+#include "tuiles.h"
+#include "pile.h"
 
-
-class Partie;
-
-
-class Pile {
+class Chantier {
 public:
-    unsigned int getId() const { return id; }
-    int getNbTuiles() const { return static_cast<int>(tuiles.size()); }
-    bool estVide() const { return tuiles.empty(); }
+    
 
-    // =========================================================
-    // IT�RATEUR POUR LA PILE
-    // =========================================================
+    // Gestion des tuiles
+    void ajouterPile(Pile& p);
+
+    int getNbTuiles() const { return static_cast<int>(tuiles.size()); }
+
+    void retirerTuile(Tuile* t); // Modifié pour prendre un pointeur
+    bool estVide() const;
+
+    // Nettoyage
+    void vider();
+
+    // Accesseurs pour l'affichage (références constantes)
+    // SUPPRIMÉ : const std::vector<Tuile*>& getTuiles() const { return tuiles; }
+    void ajouterTuileSpecifique(Tuile* t);
+
+    // ==========================================
+    // ITERATOR
+    // ==========================================
     class Iterator {
-        friend class Pile;
+        friend class Chantier;
         std::vector<Tuile*>::const_iterator current;
         Iterator(std::vector<Tuile*>::const_iterator it) : current(it) {}
     public:
@@ -26,7 +37,6 @@ public:
         bool operator!=(const Iterator& other) const { return current != other.current; }
         bool operator==(const Iterator& other) const { return current == other.current; }
         Tuile* operator*() const { return *current; }
-        Tuile* operator->() const { return *current; }
     };
 
     Iterator begin() const { return Iterator(tuiles.begin()); }
@@ -34,10 +44,9 @@ public:
 
 private:
     friend class Partie;
-    ~Pile();
-    Pile(unsigned int id_, unsigned int nb = 3);
-    unsigned int id;
-    vector<Tuile*> tuiles;
+    Chantier();
+    ~Chantier();
+    std::vector<Tuile*> tuiles;
 };
 
 #endif

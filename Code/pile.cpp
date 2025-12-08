@@ -1,17 +1,19 @@
 #include "pile.h"
 #include <iostream>
+#include <string>
+#include <vector>
 
-Pile::Pile(int id_, int nb)
-    : id(id_), nbTuiles(nb)
+Pile::Pile(unsigned int id_, unsigned int nb) : id(id_)
 {
+    tuiles.reserve(nb);
+    for (unsigned int i = 0; i < nb; i++) {
+        tuiles.push_back(new Tuile(id * 10 + i, i + 1));
+    }
 }
 
-bool Pile::retirerTuile() {
-    if(nbTuiles > 0) {
-        nbTuiles--;
-        return true;
-    } else {
-        std::cout << "La pile est vide !" << std::endl;
-        return false;
+Pile::~Pile() {
+    for (auto it = tuiles.begin(); it != tuiles.end(); ++it) {
+        delete* it;
     }
+    tuiles.clear();
 }

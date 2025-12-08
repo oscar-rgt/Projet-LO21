@@ -1,18 +1,10 @@
 #include <iostream>
 #include <cstring>
 #include "hexagone.h"
+#include "tuiles.h"
 
 using namespace std;
 
-
-
-
-void Hexagone::recouvrir(bool r) {
-	if (est_recouvert()) {
-		throw HexaException("Hexagone deja recouvert");
-	}
-	recouvert = r;
-}
 
 string Hexagone::affiche() {
 	// Habitation, Marche, Caserne, Temple, Jardin, Place
@@ -29,7 +21,7 @@ string Hexagone::affiche() {
 		res += "H" + niv;
 		break;
 	case Marche:
-		res += "M"+niv;
+		res += "M" + niv;
 		break;
 	case Caserne:
 		res += "C" + niv;
