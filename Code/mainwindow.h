@@ -7,7 +7,11 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
-#include "partie.h" // On inclut votre moteur de jeu
+#include <QHBoxLayout>
+#include <QStackedWidget>
+#include <QMessageBox>
+#include "partie.h"
+#include "hexagoneitem.h"
 
 class MainWindow : public QMainWindow
 {
@@ -18,32 +22,41 @@ public:
     ~MainWindow();
 
 private slots:
-    // Slots pour les interactions boutons
-    void onRotationClicked();
-    void onValidationClicked();
-
-    // Slot pour gérer le clic sur une tuile du chantier
-    //void onTuileChantierClicked(int index);
-
-private:
+    void afficherMenuJeu();
+    void afficherMenuRegles();
+    void quitterJeu();
     void demarrerPartie();
     void mettreAJourInterface();
-    void dessinerCite(Joueur* joueur);
-
-
-    void dessinerChantier();
+    void onRotationClicked();
+    void onValidationClicked();
     void selectionnerTuileChantier(int index);
 
-    // Widgets de l'interface
-    QGraphicsScene *sceneCite; // zone où on dessine la cité
-    QGraphicsView *viewCite;   // vue de la cité
+private:
+    // Widgets pour le menu principal
+    QStackedWidget *stackedWidget;
+    QWidget *pageMenuPrincipal;
+    QWidget *pageRegles;
+    QWidget *pageJeu;
 
+    // Widgets pour la page de jeu
+    QGraphicsScene *sceneCite;
+    QGraphicsView *viewCite;
+    QLabel *labelInfoJoueur;
     QVBoxLayout *layoutChantier;
-    QLabel *labelInfoJoueur;   // affichage infos joueur
+    QPushButton *btnRotation;
+    QPushButton *btnValidation;
 
-    // État temporaire pour la sélection
-    int indexTuileSelectionnee = -1;
-    int rotationActuelle = 0;
+    // État de la partie
+    int indexTuileSelectionnee;
+    int rotationActuelle;
+
+    // Méthodes d'affichage
+    void initialiserPageMenuPrincipal();
+    void initialiserPageRegles();
+    void initialiserPageJeu();
+    void dessinerCite(Joueur* joueur);
+    void dessinerChantier();
+    QColor getTypeColor(TypeQuartier t);
 };
 
 #endif // MAINWINDOW_H
