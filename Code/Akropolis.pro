@@ -11,7 +11,6 @@ HEADERS += \
     mainwindow.h \
     partie.h \
     pile.h \
-    quadrillage.h \
     save.h \
     score.h \
     tuiles.h
@@ -27,7 +26,6 @@ SOURCES += \
     mainwindow.cpp \
     partie.cpp \
     pile.cpp \
-    quadrillage.cpp \
     save.cpp \
     score.cpp \
     tuiles.cpp
