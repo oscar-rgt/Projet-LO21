@@ -362,3 +362,8 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 *.jar
+*.stash
+*.json
+Code/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/Makefile
+Code/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/Makefile.Debug
+Code/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/Makefile.Release
