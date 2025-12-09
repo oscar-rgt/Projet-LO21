@@ -20,6 +20,7 @@ public:
             double rad = 3.14159 / 180 * angle;
             hex << QPointF(x + rayon * cos(rad), y + rayon * sin(rad));
         }
+        setRotation(30);
         setPolygon(hex);
         setBrush(QBrush(couleur));
         setPen(QPen(Qt::black));
