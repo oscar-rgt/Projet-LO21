@@ -1,12 +1,13 @@
-#include <iostream>
-#include <cstring>
-#include "main.h"
-#include "jeuConsole.h"
+#include "mainwindow.h"
+#include <QApplication>
 
-using namespace std;
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
 
+    // On lance la fenêtre principale
+    MainWindow w;
+    w.show();
 
-int main() {
-	JeuConsole().lancer();
-	return 0;
+    return a.exec();
 }
