@@ -16,11 +16,11 @@ public:
         // Création du polygone hexagonal
         QPolygonF hex;
         for (int i = 0; i < 6; ++i) {
-            double angle = 60 * i - 30;
+            double angle = 60 * i;
             double rad = 3.14159 / 180 * angle;
             hex << QPointF(x + rayon * cos(rad), y + rayon * sin(rad));
         }
-        setRotation(30);
+        //setRotation(30);
         setPolygon(hex);
         setBrush(QBrush(couleur));
         setPen(QPen(Qt::black));

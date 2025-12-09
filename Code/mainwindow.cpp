@@ -128,14 +128,15 @@ void MainWindow::dessinerCite(Joueur* joueur) {
         Hexagone* hex = it->second;
 
         // 1. Calcul des coordonnées pixels (Conversion Hex -> 2D)
-        // Formule "Pointy topped" standard ajustée
-        double w = sqrt(3.0) * taille;
-        double h = 2.0 * taille * 0.75;
+        // Formule "Flat topped" standard ajustée
 
-        double pixelX = pos.x * w + (pos.y % 2) * (w / 2.0); // Décalage pour hexagones
+        double w = 1.53*taille;
+        double h = (sqrt(3.) * taille);
+
+        double pixelX = pos.x * w; // Décalage pour hexagones
         // Note : Votre système de coordonnées peut varier, il faudra peut-être ajuster cette formule
         // selon la logique précise de vos vecteurs voisins dans "cite.cpp"
-        double pixelY = pos.y * h;
+        double pixelY = pos.y * - h + abs((pos.x % 2)) * (h / 2);
 
         // Effet de hauteur (Z) : on décale vers le haut pour simuler la 3D
         pixelY -= (pos.z * 10.0);
@@ -147,12 +148,15 @@ void MainWindow::dessinerCite(Joueur* joueur) {
         HexagoneItem* item = new HexagoneItem(pixelX, pixelY, taille, couleur, pos.x, pos.y, pos.z);
 
         // 4. Ajout texte (Niveau / Étoiles)
-        if (hex->getEtoiles() > 0) {
+        /*if (hex->getEtoiles() > 0) {
             QGraphicsTextItem* txt = sceneCite->addText(QString("*%1").arg(hex->getEtoiles()));
             txt->setPos(pixelX - 10, pixelY - 10);
             txt->setZValue(pos.z + 0.1); // Texte au-dessus de la tuile
-        }
-
+        }*/
+        //debug
+        QGraphicsTextItem* txt = sceneCite->addText(QString("%1, %2, %3").arg(pos.x).arg(pos.y).arg(pos.z));
+        txt->setPos(pixelX , pixelY);
+        txt->setZValue(pos.z + 0.1); // Texte au-dessus de la tuile
         sceneCite->addItem(item);
     }
 }
