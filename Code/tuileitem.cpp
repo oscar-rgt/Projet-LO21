@@ -68,6 +68,14 @@ TuileItem::TuileItem(Tuile* t, int index, double rayon)
     }
 }
 
+void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent *event)  {
+
+    // C'est ici que vous exécutez votre fonction
+    // Important : Passer l'événement à la classe parente si nécessaire
+    QGraphicsItemGroup::mousePressEvent(event);
+    emit clicked(indexChantier);
+}
+
 QColor TuileItem::getTypeColor(TypeQuartier t) {
     // Copie de votre logique existante ou appel à une fonction statique
     switch(t) {

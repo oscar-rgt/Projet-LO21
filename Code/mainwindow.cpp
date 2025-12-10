@@ -9,7 +9,7 @@
 #include<QApplication>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), indexTuileSelectionnee(-1), rotationActuelle(0)
+    : QMainWindow(parent), indexTuileSelectionnee(-1)
 {
     setWindowTitle("Akropolis - Qt");
     resize(1024, 768);
@@ -247,7 +247,6 @@ void MainWindow::dessinerChantier()
     const Chantier& chantier = Partie::getInstance().getChantier();
     int index = 0;
     double yPos = 40; // Position verticale dans le chantier
-
     // On parcourt les tuiles du modèle
     for (auto it = chantier.begin(); it != chantier.end(); ++it) {
         Tuile* tuile = *it;
@@ -255,13 +254,14 @@ void MainWindow::dessinerChantier()
         // Création de la tuile graphique
         // On réduit un peu la taille (rayon 20) pour que ça rentre dans la colonne
         TuileItem* item = new TuileItem(tuile, index, 20.0);
-
+        tuiles[index] = item;
         // Positionnement vertical les unes sous les autres
         item->setPos(50, yPos);
         yPos += 120; // Espace entre les tuiles
 
-        sceneChantier->addItem(item);
-
+        sceneChantier->addItem(item);        // Ajouter des items au groupe...        
+        // Connecter le signal à votre fonction
+        connect(item, &TuileItem::clicked, this, &MainWindow::selectionnerTuileChantier);
         // Gestion du texte (Prix) à côté
         QGraphicsTextItem* txt = sceneChantier->addText(QString("%1 pierres").arg(tuile->getPrix()));
         txt->setPos(100, item->y()); // À droite de la tuile
@@ -276,13 +276,15 @@ void MainWindow::dessinerChantier()
 void MainWindow::selectionnerTuileChantier(int index)
 {
     indexTuileSelectionnee = index;
-    qDebug() << "Tuile sélectionnée : " << index;
+    qDebug() << "Tuile selectionnee : " << index;
 }
 
 void MainWindow::onRotationClicked()
 {
-    rotationActuelle = (rotationActuelle + 1) % 3;
-    qDebug() << "Rotation : " << rotationActuelle;
+    qDebug() << "Rotation";
+    tuiles[indexTuileSelectionnee]->rotation();
+    tuiles[indexTuileSelectionnee]->modeleTuile->tourner();
+    mettreAJourInterface();
 }
 
 void MainWindow::onValidationClicked()
@@ -293,7 +295,8 @@ void MainWindow::onValidationClicked()
     }
 
     // Exemple de placement (à adapter selon ta logique)
-    Partie::getInstance().actionPlacerTuile(indexTuileSelectionnee, 0, 0, 0, rotationActuelle, 0);
+    // Partie::getInstance().actionPlacerTuile(indexTuileSelectionnee, 0, 0, 0, rotationActuelle, 0);
+
     mettreAJourInterface();
 }
 

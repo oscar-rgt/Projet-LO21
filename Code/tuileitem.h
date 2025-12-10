@@ -2,10 +2,14 @@
 #define TUILEITEM_H
 
 #include <QGraphicsItemGroup>
+#include <QGraphicsSceneMouseEvent>
+#include <QObject>
 #include "tuiles.h"
 #include "hexagoneitem.h"
 
-class TuileItem : public QGraphicsItemGroup {
+class TuileItem : public QObject, public QGraphicsItemGroup {
+    Q_OBJECT // 2. La macro est OBLIGATOIRE pour les signaux
+    Q_INTERFACES(QGraphicsItem)
 public:
     // On garde un pointeur vers le modèle pour récupérer l'ID ou le prix au clic
     Tuile* modeleTuile;
@@ -15,6 +19,9 @@ public:
 
     // Helpers pour récupérer la couleur (à déplacer idéalement dans un utilitaire partagé)
     QColor getTypeColor(TypeQuartier t);
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+signals :
+    void clicked(int index);
 };
 
 #endif // TUILEITEM_H

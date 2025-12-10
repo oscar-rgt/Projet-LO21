@@ -11,7 +11,7 @@
 #include <QStackedWidget>
 #include <QMessageBox>
 #include "partie.h"
-#include "hexagoneitem.h"
+#include "tuileitem.h"
 
 class MainWindow : public QMainWindow
 {
@@ -49,7 +49,7 @@ private:
 
     // État de la partie
     int indexTuileSelectionnee;
-    int rotationActuelle;
+    TuileItem* tuiles[4];
 
     // Méthodes d'affichage
     void initialiserPageMenuPrincipal();
