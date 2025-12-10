@@ -42,7 +42,8 @@ private:
     QGraphicsScene *sceneCite;
     QGraphicsView *viewCite;
     QLabel *labelInfoJoueur;
-    QVBoxLayout *layoutChantier;
+    QGraphicsScene *sceneChantier;
+    QGraphicsView *viewChantier;
     QPushButton *btnRotation;
     QPushButton *btnValidation;
 

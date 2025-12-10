@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "tuileitem.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QMessageBox>
@@ -156,12 +157,20 @@ void MainWindow::initialiserPageJeu()
     connect(btnValidation, &QPushButton::clicked, this, &MainWindow::onValidationClicked);
     sideLayout->addWidget(btnValidation);
 
-    layoutChantier = new QVBoxLayout();
+    // ... Zone droite ...
     sideLayout->addWidget(new QLabel("--- CHANTIER ---", pageJeu));
-    sideLayout->addLayout(layoutChantier);
-    sideLayout->addStretch();
 
-    mainLayout->addLayout(sideLayout, 1);
+    // Création de la scène et de la vue pour le chantier
+    sceneChantier = new QGraphicsScene(this);
+    viewChantier = new QGraphicsView(sceneChantier);
+    viewChantier->setFixedWidth(200); // Largeur fixe pour la colonne
+
+    // On ajoute la VUE directement au layout (plus besoin de layoutChantier)
+    sideLayout->addWidget(viewChantier);
+    viewChantier->setAlignment(Qt::AlignTop | Qt::AlignLeft);
+
+    // On ajoute le layout latéral au layout principal
+    mainLayout->addLayout(sideLayout, 1); // Prend 1/3 de la largeur
 
     stackedWidget->addWidget(pageJeu);
 }
@@ -220,7 +229,8 @@ void MainWindow::dessinerCite(Joueur* joueur)
         pixelY -= (pos.z * 10.0);
 
         QColor couleur = getTypeColor(hex->getType());
-        HexagoneItem* item = new HexagoneItem(pixelX, pixelY, taille, couleur, pos.x, pos.y, pos.z);
+        int nbEtoiles = hex->estPlace() ? hex->getEtoiles() : 0;
+        HexagoneItem* item = new HexagoneItem(pixelX, pixelY, taille, couleur, pos.x, pos.y, pos.z, nbEtoiles);
         sceneCite->addItem(item);
 
         QGraphicsTextItem* txt = sceneCite->addText(QString("%1, %2, %3").arg(pos.x).arg(pos.y).arg(pos.z));
@@ -232,31 +242,35 @@ void MainWindow::dessinerCite(Joueur* joueur)
 
 void MainWindow::dessinerChantier()
 {
-    QLayoutItem *child;
-    while ((child = layoutChantier->takeAt(0)) != 0) {
-        if (child->widget()) {
-            delete child->widget();
-        }
-        delete child;
-    }
+    sceneChantier->clear(); // On vide l'ancienne scène
 
     const Chantier& chantier = Partie::getInstance().getChantier();
     int index = 0;
+    double yPos = 40; // Position verticale dans le chantier
 
+    // On parcourt les tuiles du modèle
     for (auto it = chantier.begin(); it != chantier.end(); ++it) {
         Tuile* tuile = *it;
-        QPushButton* btnTuile = new QPushButton(pageJeu);
-        btnTuile->setCheckable(true);
-        QString desc = QString("Tuile #%1 (Prix: %2)").arg(index).arg(tuile->getPrix());
-        btnTuile->setText(desc);
 
-        connect(btnTuile, &QPushButton::clicked, [this, index]() {
-            selectionnerTuileChantier(index);
-        });
+        // Création de la tuile graphique
+        // On réduit un peu la taille (rayon 20) pour que ça rentre dans la colonne
+        TuileItem* item = new TuileItem(tuile, index, 20.0);
 
-        layoutChantier->addWidget(btnTuile);
+        // Positionnement vertical les unes sous les autres
+        item->setPos(50, yPos);
+        yPos += 120; // Espace entre les tuiles
+
+        sceneChantier->addItem(item);
+
+        // Gestion du texte (Prix) à côté
+        QGraphicsTextItem* txt = sceneChantier->addText(QString("%1 pierres").arg(tuile->getPrix()));
+        txt->setPos(100, item->y()); // À droite de la tuile
+
         index++;
     }
+
+    // Ajuster la zone de scroll pour tout voir
+    sceneChantier->setSceneRect(0, 0, 180, yPos);
 }
 
 void MainWindow::selectionnerTuileChantier(int index)

@@ -7,7 +7,7 @@ int main(int argc, char *argv[])
 
     // On lance la fenêtre principale
     MainWindow w;
-    w.show();
+    w.showMaximized();
 
     return a.exec();
 }

@@ -13,6 +13,7 @@ HEADERS += \
     pile.h \
     save.h \
     score.h \
+    tuileitem.h \
     tuiles.h
 
 SOURCES += \
@@ -28,4 +29,5 @@ SOURCES += \
     pile.cpp \
     save.cpp \
     score.cpp \
+    tuileitem.cpp \
     tuiles.cpp
