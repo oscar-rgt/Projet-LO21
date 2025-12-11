@@ -28,6 +28,7 @@ private slots:
     void demarrerPartie();
     void mettreAJourInterface();
     void onRotationClicked();
+    void onInversionClicked();
     void onValidationClicked();
     void selectionnerTuileChantier(int index);
 
@@ -45,6 +46,7 @@ private:
     QGraphicsScene *sceneChantier;
     QGraphicsView *viewChantier;
     QPushButton *btnRotation;
+    QPushButton *btnInversion;
     QPushButton *btnValidation;
 
     // État de la partie

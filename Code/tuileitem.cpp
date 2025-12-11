@@ -43,6 +43,9 @@ TuileItem::TuileItem(Tuile* t, int index, double rayon)
         offsets.push_back({-1, 0}); // Exemple : gauche
     }
 
+    double sideX = offsets[2].x * w;
+    double shiftX = -(sideX / 3.0);
+
     for (int i = 0; i < 3; ++i) {
         Hexagone* hexModel = t->getHexagone(i);
 
@@ -56,7 +59,7 @@ TuileItem::TuileItem(Tuile* t, int index, double rayon)
         if (relX % 2 != 0) {
             pixelY += h / 2.0;
         }
-
+        pixelX += shiftX;
         QColor couleur = getTypeColor(hexModel->getType());
 
         int nbEtoiles = hexModel->estPlace() ? hexModel->getEtoiles() : 0;

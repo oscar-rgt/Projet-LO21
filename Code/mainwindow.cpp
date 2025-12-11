@@ -153,6 +153,10 @@ void MainWindow::initialiserPageJeu()
     connect(btnRotation, &QPushButton::clicked, this, &MainWindow::onRotationClicked);
     sideLayout->addWidget(btnRotation);
 
+    btnInversion = new QPushButton("Inverser Tuile", pageJeu);
+    connect(btnInversion, &QPushButton::clicked, this, &MainWindow::onInversionClicked);
+    sideLayout->addWidget(btnInversion);
+
     btnValidation = new QPushButton("Valider Placement", pageJeu);
     connect(btnValidation, &QPushButton::clicked, this, &MainWindow::onValidationClicked);
     sideLayout->addWidget(btnValidation);
@@ -286,6 +290,36 @@ void MainWindow::selectionnerTuileChantier(int index)
 
     // On redessine pour mettre à jour l'affichage de la sélection (l'opacité changée ci-dessus)
     dessinerChantier();
+}
+
+void MainWindow::onInversionClicked()
+{
+    // 1. Sécurité : Vérifier qu'une tuile est sélectionnée
+    if (indexTuileSelectionnee == -1) return;
+
+    const Chantier& chantier = Partie::getInstance().getChantier();
+
+    // Vérification de bornes
+    if (indexTuileSelectionnee >= chantier.getNbTuiles()) {
+        indexTuileSelectionnee = -1;
+        return;
+    }
+
+    // 2. Retrouver la tuile dans le Chantier via l'index
+    auto it = chantier.begin();
+    for(int i = 0; i < indexTuileSelectionnee; ++i) {
+        ++it;
+    }
+    Tuile* t = *it;
+
+    // 3. Inversion du Modèle (C++)
+    // Cela change le booléen 'inversion' interne de la tuile
+    t->inverser();
+
+    // 4. Mise à jour de l'Interface
+    // dessinerChantier() sera appelé, créera de nouveaux TuileItem.
+    // Le constructeur de TuileItem lira t->getInversion() et dessinera la forme inversée.
+    mettreAJourInterface();
 }
 
 void MainWindow::onRotationClicked()
