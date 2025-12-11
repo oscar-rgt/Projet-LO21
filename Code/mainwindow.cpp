@@ -254,14 +254,20 @@ void MainWindow::dessinerChantier()
         // Création de la tuile graphique
         // On réduit un peu la taille (rayon 20) pour que ça rentre dans la colonne
         TuileItem* item = new TuileItem(tuile, index, 20.0);
-        tuiles[index] = item;
         // Positionnement vertical les unes sous les autres
         item->setPos(50, yPos);
         yPos += 120; // Espace entre les tuiles
 
         sceneChantier->addItem(item);        // Ajouter des items au groupe...        
         // Connecter le signal à votre fonction
-        connect(item, &TuileItem::clicked, this, &MainWindow::selectionnerTuileChantier);
+        // --- GESTION DE LA SÉLECTION ---
+        // On connecte le clic pour qu'il appelle selectionner... avec le bon index
+        connect(item, &TuileItem::clicked, this, [this, index]() {
+            selectionnerTuileChantier(index);
+        });
+        if (index == indexTuileSelectionnee) {
+            item->setOpacity(0.5); // Exemple simple pour montrer la sélection
+        }
         // Gestion du texte (Prix) à côté
         QGraphicsTextItem* txt = sceneChantier->addText(QString("%1 pierres").arg(tuile->getPrix()));
         txt->setPos(100, item->y()); // À droite de la tuile
@@ -276,14 +282,41 @@ void MainWindow::dessinerChantier()
 void MainWindow::selectionnerTuileChantier(int index)
 {
     indexTuileSelectionnee = index;
-    qDebug() << "Tuile selectionnee : " << index;
+    qDebug() << "Tuile selectionnee index :" << index;
+
+    // On redessine pour mettre à jour l'affichage de la sélection (l'opacité changée ci-dessus)
+    dessinerChantier();
 }
 
 void MainWindow::onRotationClicked()
 {
-    qDebug() << "Rotation";
-    tuiles[indexTuileSelectionnee]->rotation();
-    tuiles[indexTuileSelectionnee]->modeleTuile->tourner();
+    // Sécurité
+    if (indexTuileSelectionnee == -1) return;
+
+    // 1. Retrouver la tuile dans le Chantier via l'index
+    const Chantier& chantier = Partie::getInstance().getChantier();
+
+    // Vérification de bornes (au cas où le nombre de tuiles a changé)
+    if (indexTuileSelectionnee >= chantier.getNbTuiles()) {
+        indexTuileSelectionnee = -1;
+        return;
+    }
+
+    // On avance un itérateur jusqu'à l'index voulu
+    auto it = chantier.begin();
+    // On avance manuellement jusqu'à l'index voulu
+    for(int i = 0; i < indexTuileSelectionnee; ++i) {
+        ++it;
+    } // Fonction standard pour avancer de N cases
+    Tuile* t = *it;
+
+    // 2. Rotation du Modèle (Les couleurs changent de place logiquement)
+    t->tourner();
+
+    // 3. Mise à jour de l'Interface
+    // Cela va appeler dessinerChantier(), qui va recréer les TuileItem.
+    // Comme le modèle a changé, les couleurs seront dessinées aux nouvelles places.
+    // Et comme on recrée l'item, le texte restera bien droit !
     mettreAJourInterface();
 }
 

@@ -49,7 +49,6 @@ private:
 
     // État de la partie
     int indexTuileSelectionnee;
-    TuileItem* tuiles[4];
 
     // Méthodes d'affichage
     void initialiserPageMenuPrincipal();

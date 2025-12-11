@@ -20,7 +20,7 @@ public:
         for (int i = 0; i < 6; ++i) {
             double angle = 60 * i;
             double rad = 3.14159 / 180 * angle;
-            hex << QPointF(x + rayon * cos(rad), y + rayon * sin(rad));
+            hex << QPointF(rayon * cos(rad),rayon * sin(rad));
         }
         //setRotation(30);
         setPolygon(hex);
@@ -28,7 +28,7 @@ public:
         setPen(QPen(Qt::black));
 
         // Effet de profondeur : plus c'est haut (Z), plus on affiche devant
-        setZValue(gz);
+        setPos(x, y);
         setZValue(gz);
 
         // 2. DESSIN DES ÉTOILES (NOUVEAU)
