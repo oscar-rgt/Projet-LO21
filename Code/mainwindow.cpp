@@ -7,9 +7,10 @@
 #include <cmath>
 #include <QTextEdit>
 #include<QApplication>
+#include <QInputDialog>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), indexTuileSelectionnee(-1)
+    : QMainWindow(parent), indexTuileSelectionnee(-1), rotationCompteur(0), inversionEtat(false)
 {
     setWindowTitle("Akropolis - Qt");
     resize(1024, 768);
@@ -161,6 +162,10 @@ void MainWindow::initialiserPageJeu()
     connect(btnValidation, &QPushButton::clicked, this, &MainWindow::onValidationClicked);
     sideLayout->addWidget(btnValidation);
 
+    btnPasserTour = new QPushButton("Passer son tour", pageJeu);
+    connect(btnPasserTour, &QPushButton::clicked, this, &MainWindow::onPasserTourClicked);
+    sideLayout->addWidget(btnPasserTour);
+
     // ... Zone droite ...
     sideLayout->addWidget(new QLabel("--- CHANTIER ---", pageJeu));
 
@@ -197,12 +202,44 @@ void MainWindow::quitterJeu()
 
 void MainWindow::demarrerPartie()
 {
-    // Configuration hardcodée pour le test graphique
-    std::vector<std::string> noms = {"Joueur 1", "Joueur 2"};
-    std::array<bool, 5> variantes = {false, false, false, false, false};
-    Partie::getInstance().initialiser(2, noms, Partie::TuileCite::STANDARD, variantes, 0);
+    // Boîte de dialogue pour le nombre de joueurs
+    int nbJoueurs = QInputDialog::getInt(this, "Configuration", "Nombre de joueurs (1-4):", 2, 1, 4, 1);
+    std::vector<std::string> noms;
+
+    // Saisie des noms des joueurs
+    for (int i = 0; i < nbJoueurs; ++i) {
+        QString nom = QInputDialog::getText(this, "Configuration", "Nom du joueur " + QString::number(i+1) + ":");
+        noms.push_back(nom.toStdString());
+    }
+
+    // Configuration du niveau de difficulté de l'IA (uniquement en mode solo)
+    int niveauIA = 0; // Valeur par défaut (niveau 1 si non modifié)
+    if (nbJoueurs == 1) {
+        niveauIA = QInputDialog::getInt(this, "Configuration IA", "Niveau de l'Illustre Constructeur (1-3):", 1, 1, 3, 1);
+    }
+
+    // Boîte de dialogue pour le mode tuile cité augmentée
+    bool modeTuileCite = QMessageBox::question(this, "Configuration", "Mode tuile cité augmentée ?") == QMessageBox::Yes;
+
+    // Boîte de dialogue pour activer les variantes
+    std::array<bool, 5> variantesActives = {false, false, false, false, false};
+    if (QMessageBox::question(this, "Configuration", "Activer les variantes ?") == QMessageBox::Yes) {
+        variantesActives[0] = QMessageBox::question(this, "Configuration", "Variante habitations ?") == QMessageBox::Yes;
+        variantesActives[1] = QMessageBox::question(this, "Configuration", "Variante marchés ?") == QMessageBox::Yes;
+        variantesActives[2] = QMessageBox::question(this, "Configuration", "Variante casernes ?") == QMessageBox::Yes;
+        variantesActives[3] = QMessageBox::question(this, "Configuration", "Variante temples ?") == QMessageBox::Yes;
+        variantesActives[4] = QMessageBox::question(this, "Configuration", "Variante jardins ?") == QMessageBox::Yes;
+    }
+
+    // Initialisation de la partie
+    Partie::TuileCite mode = modeTuileCite ? Partie::TuileCite::AUGMENTE : Partie::TuileCite::STANDARD;
+    Partie::getInstance().initialiser(nbJoueurs, noms, mode, variantesActives, niveauIA);
+
+    // Mise à jour de l'interface
     mettreAJourInterface();
 }
+
+
 
 void MainWindow::mettreAJourInterface()
 {
@@ -233,8 +270,7 @@ void MainWindow::dessinerCite(Joueur* joueur)
         pixelY -= (pos.z * 10.0);
 
         QColor couleur = getTypeColor(hex->getType());
-        int nbEtoiles = hex->estPlace() ? hex->getEtoiles() : 0;
-        HexagoneItem* item = new HexagoneItem(pixelX, pixelY, taille, couleur, pos.x, pos.y, pos.z, nbEtoiles);
+        HexagoneItem* item = new HexagoneItem(pixelX, pixelY, taille, couleur, pos.x, pos.y, pos.z);
         sceneCite->addItem(item);
 
         QGraphicsTextItem* txt = sceneCite->addText(QString("%1, %2, %3").arg(pos.x).arg(pos.y).arg(pos.z));
@@ -244,44 +280,8 @@ void MainWindow::dessinerCite(Joueur* joueur)
     }
 }
 
-void MainWindow::dessinerChantier()
-{
-    sceneChantier->clear(); // On vide l'ancienne scène
 
-    const Chantier& chantier = Partie::getInstance().getChantier();
-    int index = 0;
-    double yPos = 40; // Position verticale dans le chantier
-    // On parcourt les tuiles du modèle
-    for (auto it = chantier.begin(); it != chantier.end(); ++it) {
-        Tuile* tuile = *it;
 
-        // Création de la tuile graphique
-        // On réduit un peu la taille (rayon 20) pour que ça rentre dans la colonne
-        TuileItem* item = new TuileItem(tuile, index, 20.0);
-        // Positionnement vertical les unes sous les autres
-        item->setPos(50, yPos);
-        yPos += 120; // Espace entre les tuiles
-
-        sceneChantier->addItem(item);        // Ajouter des items au groupe...        
-        // Connecter le signal à votre fonction
-        // --- GESTION DE LA SÉLECTION ---
-        // On connecte le clic pour qu'il appelle selectionner... avec le bon index
-        connect(item, &TuileItem::clicked, this, [this, index]() {
-            selectionnerTuileChantier(index);
-        });
-        if (index == indexTuileSelectionnee) {
-            item->setOpacity(0.5); // Exemple simple pour montrer la sélection
-        }
-        // Gestion du texte (Prix) à côté
-        QGraphicsTextItem* txt = sceneChantier->addText(QString("%1 pierres").arg(tuile->getPrix()));
-        txt->setPos(100, item->y()); // À droite de la tuile
-
-        index++;
-    }
-
-    // Ajuster la zone de scroll pour tout voir
-    sceneChantier->setSceneRect(0, 0, 180, yPos);
-}
 
 void MainWindow::selectionnerTuileChantier(int index)
 {
@@ -292,80 +292,189 @@ void MainWindow::selectionnerTuileChantier(int index)
     dessinerChantier();
 }
 
-void MainWindow::onInversionClicked()
-{
-    // 1. Sécurité : Vérifier qu'une tuile est sélectionnée
+void MainWindow::onInversionClicked() {
     if (indexTuileSelectionnee == -1) return;
-
     const Chantier& chantier = Partie::getInstance().getChantier();
-
-    // Vérification de bornes
     if (indexTuileSelectionnee >= chantier.getNbTuiles()) {
         indexTuileSelectionnee = -1;
         return;
     }
-
-    // 2. Retrouver la tuile dans le Chantier via l'index
     auto it = chantier.begin();
-    for(int i = 0; i < indexTuileSelectionnee; ++i) {
-        ++it;
-    }
+    for(int i = 0; i < indexTuileSelectionnee; ++i) ++it;
     Tuile* t = *it;
-
-    // 3. Inversion du Modèle (C++)
-    // Cela change le booléen 'inversion' interne de la tuile
     t->inverser();
-
-    // 4. Mise à jour de l'Interface
-    // dessinerChantier() sera appelé, créera de nouveaux TuileItem.
-    // Le constructeur de TuileItem lira t->getInversion() et dessinera la forme inversée.
+    inversionEtat = !inversionEtat; // Bascule l'état d'inversion
     mettreAJourInterface();
 }
 
-void MainWindow::onRotationClicked()
+void MainWindow::dessinerChantier()
 {
-    // Sécurité
-    if (indexTuileSelectionnee == -1) return;
-
-    // 1. Retrouver la tuile dans le Chantier via l'index
+    sceneChantier->clear(); // On vide l'ancienne scène
     const Chantier& chantier = Partie::getInstance().getChantier();
+    int index = 0;
+    double yPos = 40; // Position verticale initiale
+    double rayon = 20.0; // Rayon des hexagones
 
-    // Vérification de bornes (au cas où le nombre de tuiles a changé)
+    // Position horizontale optimale pour centrer les tuiles (valeur ajustée manuellement)
+    double xPos = 70; // Valeur testée pour un rayon de 20.0
+
+    // On parcourt les tuiles du modèle
+    for (auto it = chantier.begin(); it != chantier.end(); ++it) {
+        Tuile* tuile = *it;
+
+        // Création de la tuile graphique
+        TuileItem* item = new TuileItem(tuile, index, rayon);
+        item->setPos(xPos, yPos); // Position ajustée
+        yPos += 120; // Espace entre les tuiles
+
+        // Ajout de la tuile à la scène
+        sceneChantier->addItem(item);
+
+        // Connexion du signal de clic
+        connect(item, &TuileItem::clicked, this, [this, index]() {
+            selectionnerTuileChantier(index);
+        });
+
+        // Mise en évidence de la tuile sélectionnée
+        if (index == indexTuileSelectionnee) {
+            QGraphicsRectItem* border = new QGraphicsRectItem(item->boundingRect());
+            border->setPen(QPen(Qt::red, 2));
+            border->setPos(item->pos());
+            sceneChantier->addItem(border);
+        }
+
+        // Affichage du prix à droite de la tuile
+        QGraphicsTextItem* txt = sceneChantier->addText(QString("%1 pierres").arg(tuile->getPrix()));
+        txt->setPos(item->boundingRect().right() + 10, item->y());
+
+        index++;
+    }
+
+    // Ajustement de la zone de scroll
+    sceneChantier->setSceneRect(0, 0, 180, yPos);
+}
+
+
+
+void MainWindow::onRotationClicked() {
+    if (indexTuileSelectionnee == -1) return;
+    const Chantier& chantier = Partie::getInstance().getChantier();
     if (indexTuileSelectionnee >= chantier.getNbTuiles()) {
         indexTuileSelectionnee = -1;
         return;
     }
-
-    // On avance un itérateur jusqu'à l'index voulu
     auto it = chantier.begin();
-    // On avance manuellement jusqu'à l'index voulu
-    for(int i = 0; i < indexTuileSelectionnee; ++i) {
-        ++it;
-    } // Fonction standard pour avancer de N cases
+    for(int i = 0; i < indexTuileSelectionnee; ++i) ++it;
     Tuile* t = *it;
-
-    // 2. Rotation du Modèle (Les couleurs changent de place logiquement)
     t->tourner();
-
-    // 3. Mise à jour de l'Interface
-    // Cela va appeler dessinerChantier(), qui va recréer les TuileItem.
-    // Comme le modèle a changé, les couleurs seront dessinées aux nouvelles places.
-    // Et comme on recrée l'item, le texte restera bien droit !
+    rotationCompteur = (rotationCompteur + 1) % 3; // Incrémente le compteur
     mettreAJourInterface();
 }
+
 
 void MainWindow::onValidationClicked()
 {
+    // Vérification qu'une tuile est sélectionnée
     if (indexTuileSelectionnee == -1) {
         QMessageBox::warning(this, "Erreur", "Veuillez sélectionner une tuile !");
         return;
     }
 
-    // Exemple de placement (à adapter selon ta logique)
-    // Partie::getInstance().actionPlacerTuile(indexTuileSelectionnee, 0, 0, 0, rotationActuelle, 0);
+    // Boîtes de dialogue pour saisir les coordonnées (x, y, z)
+    bool ok;
+    int x = QInputDialog::getInt(this, "Placement", "Coordonnée X:", 0, -999, 999, 1, &ok);
+    if (!ok) return; // Annulation par l'utilisateur
+    int y = QInputDialog::getInt(this, "Placement", "Coordonnée Y:", 0, -999, 999, 1, &ok);
+    if (!ok) return; // Annulation par l'utilisateur
+    int z = QInputDialog::getInt(this, "Placement", "Coordonnée Z (Niveau):", 0, 0, 10, 1, &ok);
+    if (!ok) return; // Annulation par l'utilisateur
 
-    mettreAJourInterface();
+    try {
+        // Tentative de placement de la tuile
+        bool succes = Partie::getInstance().actionPlacerTuile(
+            indexTuileSelectionnee, x, y, z, rotationCompteur, inversionEtat
+            );
+
+        if (!succes) {
+            // Échec du placement (ex : pas assez de pierres, règles non respectées)
+            QMessageBox::warning(this, "Erreur", "Impossible de placer la tuile ici. Vérifiez les coordonnées ou vos pierres.");
+        } else {
+            // Succès : réinitialisation des états et mise à jour de l'interface
+            rotationCompteur = 0;
+            inversionEtat = false;
+            indexTuileSelectionnee = -1;
+            mettreAJourInterface();
+
+            // Vérification de la fin de partie
+            if (Partie::getInstance().estFinDePartie()) {
+                afficherFinDePartie();
+            }
+        }
+    } catch (const std::exception& e) {
+        // Gestion des exceptions (ex : coordonnées invalides, tuile inexistante)
+        QMessageBox::critical(this, "Erreur", QString("Une erreur est survenue : %1").arg(e.what()));
+    }
 }
+
+
+
+void MainWindow::onPasserTourClicked()
+{
+    // Demande de confirmation
+    if (QMessageBox::question(this, "Passer son tour", "Êtes-vous sûr de vouloir passer votre tour ?") != QMessageBox::Yes) {
+        return;
+    }
+
+    // Réinitialisation des états
+    rotationCompteur = 0;
+    inversionEtat = false;
+    indexTuileSelectionnee = -1;
+
+    // Passer au joueur suivant
+    Partie::getInstance().passerAuJoueurSuivant();
+
+    // Mise à jour de l'interface
+    mettreAJourInterface();
+
+    // Vérification de la fin de partie
+    if (Partie::getInstance().estFinDePartie()) {
+        afficherFinDePartie();
+        return;
+    }
+
+    // Si le joueur suivant est une IA, on joue son tour automatiquement
+    Joueur* j = Partie::getInstance().getJoueurActuel();
+    if (dynamic_cast<IA*>(j)) {
+        Partie::getInstance().jouerTourIA();
+        mettreAJourInterface();
+        if (Partie::getInstance().estFinDePartie()) {
+            afficherFinDePartie();
+        }
+    }
+}
+
+
+
+
+void MainWindow::afficherFinDePartie() {
+    QString message = "=== FIN DE PARTIE ===\n\n--- SCORES ---\n";
+    for (auto it = Partie::getInstance().debutJoueurs(); it != Partie::getInstance().finJoueurs(); ++it) {
+        Joueur* j = *it;
+        message += QString::fromStdString(j->getNom()) + " : " + QString::number(j->getScore()->getTotal()) + " points\n";
+    }
+    vector<Joueur*> gagnants = Partie::getInstance().determinerGagnants();
+    if (gagnants.size() == 1) {
+        message += "\n>>> VAINQUEUR : " + QString::fromStdString(gagnants[0]->getNom()) + " ! <<<";
+    } else {
+        message += "\n>>> ÉGALITÉ ENTRE : ";
+        for (Joueur* g : gagnants) {
+            message += QString::fromStdString(g->getNom()) + " ";
+        }
+        message += "<<<";
+    }
+    QMessageBox::information(this, "Fin de Partie", message);
+}
+
 
 QColor MainWindow::getTypeColor(TypeQuartier t)
 {
