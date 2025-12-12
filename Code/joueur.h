@@ -10,6 +10,7 @@ class Score;
 class Cite;
 
 class Joueur {
+    friend class Partie;
 private:
     Score* score;
     string nom;
@@ -19,7 +20,7 @@ private:
 public:
     Score* getScore() const { return score; }
     Cite* getCite() const { return cite; }
-    Joueur(const string& n, unsigned int p=2);
+    Joueur(const string& n);
     const string& getNom() const { return nom; }
     int getPierres() const { return pierres; }
     void ajouterPierres(unsigned int n = 0);

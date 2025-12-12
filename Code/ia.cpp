@@ -28,31 +28,26 @@ bool IA::tuileContientPlace(Tuile* t) {
 }
 
 int IA::choisirTuile(const Chantier& chantier) {
-    // L’Illustre Architecte cherche toujours à acquérir la moins chère des tuiles Cité comportant une Place.
-    // S’il n’a pas assez de Pierres pour l’acquérir ou si aucune tuile Cité ne comporte de Place,
-    // l’Illustre Architecte prend la 1ère tuile Cité du Chantier.
+     int meilleurIndex = -1;
 
-    int meilleurIndex = -1;
-    int currentIndex = 0;
-
-    for (auto it = chantier.begin(); it != chantier.end(); ++it) {
-        Tuile* t = *it;
+    for (int i = 0; i < chantier.getNbTuiles(); ++i) {
+        Tuile* t = chantier.getTuile(i);
         int coutTuile = t->getPrix();
 
         if (tuileContientPlace(t)) {
-            // C'est une tuile avec Place
-            // Comme on parcourt par index croissant (donc prix croissant),
-            // la première qu'on trouve est forcément la moins chère.
             if (getPierres() >= coutTuile) {
-                meilleurIndex = currentIndex;
-                break;
-            }
+                meilleurIndex = i;
+                break; }
         }
-        currentIndex++;
     }
 
-    if (meilleurIndex != -1) return meilleurIndex;
-    return 0;
+    if (meilleurIndex != -1) {
+        return meilleurIndex;
+    }
+    else {
+        // Pas de tuile avec Place ou pas assez de pierres
+        return 0; // Prend la 1ère tuile
+    }
 }
 
 
@@ -67,7 +62,7 @@ int IA::calculerScoreIA() const {
     int multiplicateurNiveau = (difficulte == 3) ? 2 : 1;
 
     for (Tuile* t : tuilesAcquises) {
-        for (int i = 0; i < t->getNbHexagones(); i++) {
+        for (size_t i = 0; i < t->getNbHexagones(); i++) {
             Hexagone* h = t->getHexagone((int)i);
             TypeQuartier type = h->getType();
 

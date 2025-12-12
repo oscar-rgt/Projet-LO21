@@ -4,26 +4,31 @@
 #include <vector>
 #include "tuiles.h"
 #include "pile.h"
+// Dans chantier.h
+
+// ... (début du fichier)
 
 class Chantier {
 public:
-    
+    Chantier();
+    ~Chantier();
 
-    // Gestion des tuiles
     void ajouterPile(Pile& p);
 
-    int getNbTuiles() const { return static_cast<int>(tuiles.size()); }
+    // Gardez l'implémentation inline ici
+    size_t getNbTuiles() const { return tuiles.size(); }
 
-    void retirerTuile(Tuile* t); // Modifié pour prendre un pointeur
+    // CORRECTION 1 : Changer la signature pour correspondre au .cpp
+    void retirerTuile(int index); 
+    
+    // CORRECTION 2 : Ajouter la déclaration manquante
+    Tuile* getTuile(int index) const; 
+
     bool estVide() const;
-
-    // Nettoyage
     void vider();
-
-    // Accesseurs pour l'affichage (références constantes)
-    // SUPPRIMÉ : const std::vector<Tuile*>& getTuiles() const { return tuiles; }
     void ajouterTuileSpecifique(Tuile* t);
 
+// ... (reste du fichier avec Iterator)
     // ==========================================
     // ITERATOR
     // ==========================================
@@ -43,9 +48,6 @@ public:
     Iterator end() const { return Iterator(tuiles.end()); }
 
 private:
-    friend class Partie;
-    Chantier();
-    ~Chantier();
     std::vector<Tuile*> tuiles;
 };
 

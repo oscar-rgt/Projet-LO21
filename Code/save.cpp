@@ -1,185 +1,129 @@
-/*#include "sauvegarde.h"
+#include "save.h"
+#include "partie.h"
+#include "tuiles.h"
+#include "joueur.h"
+#include "ia.h" // Nécessaire pour new IA()
+#include "pile.h"
 #include <fstream>
 #include <iostream>
+#include <string>
 
 using namespace std;
 
-bool Save::savePartie(const string& nameFich) {
-    ofstream fichier(nomFichier);
-    
-    if (!fichier.is_open()) {
-        cout << "Impossible de créer le fichier de sauvegarde" << endl;
-        return false;
-    }
-    
-    try {
-        Partie& partie = Partie::getInstance();
+// =========================================================
+// FONCTION SAUVEGARDER
+// =========================================================
+bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
+    ofstream f(nomFichier);
+    if (!f) return false;
 
-        fichier << "# Sauvegarde partie Akropolis" << endl;
-        fichier << endl;
+    // 1. Sauvegarde des variables simples de la Partie
+    // On utilise les GETTERS publics
+    f << partie.getNbJoueurs() << endl;
+    f << partie.getIndexJoueurActuel() << endl;
+    f << partie.getIndexPileActuelle() << endl;
 
-        fichier << "Info sur la Partie" << endl;
-        fichier << "nb_joueurs=" << partie.getNbJoueurs() << endl;
-        fichier << "index_joueur_actuel=" << partie.getJoueurActuel()->getNom() << endl;
-        fichier << "index_pile_actuelle=" << partie.getIndexPileActuelle() << endl;
-        fichier << "nb_piles_total=" << partie.getNbPiles() << endl;
-        fichier << endl;
-        
-  
-        for (int i = 0; i < partie.getNbJoueurs(); i++) {
-            Joueur* j = partie.getJoueur(i);
-            
-            fichier << "Info sur Joueur" << i << endl;
-            fichier << "nom=" << j->getNom() << endl;
-            fichier << "points=" << j->getPoints() << endl;
-            fichier << "pierres=" << j->getPierres() << endl;
-            
+    // 2. Sauvegarde du Chantier
+    // On récupère le chantier via getChantier()
+    const Chantier& chantier = partie.getChantier();
+    f << chantier.getNbTuiles() << endl;
 
-            const auto& carte = j->getCite()->getCarte();
-            fichier << "nb_hexagones=" << carte.size() << endl;
-            
-            // Chaque hexagone sur une ligne
-            for (const auto& paire : carte) {
-                fichier << "hexa="
-                       << paire.first.x << ","
-                       << paire.first.y << ","
-                       << paire.first.z << ","
-                       << static_cast<int>(paire.second->getType()) << ","
-                       << paire.second->getNiveau() << ","
-                       << paire.second->getEtoiles()
-                       << endl;
-            }
-            fichier << endl;
+    for (size_t i = 0; i < chantier.getNbTuiles(); i++) {
+        const Tuile* t = chantier.getTuile(i);
+        // On suppose que la classe Tuile a les getters getId() et getPrix()
+        // Si vos méthodes s'appellent autrement, adaptez ces deux mots.
+        if (t) {
+            f << t->getId() << " " << t->getPrix() << endl;
         }
-        
-        // === 3. SAUVEGARDER LE CHANTIER ===
-        fichier << "[CHANTIER]" << endl;
-        fichier << "nb_tuiles=" << partie.getChantier().getNbTuiles() << endl;
-        
-        for (size_t i = 0; i < partie.getChantier().getNbTuiles(); i++) {
-            Tuile* t = partie.getChantier().getTuile(i);
-            fichier << "tuile=" << t->getId() << "," << t->getPrix() << endl;
-        }
-        fichier << endl;
-        
-        fichier.close();
-        cout << "Partie sauvegardée << endl;
-        return true;
-        
-    } catch (const exception& e) {
-        cout << "Erreur lors de la sauvegarde : " << e.what() << endl;
-        fichier.close();
-        return false;
     }
-}
 
-bool Sauvegarde::chargerPartie(const string& nomFichier) {
-    ifstream fichier(nomFichier);
+    // 3. Sauvegarde des Joueurs
+    // On récupère la liste via getJoueurs()
+    const vector<Joueur*>& listeJoueurs = partie.getJoueurs();
     
-    if (!fichier.is_open()) {
-        cout << "❌ Aucune sauvegarde trouvée" << endl;
-        return false;
-    }
-    
-    try {
-        string ligne;
-        
-
-        int nbJoueurs = 0;
-        string nomJoueurActuel;
-        int indexPileActuelle = 0;
-        
-        // === LECTURE DU FICHIER ===
-        while (getline(fichier, ligne)) {
-            // Ignorer les commentaires et lignes vides
-            if (ligne.empty() || ligne[0] == '#') continue;
-            
-            // SECTION GENERAL
-            if (ligne == "[GENERAL]") {
-                while (getline(fichier, ligne) && !ligne.empty() && ligne[0] != '[') {
-                    size_t pos = ligne.find('=');
-                    if (pos != string::npos) {
-                        string cle = ligne.substr(0, pos);
-                        string valeur = ligne.substr(pos + 1);
-                        
-                        if (cle == "nb_joueurs") {
-                            nbJoueurs = stoi(valeur);
-                        } else if (cle == "index_joueur_actuel") {
-                            nomJoueurActuel = valeur;
-                        } else if (cle == "index_pile_actuelle") {
-                            indexPileActuelle = stoi(valeur);
-                        }
-                    }
-                }
-            }
-            
-            // SECTION JOUEUR
-            if (ligne.find("[JOUEUR_") != string::npos) {
-                string nom;
-                int points = 0, pierres = 0;
-                
-                while (getline(fichier, ligne) && !ligne.empty() && ligne[0] != '[') {
-                    size_t pos = ligne.find('=');
-                    if (pos != string::npos) {
-                        string cle = ligne.substr(0, pos);
-                        string valeur = ligne.substr(pos + 1);
-                        
-                        if (cle == "nom") {
-                            nom = valeur;
-                        } else if (cle == "points") {
-                            points = stoi(valeur);
-                        } else if (cle == "pierres") {
-                            pierres = stoi(valeur);
-                        } else if (cle == "hexa") {
-                            // Format: x,y,z,type,niveau,etoiles
-                            // Pour l'instant on skip la reconstruction de la cité
-                            // (nécessiterait d'ajouter des méthodes dans Cite)
-                        }
-                    }
-                }
-                
-                // NOTE : Ici tu devrais recréer le joueur avec ses données
-                // Pour l'instant, on affiche juste ce qu'on a lu
-                cout << "  - Joueur trouvé : " << nom 
-                     << " (Points: " << points 
-                     << ", Pierres: " << pierres << ")" << endl;
-            }
-            
-            // SECTION CHANTIER
-            if (ligne == "[CHANTIER]") {
-                while (getline(fichier, ligne) && !ligne.empty() && ligne[0] != '[') {
-                    // Lecture des tuiles du chantier
-                }
-            }
+    for (const Joueur* j : listeJoueurs) {
+        if (j) {
+            f << j->getNom() << endl;
+            // Ici, si le joueur a une méthode interne pour se sauvegarder (sa cité, son score),
+            // il faudrait l'appeler, par exemple : j->sauvegarder(f);
+            // Pour l'instant, je sauvegarde juste le nom comme vu dans vos erreurs.
         }
-        
-        fichier.close();
-        
-        cout << "\n✓ Partie chargée depuis '" << nomFichier << "'" << endl;
-        cout << "  Nombre de joueurs : " << nbJoueurs << endl;
-        cout << "  Joueur actuel : " << nomJoueurActuel << endl;
-        
-        return true;
-        
-    } catch (const exception& e) {
-        cout << "❌ Erreur lors du chargement : " << e.what() << endl;
-        fichier.close();
-        return false;
     }
+
+    f.close();
+    return true;
 }
 
-bool Sauvegarde::sauvegardeExiste(const string& nomFichier) {
-    ifstream fichier(nomFichier);
-    bool existe = fichier.good();
-    fichier.close();
-    return existe;
+// =========================================================
+// FONCTION CHARGER
+// =========================================================
+bool SaveManager::charger(Partie& partie, const string& nomFichier) {
+    ifstream f(nomFichier);
+    if (!f) return false;
+
+    // 1. Nettoyage complet de l'ancienne partie
+    // On utilise la méthode publique créée spécialement pour respecter SOLID
+    partie.resetPourChargement();
+
+    // 2. Lecture des variables simples
+    int nbJ, idxJ, idxP;
+    if (!(f >> nbJ >> idxJ >> idxP)) return false;
+
+    // On utilise les SETTERS publics
+    partie.setNbJoueurs(nbJ);
+    partie.setIndexJoueurActuel(idxJ);
+    partie.setIndexPileActuelle(idxP);
+
+    // 3. Reconstruction du Chantier
+    size_t nbTuilesChantier;
+    f >> nbTuilesChantier;
+
+    for (size_t i = 0; i < nbTuilesChantier; ++i) {
+        unsigned int id, prix;
+        f >> id >> prix;
+
+        // Création de la tuile (Constructeur doit être public dans tuiles.h)
+        Tuile* t = Tuile::fabriquer(id, prix);
+
+        // Ajout au chantier via l'accesseur
+        partie.getChantier().ajouterTuileSpecifique(t);
+    }
+
+    // 4. Reconstruction des Joueurs
+    // On boucle selon le nombre de joueurs lu dans le fichier
+    for (int i = 0; i < partie.getNbJoueurs(); i++) {
+        string nom;
+        f >> nom; // Lit le nom sauvegardé
+
+        Joueur* j = nullptr;
+
+        // Logique de détection IA vs Humain basée sur vos erreurs précédentes
+        // Si c'est une partie à 2 joueurs et qu'on est au 2ème (index 1), c'est l'IA
+        if (partie.getNbJoueurs() == 2 && i == 1) {
+            // On utilise le getter pour récupérer le niveau de l'IA
+            j = new IA(nom, partie.getNiveauIllustreConstructeur());
+        } else {
+            // Sinon c'est un joueur humain classique
+            j = new Joueur(nom);
+        }
+
+        // Si le joueur doit charger sa Cité depuis le fichier, appelez sa méthode ici :
+        // j->charger(f);
+
+        // Ajout du joueur dans la partie via la méthode publique
+        partie.ajouterJoueur(j);
+    }
+
+    f.close();
+    return true;
 }
 
-bool Sauvegarde::supprimerSauvegarde(const string& nomFichier) {
-    if (remove(nomFichier.c_str()) == 0) {
-        cout << "✓ Sauvegarde supprimée" << endl;
-        return true;
-    }
-    return false;
+bool SaveManager::supprimerSauvegarde(const string& nomFichier) {
+    return std::remove(nomFichier.c_str()) == 0;
 }
-*/
+
+
+bool SaveManager::sauvegardeExiste(const string& nomFichier) {
+    ifstream f(nomFichier);
+    return f.good();
+}

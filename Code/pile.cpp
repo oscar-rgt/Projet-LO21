@@ -1,7 +1,7 @@
 #include "pile.h"
 #include <iostream>
 #include <string>
-#include <vector>
+#include<vector>
 
 Pile::Pile(unsigned int id_, unsigned int nb) : id(id_)
 {
@@ -17,3 +17,16 @@ Pile::~Pile() {
     }
     tuiles.clear();
 }
+
+
+Tuile* Pile::getTuile(unsigned int id_) {
+    for (auto it = tuiles.begin(); it != tuiles.end(); ++it) {
+        if ((*it)->getId() == id_) {
+            return *it;
+        }
+    }
+    throw PileException("La tuile n'existe pas");
+}
+
+
+

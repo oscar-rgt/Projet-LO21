@@ -3,12 +3,18 @@
 #include "ia.h"
 #include "tuiles.h"
 #include "cite.h"
+#include "partie.h"
+#include "save.h"
 #include <iostream>
 #include <limits>
 #include <algorithm>
 #include <cstdlib>
 
 using namespace std;
+
+// ==========================================
+// OUTILS ET AFFICHAGE (Parties conservées)
+// ==========================================
 
 void JeuConsole::nettoyerEcran() {
 #ifdef _WIN32
@@ -20,7 +26,7 @@ void JeuConsole::nettoyerEcran() {
 
 int JeuConsole::saisieNombre(const string& prompt, int min, int max) {
     int reponse = -1;
-    cout << prompt << " (" << min << " - " << max << ") : ";
+    cout << prompt << " ( de " << min << " a " << max << ") : ";
     while (!(cin >> reponse) || reponse < min || reponse > max) {
         cout << "Erreur. Entrez un nombre entre " << min << " et " << max << " : ";
         cin.clear();
@@ -43,19 +49,18 @@ bool JeuConsole::saisieOuiNon(const string& prompt) {
 
 void JeuConsole::afficherChantier() {
     const auto& chantier = Partie::getInstance().getChantier();
+    
+    // Petite sécurité : si le chantier est vide, on n'affiche rien pour éviter les bugs
+    if (chantier.getNbTuiles() == 0) return;
+
     vector<string> lignes(9, "");
     const int hauteur = 9;
     const int largeur_reelle = 20;
     const int largeur_visuelle = 19;
-
-
-    // Calcul : Total piles - Index pile actuelle
-    size_t pilesRestantes = Partie::getInstance().getNbPiles() - Partie::getInstance().getIndexPileActuelle();
-    cout << "\n=== CHANTIER === " << pilesRestantes << " pile(s) restante(s)" << endl;
-
-    // --- 2. AFFICHAGE DES TUILES VIA ITÉRATEUR ---
-    for (auto it = chantier.begin(); it != chantier.end(); ++it) {
-        Tuile* t = *it; // Accès à la tuile via l'itérateur
+    
+    cout << "\n=== CHANTIER === " << Partie::getInstance().getNbPiles() - (Partie::getInstance().getIndexPileActuelle()) << " pile(s) restante(s)" << endl;
+    for (int i = 0; i < chantier.getNbTuiles(); ++i) {
+        Tuile* t = chantier.getTuile(i);
         string designTuile = t->getDesign();
         for (int j = 0; j < hauteur; j++) {
             string segment = designTuile.substr(j * largeur_reelle, largeur_visuelle);
@@ -67,11 +72,8 @@ void JeuConsole::afficherChantier() {
         cout << lignes[j] << endl;
     }
     cout << "\n\n";
-
-    // --- 3. AFFICHAGE DES PRIX VIA ITÉRATEUR ---
-    for (auto it = chantier.begin(); it != chantier.end(); ++it) {
-        // (*it) donne le pointeur Tuile*, donc (*it)->getPrix() donne le prix
-        int pierres = (*it)->getPrix();
+    for (int i = 0; i < chantier.getNbTuiles(); i++) {
+        int pierres = chantier.getTuile(i)->getPrix();
         cout << "    ";
         cout << pierres << " pierres";
         cout << "               ";
@@ -91,27 +93,30 @@ void JeuConsole::afficherEtatJeu() {
 
     if (dynamic_cast<IA*>(j)) {
         cout << "(Cite de l'IA - Gestion virtuelle)" << endl;
+        // On affiche quand même le chantier pour voir ce qu'il se passe
+        afficherChantier(); 
     }
     else {
         j->getCite()->afficher();
         afficherChantier();
     }
-
-
 }
 
-void JeuConsole::jouerTour() {
+// ==========================================
+// LOGIQUE DU TOUR
+// ==========================================
 
+void JeuConsole::jouerTour() {
     nettoyerEcran();
     afficherEtatJeu();
 
     Joueur* j = Partie::getInstance().getJoueurActuel();
 
-    // Si c'est l'IA, on joue automatiquement
+    // --- TOUR DE L'IA ---
     if (dynamic_cast<IA*>(j)) {
         cout << "\n\n--- TOUR DE L'IA ---" << endl;
         cout << "\nL'Illustre Constructeur reflechit..." << endl;
-        afficherChantier();
+        
         int indexChoisi = Partie::getInstance().jouerTourIA();
         try {
             cout << "\n\nL'IA choisit la tuile " << indexChoisi << endl;
@@ -120,79 +125,81 @@ void JeuConsole::jouerTour() {
             cin.get();
         }
         catch (const PartieException& e) {
-            cout << "L'IA a rencontre une erreur en choisissant une tuile : " << e.what() << endl;
+            cout << "Erreur IA : " << e.getInfo() << endl;
         }
         return;
     }
 
-    //Tour humain
-
-    // 1. Calculer le nombre de tuiles disponibles avec les itérateurs
-    const auto& chantier = Partie::getInstance().getChantier();
-
-    size_t maxChoix = chantier.getNbTuiles() - 1;
+    // --- TOUR HUMAIN ---
+    size_t maxChoix = Partie::getInstance().getChantier().getNbTuiles() - 1;
 
     cout << "\n--- ACTION ---" << endl;
-    int index = saisieNombre("Quelle tuile choisir ?", 0, (int)maxChoix);
-
-    // 2. Récupérer la tuile choisie (On avance l'itérateur jusqu'à l'index)
-    auto itTuile = chantier.begin();
-    for (int k = 0; k < index; ++k) {
-        ++itTuile;
+    int index = saisieNombre("Quelle tuile choisir ? (-1 pour SAUVEGARDER et QUITTER)", -1, (int)maxChoix);
+    
+    if (index == -1) {
+        cout << "\n>>> SAUVEGARDE EN COURS... <<<" << endl;
+        
+        if (SaveManager::sauvegarder(Partie::getInstance(), "save.txt")) {
+            cout << ">> SUCCES : Partie sauvegardee dans 'akropolis_save.txt'" << endl;
+        } else {
+            cout << ">> ERREUR : Impossible de sauvegarder la partie." << endl;
+        }
+        
+        cout << "Au revoir !" << endl;
+        exit(0);
     }
-    Tuile* tuileAffichee = *itTuile;
+
+    Tuile* tuileAffichee = Partie::getInstance().getChantier().getTuile(index);
 
     // --- MODE PREVISUALISATION ---
-
     bool placementValide = false;
     int rotationCompteur = 0;
     bool inversionEtat = false;
+    bool invInitial = tuileAffichee->getInversion(); // Pour pouvoir annuler proprement
 
     while (!placementValide) {
         nettoyerEcran();
-        afficherEtatJeu(); // On réaffiche le contexte
+        afficherEtatJeu();
 
+        cout << "\nTuile selectionnee :" << endl;
+        cout << tuileAffichee->getDesign() << endl;
 
-        cout << "\n\nCommandes : [R]otation | [I]nversion | [V]alider | [A]nnuler choix" << endl;
+        cout << "\nCommandes : [R]otation | [I]nversion | [V]alider | [A]nnuler choix" << endl;
         cout << "Votre choix : ";
 
         string choix;
         cin >> choix;
 
-        // Gestion des commandes
         if (choix == "R" || choix == "r") {
             tuileAffichee->tourner();
             rotationCompteur = (rotationCompteur + 1) % 3;
         }
         else if (choix == "I" || choix == "i") {
             tuileAffichee->inverser();
+            inversionEtat = !inversionEtat;
         }
         else if (choix == "A" || choix == "a") {
-            // Annuler le choix de la tuile, on recommence le tour
-            if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser(); // Remettre l'état initial
-            for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) {
-                tuileAffichee->tourner(); // Remettre l'orientation initiale
-            }
-            jouerTour();
+            // Annuler : on remet tout comme avant
+            if (tuileAffichee->getInversion() != invInitial) tuileAffichee->inverser();
+            for (int i = 0; i < (3 - (rotationCompteur % 3)) % 3; ++i) tuileAffichee->tourner();
+            
+            jouerTour(); // On recommence le choix
             return;
         }
         else if (choix == "V" || choix == "v") {
-            // On sort de la boucle de prévisualisation pour aller placer
             placementValide = true;
         }
     }
 
-    // Placement
-    int x = saisieNombre("Coord X", -999, 999);
-    int y = saisieNombre("Coord Y", -99, 999);
+    // --- PLACEMENT ---
+    int x = saisieNombre("Coord X", -20, 20);
+    int y = saisieNombre("Coord Y", -20, 20);
     int z = saisieNombre("Coord Z (Niveau)", 0, 10);
 
-
-    cout << "\n\nLa tuile\n\n" << tuileAffichee->getDesign() << "\n\nva etre placee en (" << x << ", " << y << ", " << z << ").\n" << endl;
-
+    // On passe 0 et false car la tuile a déjà été tournée visuellement sur le pointeur du chantier
     if (saisieOuiNon("Valider ce choix ?")) {
         try {
-            bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, rotationCompteur, inversionEtat);
+            bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, 0, false);
 
             if (!succes) {
                 cout << ">> ECHEC : Pas assez de pierres ou regle non respectee." << endl;
@@ -202,37 +209,24 @@ void JeuConsole::jouerTour() {
                 jouerTour();
             }
         }
-        catch (const CiteException& e) {
-            cout << ">> ECHEC : " << e.what() << endl;
-            cout << "Appuyez sur Entree pour reessayer...";
+        catch (CiteException& e) {
+            cout << ">> ECHEC : " << e.getInfos() << endl;
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cin.get();
             jouerTour();
         }
-        catch (const PartieException& e) {
-            cout << ">> ECHEC : " << e.what() << endl;
-            cout << "Appuyez sur Entree pour reessayer...";
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cin.get();
-            jouerTour();
-        }
-        catch(const exception& e) {
-            cout << ">> ECHEC INATTENDU : " << e.what() << endl;
-            cout << "Appuyez sur Entree pour reessayer...";
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cin.get();
-            jouerTour();
-		}
     }
     else {
-        // Annulation finale
-        if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser(); // Remettre l'état initial
-        for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) {
-            tuileAffichee->tourner(); // Remettre l'orientation initiale
-        }
+        // Annulation finale : on remet l'état initial
+        if (tuileAffichee->getInversion() != invInitial) tuileAffichee->inverser();
+        for (int i = 0; i < (3 - (rotationCompteur % 3)) % 3; ++i) tuileAffichee->tourner();
         jouerTour();
     }
 }
+
+// ==========================================
+// MENU PRINCIPAL ET CONFIGURATION
+// ==========================================
 
 void JeuConsole::lancer() {
 
@@ -269,99 +263,118 @@ void JeuConsole::lancer() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     nettoyerEcran();
 
-
     unsigned int choixMenu;
+    bool partieChargeeSucces = false;
+
+    // --- BOUCLE MENU ---
     do {
         nettoyerEcran();
-        std::cout << "1. JOUER UNE PARTIE                     " << std::endl;
-        std::cout << "2. REGLES DU JEU                        " << std::endl;
-        std::cout << "3. QUITTER                              " << std::endl;
-        std::cout << "\n\n";
-        choixMenu = saisieNombre("Choisissez une option", 1, 3);
+        cout << "1. JOUER UNE PARTIE" << endl;
+        cout << "2. CHARGER UNE PARTIE" << endl;
+        cout << "3. REGLES DU JEU" << endl;
+        cout << "4. QUITTER" << endl;
+        cout << "\n";
+        
+        choixMenu = saisieNombre("Choisissez une option", 1, 4);
 
         switch (choixMenu)
         {
         case 1:
+            // Nouvelle partie : on sort juste de la boucle
+            // partieChargeeSucces reste à false
             break;
-        case 2:
+
+        case 2: {
+            cout << "\nChargement..." << endl;
+            if (SaveManager::charger(Partie::getInstance(), "save.txt")) {
+                cout << ">> Succes !" << endl;
+                partieChargeeSucces = true; // On retient qu'on a chargé
+                choixMenu = 1; // On force la sortie du menu
+                
+                cout << "Appuyez sur Entree pour reprendre...";
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cin.get();
+            } else {
+                cerr << ">> Echec du chargement." << endl;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cin.get();
+            }
+            break;
+        }
+
+        case 3:
             afficherRegles();
             break;
-        case 3:
+
+        case 4:
             exit(0);
+
         default:
             break;
         }
     } while (choixMenu != 1);
 
+    // --- GESTION DE LA CONFIGURATION ---
     nettoyerEcran();
-    demanderConfiguration();
 
+    // C'EST ICI LA CORRECTION PRINCIPALE :
+    if (partieChargeeSucces) {
+        // Si on a chargé une partie, ON NE FAIT RIEN DE PLUS.
+        cout << ">> Reprise de la partie sauvegardee..." << endl;
+        // On laisse une pause
+        cout << "Appuyez sur Entree...";
+    } 
+    else {
+        // Si c'est une nouvelle partie (pas chargée) : ON CONFIGURE
+        demanderConfiguration();
+    }
+
+    // --- BOUCLE DE JEU ---
     while (!Partie::getInstance().estFinDePartie()) {
         jouerTour();
     }
-
-	nettoyerEcran();
-
+    SaveManager::supprimerSauvegarde("save.txt");;
+    // --- FIN DE PARTIE ---
+    nettoyerEcran();
     cout << "=== FIN DE PARTIE ===" << endl;
 
-    cout << "\n--- SCORES ---" << endl;
-	int score = 0;
+    cout << "\n--- CLASSEMENT ---" << endl;
+    for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
+        Joueur* j = Partie::getInstance().getJoueur(i);
 
-    // Utilisation de debutJoueurs() et finJoueurs() au lieu de l'index
-    for (auto it = Partie::getInstance().debutJoueurs(); it != Partie::getInstance().finJoueurs(); ++it) {
-        Joueur* j = *it;
-
-        // Calcul du score IA si nécessaire
         IA* ia = dynamic_cast<IA*>(j);
-        if (ia) {
-            ia->calculerScoreIA(); // Mise à jour score interne
-        }
-        else {
-            j->getScore()->calculerScore();
-            score = j->getScore()->getTotal();
-        }
+        if (ia) ia->calculerScoreIA(); // Mise à jour score IA
+        else j->getScore()->calculerScore(); // Mise à jour score Humain
 
-        cout << j->getNom() << " : " << score << " points (" << j->getPierres() << " pierres)" << endl;
+        cout << i + 1 << ". " << j->getNom() << " : " << j->getScore()->getTotal() << " points" << endl;
     }
 
-    cout << "\n--- RESULTAT ---" << endl;
-
-    // determinerGagnants renvoie maintenant un vector<Joueur*> directement
-    vector<Joueur*> gagnants = Partie::getInstance().determinerGagnants();
-
-    if (gagnants.size() == 1) {
-        cout << ">>> LE VAINQUEUR EST : " << gagnants[0]->getNom() << " !!! <<<" << endl;
-    }
-    else if (gagnants.size() > 1) {
-        cout << ">>> EGALITE PARFAITE ENTRE : ";
-        for (size_t k = 0; k < gagnants.size(); ++k) {
-            cout << gagnants[k]->getNom();
-            if (k < gagnants.size() - 1) cout << " ET ";
-        }
-        cout << " ! <<<" << endl;
-    }
-
-
-    cout << "\n\n\n";
+    cout << "\n\nAppuyez sur Entree pour quitter.";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
-	exit(0);
+    exit(0);
 }
 
 void JeuConsole::demanderConfiguration() {
     cout << "\n--- CONFIGURATION DE LA PARTIE ---" << endl;
     int nbJoueurs = saisieNombre("Combien de joueurs ?", 1, 4);
+    
     nomsJoueurs.clear();
     for (int i = 0; i < nbJoueurs; ++i) {
         string nom;
         cout << "Nom du joueur " << i + 1 << " : ";
         cin >> nom;
+        
+        // IMPORTANT : On remplace les espaces par des '_' pour éviter les bugs de sauvegarde
+        std::replace(nom.begin(), nom.end(), ' ', '_');
+        
         nomsJoueurs.push_back(nom);
     }
-    int niveauIA = 0;
+    
+    int niveauIllustreConstructeur = 0;
     if (nbJoueurs == 1) {
         cout << "Mode solo active" << endl;
-        niveauIA = saisieNombre("Niveau Illustre Constructeur", 1, 3);
+        niveauIllustreConstructeur = saisieNombre("Niveau Illustre Constructeur", 1, 3);
     }
 
     bool modeTuileCite = saisieOuiNon("Mode tuile cite augmente ?");
@@ -374,10 +387,11 @@ void JeuConsole::demanderConfiguration() {
         variantesActives[2] = saisieOuiNon("Variante casernes active ?");
         variantesActives[3] = saisieOuiNon("Variante temples active ?");
         variantesActives[4] = saisieOuiNon("Variante jardins active ?");
+    } else {
+        variantesActives.fill(false);
     }
 
-
-    Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIA);
+    Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIllustreConstructeur);
 }
 
 void JeuConsole::afficherRegles() {
@@ -396,30 +410,30 @@ void JeuConsole::afficherRegles() {
     cout << "   - Caserne (C)   : 1 point si votre caserne n'est pas completement entouree par d'autres hexagones." << endl;
     cout << "   - Temple (T)   : 1 point si votre temple est completement entoure par d'autres hexagones." << endl;
     cout << "   - Jardin (J)     : 1 point pour chaque jardin pose sans condition." << endl;
-	cout << "   - Carriere (X)  : Permet d'agrandir votre cite mais ne donne pas de points." << endl;
+    cout << "   - Carriere (X)  : Permet d'agrandir votre cite mais ne donne pas de points." << endl;
     cout << "\n";
     cout << "3. LES PLACES :" << endl;
-	cout << "   Les places de chaque type vous permettent de multiplier vos points" << endl;
-	cout << "   en fonction du chiffre qui est ecrit dessus." << endl;
+    cout << "   Les places de chaque type vous permettent de multiplier vos points" << endl;
+    cout << "   en fonction du chiffre qui est ecrit dessus." << endl;
     cout << "   Par exemple, un hexagone 2H est une place Habitation a 2 etoiles." << endl;
     cout << "   Elle multiplie donc par 2 les points gagnes par vos quartiers Habitation." << endl;
     cout << "   /!\\ ATTENTION : Si vous n'avez aucune place d'un certain type," << endl;
-	cout << "       vous ne marquez aucun point pour ses quartiers correspondants." << endl;
+    cout << "       vous ne marquez aucun point pour ses quartiers correspondants." << endl;
     cout << "\n";
     cout << "4. LA PIERRE :" << endl;
     cout << "   Vous commencez avec un nombre de 2 pierres." << endl;
     cout << "   Ces dernieres vous permettront d'acheter des tuiles." << endl;
-	cout << "   Les pierres influent aussi sur votre score." << endl;
+    cout << "   Les pierres influent aussi sur votre score." << endl;
     cout << "   En effet, chaque pierre vous rapporte un point." << endl;
     cout << "   De plus, en cas d'egalite en fin de partie," << endl;
-	cout << "   le joueur avec le plus de pierres l'emporte." << endl;
+    cout << "   le joueur avec le plus de pierres l'emporte." << endl;
     cout << "   Les pierres s'obtiennent en construisant au dessus d'une carriere." << endl;
     cout << "   Chaque carriere recouverte donne une pierre." << endl;
     cout << "\n";
-	cout << "5. PLACEMENT :" << endl;
-	cout << "   Vous l'aurez compris, votre cite peut s'etendre aussi bien en surface qu'en hauteur." << endl;
+    cout << "5. PLACEMENT :" << endl;
+    cout << "   Vous l'aurez compris, votre cite peut s'etendre aussi bien en surface qu'en hauteur." << endl;
     cout << "   Lorsqu'un hexagone est place en hauteur, son nombre de points est multiplie par son niveau d'elevation." << endl;
-	cout << "   Par exemple, un quartier Jardin place au niveau 3 rapporte 3 points." << endl;
+    cout << "   Par exemple, un quartier Jardin place au niveau 3 rapporte 3 points." << endl;
     cout << "   A vous de trouver le bon equilibre pour devenir le plus prestigieux des architectes !" << endl;
     cout << "===========================================================" << endl;
     cout << "Appuyez sur Entree pour revenir au menu.";

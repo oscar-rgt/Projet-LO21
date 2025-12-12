@@ -5,8 +5,8 @@
 
 using namespace std;
 
-Joueur::Joueur(const string& n, unsigned int p)
-    : nom(n), pierres(p) {
+Joueur::Joueur(const string& n)
+    : nom(n), pierres(2) {
     cite = new Cite();
     score = new Score(this);
     cite->placerTuileDepart();

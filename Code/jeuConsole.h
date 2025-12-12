@@ -30,5 +30,6 @@ private:
     std::vector<std::string> nomsJoueurs;
     std::array<bool, 5> variantesActives = { false };
 };
+//class FinPartieException {};
 
 #endif // JEU_CONSOLE_H

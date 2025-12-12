@@ -1,5 +1,4 @@
 #include <iostream>
-#include <algorithm>
 #include "cite.h"
 #include "score.h"
 #include "tuiles.h"
@@ -7,11 +6,7 @@
 #include <cmath>
 using namespace std;
 
-const Hexagone* Cite::getHexagone(Coord c) const {
-    auto it = carte.find(c);
-    if (it != carte.end()) return it->second;
-    return nullptr;
-}
+
 
 // =========================================================
 // 1. OUTILS DE VOISINAGE
@@ -19,21 +14,17 @@ const Hexagone* Cite::getHexagone(Coord c) const {
 
 // On garde une vérification large (8 voisins) pour être sûr de détecter
 // les contacts quelle que soit la topologie de la grille.
-vector<Coord> Cite::getVecteursVoisins(bool isXOdd) const{
-    if (!isXOdd) return {
-        {0, -1, 0}, {0, 1, 0},   // Vertical
-        {-1, 0, 0}, {1, 0, 0},   // Horizontal même ligne
-        {-1, 1, 0}, {1, 1, 0}  // Horizontal autre ligne
-    };
+vector<Coord> Cite::getVecteursVoisins() const{
     return {
-            {0, -1, 0}, {0, 1, 0},   // Vertical
-            {-1, 0, 0}, {1, 0, 0},   // Horizontal même ligne
-            {-1, -1, 0}, {1, -1, 0}  // Horizontal autre ligne
+        {0, -1, 0}, {0, 1, 0},   // Vertical
+        {-1, 0, 0}, {1, 0, 0},   // Horizontal bas
+        {-1, 1, 0}, {1, 1, 0}  // Horizontal haut
     };
 }
 
 const bool Cite::toucheCite(Coord c) { //marche pas (jsp pk)
-    for (const auto& vec : getVecteursVoisins((c.x)%2)) {
+    if (carte.empty()) return false;
+    for (const auto& vec : getVecteursVoisins()) {
         if (!estLibre({ c.x + vec.x, c.y + vec.y, c.z })) return true;
     }
     return false;
@@ -73,7 +64,7 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j) {
                 break;
             }
         }
-        if (!contact) throw CiteException("Placement impossible : La tuile ne touche pas la cite.");
+        if (!contact) throw CiteException("Placement impossible : La tuile ne touche pas la cité.");
     }
     else {
         // Niveau Z > 0 : Support requis sous CHAQUE hexagone
@@ -95,8 +86,8 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j) {
         if (memeSupportPartout)
             throw CiteException("Placement impossible : La tuile recouvre une seule et même tuile.");
     }
-    // Sortie du cadrillage
-    for (Coord h : pos) if (h.y>999 || h.y < -99 || h.z < 0) throw CiteException("Placement impossible : Quadrillage trop petit (WIP)");
+    // Temporaire : sortie du cadrillage
+    for (Coord h : pos) if (h.x > 7 || h.x < -7 || h.y>3 || h.y < -2 || h.z < 0) throw CiteException("Placement impossible : Quadrillage trop petit (WIP)");
 
     //D.Sauvegarde
     Action act;
@@ -121,30 +112,13 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j) {
             Coord dessous = { pos[i].x, pos[i].y, pos[i].z - 1 };
             auto it = carte.find(dessous);
             if (it != carte.end()) {
-				if (it->second->getType() == TypeQuartier::Carriere) j->ajouterPierres(1); //donne 1 pierre si hexagone en dessous est une place
                 carte.erase(it);
             }
         }
         carte[pos[i]] = t->getHexagone(i);
     }
     // F. AFFICHAGE
-    if (pos[0].y >= (quadrillage.maxY)) agrandirQ('N');
-    if (pos[1].y >= (quadrillage.maxY)) agrandirQ('N');
-    if (pos[0].y <= (quadrillage.minY)) agrandirQ('S');
-    if (pos[1].y <= (quadrillage.minY)) agrandirQ('S');
-    if (pos[0].x > (quadrillage.maxX) || pos[0].x < (quadrillage.minX) || pos[2].x >(quadrillage.maxX) || pos[2].x < (quadrillage.minX)) {
-        for (auto h : pos) {
-            quadrillage.hors_txt += " [";
-            quadrillage.hors_txt += to_string(h.x);
-            quadrillage.hors_txt += ", ";
-            quadrillage.hors_txt += to_string(h.y);
-            quadrillage.hors_txt += ", ";
-            quadrillage.hors_txt += to_string(h.z);
-            quadrillage.hors_txt += "] : ";
-            quadrillage.hors_txt += carte.at(h)->affiche();
-            quadrillage.hors_txt += "\n";
-        }
-    } else remplirQuadrillage(c, *t);
+    remplirQuadrillage(c, *t);
 }
 
 // =========================================================
@@ -170,8 +144,7 @@ void Cite::placerTuileDepart() {
 }
 
 void Cite::afficher() const {
-    cout << quadrillage.txt << endl;
-    if (quadrillage.hors_txt != "") cout << quadrillage.hors_txt << endl;
+    cout << quadrillage << endl;
 }
 
 
@@ -188,7 +161,7 @@ Coord Coord::cote(bool inversion) {
 
 vector<Hexagone*> Cite::getAdjacents(Coord c) const {
     vector<Hexagone*> ret;
-    for (const auto& vec : getVecteursVoisins(c.x%2)) {
+    for (const auto& vec : getVecteursVoisins()) {
         Coord voisin = { c.x + vec.x, c.y + vec.y, c.z };
         auto it = carte.find(voisin);
 
@@ -215,13 +188,12 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
             h = c;
         }
 
-        int l = h.y * - quadrillage.hex_height + quadrillage.line_offset;
-        int c = h.x * quadrillage.hex_width + quadrillage.col_offset;
-        j = c + l * quadrillage.line_length;
-        if ((h.x % 2)) j += 2*quadrillage.line_length;
-        if (j<0 || j > quadrillage.txt.length()) throw CiteException("Placement impossible : sortie du quadrillage");
-        //replace(quadrillage.txt.begin(), quadrillage.txt.end(), ' ', '.'); //debug ascii
-        quadrillage.txt.replace(j, 3, t.getHexagone(i)->affiche());
+        int l = h.y * -4 + 14;
+        int c = h.x * 7 + 56;
+        j = c + l * 110;
+        if ((h.x % 2)) j += 220;
+        if (j<0 || j > quadrillage.length()) throw CiteException("Placement impossible : sortie du quadrillage");
+        quadrillage.replace(j, 3, t.getHexagone(i)->affiche());
     }
 }
 
@@ -231,31 +203,14 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
 
 void Cite::agrandirQ(char dir) {
     if (dir == 'S') {
-        quadrillage.minY--;
-        string extension = to_string(quadrillage.minY);
-        if (quadrillage.minY > -10) extension += " ";
-        extension += R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
-        quadrillage.txt.replace(quadrillage.txt.length() - quadrillage.line_length, quadrillage.line_length, extension);
-        quadrillage.txt += R"(
-  /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
-  \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
-   \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
-     -9     -8     -7     -6     -5     -4     -3     -2     -1      0      1      2      3      4      5      6      7       8      9    
+        string rep = to_string(lround(quadrillage.length() / 110) - 30);
+        rep += R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
+        quadrillage.replace(quadrillage.length() - 110, 110, rep);
+        quadrillage += R"(
+ /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
+ \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
+  \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
+     -7     -6     -5    -4     -3     -2     -1      0      1      2      3      4      5      6      7     
 )";
     }
-    if (dir == 'N') {
-        quadrillage.maxY++;
-        string extension = R"(
-  /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
-  \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
-   \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
-)";
-        extension += to_string(quadrillage.maxY);
-        if (quadrillage.maxY < 10) extension += "  ";
-        else if (quadrillage.maxY < 100) extension += " ";
-        extension+=R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
-        quadrillage.txt = extension + quadrillage.txt;
-        quadrillage.line_offset += 4;
-    }
-
 }
