@@ -12,6 +12,7 @@
 #include <QMessageBox>
 #include "partie.h"
 #include "tuileitem.h"
+#include "ia.h"
 
 class MainWindow : public QMainWindow
 {
@@ -31,6 +32,7 @@ private slots:
     void onInversionClicked();
     void onValidationClicked();
     void selectionnerTuileChantier(int index);
+    void afficherFinDePartie();   // Nouveau : pour afficher les résultats
 
 private:
     // Widgets pour le menu principal
@@ -48,9 +50,12 @@ private:
     QPushButton *btnRotation;
     QPushButton *btnInversion;
     QPushButton *btnValidation;
+    QPushButton* btnPasserTour;
 
     // État de la partie
     int indexTuileSelectionnee;
+    int rotationCompteur; // Nouveau : pour suivre le nombre de rotations
+    bool inversionEtat;   // Nouveau : pour suivre l'état d'inversion
 
     // Méthodes d'affichage
     void initialiserPageMenuPrincipal();
@@ -59,6 +64,7 @@ private:
     void dessinerCite(Joueur* joueur);
     void dessinerChantier();
     QColor getTypeColor(TypeQuartier t);
+    void onPasserTourClicked();
 };
 
 #endif // MAINWINDOW_H
