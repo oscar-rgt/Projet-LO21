@@ -7,20 +7,27 @@
 #include "tuiles.h"
 #include "hexagoneitem.h"
 
-class TuileItem : public QObject, public QGraphicsItemGroup {
-    Q_OBJECT // 2. La macro est OBLIGATOIRE pour les signaux
+class TuileItem : public QObject, public QGraphicsItemGroup
+{
+    Q_OBJECT
     Q_INTERFACES(QGraphicsItem)
-public:
-    // On garde un pointeur vers le modèle pour récupérer l'ID ou le prix au clic
-    Tuile* modeleTuile;
-    int indexChantier; // Pour savoir quelle tuile c'est dans le vecteur du chantier
 
+public:
+    Tuile* modeleTuile;  // Pointeur vers le modèle de la tuile
+    int indexChantier;    // Index de la tuile dans le chantier
+
+    // Constructeur : prend une tuile, son index dans le chantier, et le rayon des hexagones
     TuileItem(Tuile* t, int index, double rayon = 30.0);
 
-    // Helpers pour récupérer la couleur (à déplacer idéalement dans un utilitaire partagé)
-    QColor getTypeColor(TypeQuartier t);
+    // Méthode pour obtenir la couleur associée à un type de quartier
+    static QColor getTypeColor(TypeQuartier t);
+
+protected:
+    // Gestion de l'événement de clic sur la tuile
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
-signals :
+
+signals:
+    // Signal émis quand la tuile est cliquée (avec son index dans le chantier)
     void clicked(int index);
 };
 
