@@ -66,6 +66,10 @@ public:
     void setNbJoueurs(int n) { nbJoueurs = n; }
     void setIndexJoueurActuel(int i) { indexJoueurActuel = i; }
     void setIndexPileActuelle(int i) { indexPileActuelle = i; }
+<<<<<<< Updated upstream
+=======
+    void setNiveauIllustreConstructeur(unsigned int n) { niveauIllustreConstructeur = n; }
+>>>>>>> Stashed changes
 
     // Gestion des vecteurs
     void viderJoueurs() { joueurs.clear(); }

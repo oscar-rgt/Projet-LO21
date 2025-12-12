@@ -25,6 +25,7 @@ public:
     int getPierres() const { return pierres; }
     void ajouterPierres(unsigned int n = 0);
     bool utiliserPierres(unsigned int n = 1);
+    virtual bool estIA() const { return false; }
     virtual ~Joueur();
 };
 

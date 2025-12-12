@@ -28,6 +28,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="partie.cpp" />
     <ClCompile Include="pile.cpp" />
+    <ClCompile Include="quadrillage.cpp" />
     <ClCompile Include="save.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="tuiles.cpp" />
@@ -42,6 +43,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="partie.h" />
     <ClInclude Include="pile.h" />
+    <ClInclude Include="quadrillage.h" />
     <ClInclude Include="save.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="tuiles.h" />

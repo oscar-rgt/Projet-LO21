@@ -140,7 +140,11 @@ void JeuConsole::jouerTour() {
         cout << "\n>>> SAUVEGARDE EN COURS... <<<" << endl;
         
         if (SaveManager::sauvegarder(Partie::getInstance(), "save.txt")) {
+<<<<<<< Updated upstream
             cout << ">> SUCCES : Partie sauvegardee dans 'save.txt'" << endl;
+=======
+            cout << ">> SUCCES : Partie sauvegardee dans 'akropolis_save.txt'" << endl;
+>>>>>>> Stashed changes
         } else {
             cout << ">> ERREUR : Impossible de sauvegarder la partie." << endl;
         }

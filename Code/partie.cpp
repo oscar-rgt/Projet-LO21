@@ -31,7 +31,7 @@ Partie::Partie() :
 Partie::~Partie() {
     for (auto j : joueurs) delete j;
     joueurs.clear();
-    for (auto p : piles) delete p;
+    for (auto p : piles) delete p; 
     piles.clear();
     chantier.vider();
 }
@@ -40,9 +40,8 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
     // Reset
     for (auto j : joueurs) delete j;
     joueurs.clear();
-    for (auto p : piles) delete p;
-    piles.clear();
     chantier.vider();
+    piles.clear();
 
     nbJoueurs = nb;
     modeTuileCite = mode;
@@ -198,7 +197,7 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int
         return true;
 
     }
-    catch (const CiteException&) {
+    catch (const CiteException& e) {
         // Annuler la rotation pour remettre la tuile dans l'état initial visuel
         for (int r = 0; r < (3 - rotation) % 3; ++r) t->tourner();
         return false;
