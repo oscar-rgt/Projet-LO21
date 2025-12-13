@@ -3,7 +3,10 @@
 #include "ia.h"
 #include "tuiles.h"
 #include "cite.h"
+<<<<<<< Updated upstream
 #include "partie.h"
+=======
+>>>>>>> Stashed changes
 #include "save.h"
 #include <iostream>
 #include <limits>
@@ -57,10 +60,22 @@ void JeuConsole::afficherChantier() {
     const int hauteur = 9;
     const int largeur_reelle = 20;
     const int largeur_visuelle = 19;
+<<<<<<< Updated upstream
     
     cout << "\n=== CHANTIER === " << Partie::getInstance().getNbPiles() - (Partie::getInstance().getIndexPileActuelle()) << " pile(s) restante(s)" << endl;
     for (int i = 0; i < chantier.getNbTuiles(); ++i) {
         Tuile* t = chantier.getTuile(i);
+=======
+
+
+    // Calcul : Total piles - Index pile actuelle
+    size_t pilesRestantes = Partie::getInstance().getPiles().size() - Partie::getInstance().getIndexPileActuelle();
+    cout << "\n=== CHANTIER === " << pilesRestantes << " pile(s) restante(s)" << endl;
+
+    // --- 2. AFFICHAGE DES TUILES VIA ITÉRATEUR ---
+    for (auto it = chantier.begin(); it != chantier.end(); ++it) {
+        Tuile* t = *it; // Accès à la tuile via l'itérateur
+>>>>>>> Stashed changes
         string designTuile = t->getDesign();
         for (int j = 0; j < hauteur; j++) {
             string segment = designTuile.substr(j * largeur_reelle, largeur_visuelle);
@@ -112,7 +127,11 @@ void JeuConsole::jouerTour() {
 
     Joueur* j = Partie::getInstance().getJoueurActuel();
 
+<<<<<<< Updated upstream
     // --- TOUR DE L'IA ---
+=======
+    // --- TOUR IA (Inchangé) ---
+>>>>>>> Stashed changes
     if (dynamic_cast<IA*>(j)) {
         cout << "\n\n--- TOUR DE L'IA ---" << endl;
         cout << "\nL'Illustre Constructeur reflechit..." << endl;
@@ -125,12 +144,17 @@ void JeuConsole::jouerTour() {
             cin.get();
         }
         catch (const PartieException& e) {
+<<<<<<< Updated upstream
             cout << "Erreur IA : " << e.getInfo() << endl;
+=======
+            cout << "L'IA a rencontre une erreur : " << e.what() << endl;
+>>>>>>> Stashed changes
         }
         return;
     }
 
     // --- TOUR HUMAIN ---
+<<<<<<< Updated upstream
     size_t maxChoix = Partie::getInstance().getChantier().getNbTuiles() - 1;
 
     cout << "\n--- ACTION ---" << endl;
@@ -147,11 +171,49 @@ void JeuConsole::jouerTour() {
         
         cout << "Au revoir !" << endl;
         exit(0);
+=======
+
+    const auto& chantier = Partie::getInstance().getChantier();
+    size_t maxChoix = chantier.getNbTuiles() - 1;
+
+    cout << "\n--- ACTION ---" << endl;
+    
+    // MODIFICATION 1 : On appelle saisieNombre avec min = -1
+    int index = saisieNombre("Quelle tuile choisir ? (-1 pour Sauvegarder & Quitter)", -1, (int)maxChoix);
+
+    // MODIFICATION 2 : Gestion de la sauvegarde
+    if (index == -1) {
+        if (saisieOuiNon("Voulez-vous sauvegarder et quitter la partie ?")) {
+            cout << "\nSauvegarde en cours..." << endl;
+            if (SaveManager::sauvegarder(Partie::getInstance(), "save.txt")) {
+                cout << ">> Partie sauvegardee avec succes dans 'save.txt' !" << endl;
+            } else {
+                cout << ">> ERREUR CRITIQUE : La sauvegarde a echoue." << endl;
+            }
+            
+            cout << "A bientot !" << endl;
+            exit(0); // On ferme le programme proprement
+        } else {
+            // Si on annule, on relance le tour
+            jouerTour(); 
+            return;
+        }
+    }
+
+    // 2. Récupérer la tuile choisie (Suite logique inchangée)
+    auto itTuile = chantier.begin();
+    for (int k = 0; k < index; ++k) {
+        ++itTuile;
+>>>>>>> Stashed changes
     }
 
     Tuile* tuileAffichee = Partie::getInstance().getChantier().getTuile(index);
 
+<<<<<<< Updated upstream
     // --- MODE PREVISUALISATION ---
+=======
+    // --- MODE PREVISUALISATION (Inchangé) ---
+>>>>>>> Stashed changes
     bool placementValide = false;
     int rotationCompteur = 0;
     bool inversionEtat = false;
@@ -159,10 +221,14 @@ void JeuConsole::jouerTour() {
 
     while (!placementValide) {
         nettoyerEcran();
+<<<<<<< Updated upstream
         afficherEtatJeu();
 
         cout << "\nTuile selectionnee :" << endl;
         cout << tuileAffichee->getDesign() << endl;
+=======
+        afficherEtatJeu(); 
+>>>>>>> Stashed changes
 
         cout << "\nCommandes : [R]otation | [I]nversion | [V]alider | [A]nnuler choix" << endl;
         cout << "Votre choix : ";
@@ -179,11 +245,19 @@ void JeuConsole::jouerTour() {
             inversionEtat = !inversionEtat;
         }
         else if (choix == "A" || choix == "a") {
+<<<<<<< Updated upstream
             // Annuler : on remet tout comme avant
             if (tuileAffichee->getInversion() != invInitial) tuileAffichee->inverser();
             for (int i = 0; i < (3 - (rotationCompteur % 3)) % 3; ++i) tuileAffichee->tourner();
             
             jouerTour(); // On recommence le choix
+=======
+            // Reset visuel avant d'annuler
+            if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser();
+            for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) tuileAffichee->tourner();
+            
+            jouerTour(); // On recommence le tour
+>>>>>>> Stashed changes
             return;
         }
         else if (choix == "V" || choix == "v") {
@@ -191,12 +265,22 @@ void JeuConsole::jouerTour() {
         }
     }
 
+<<<<<<< Updated upstream
     // --- PLACEMENT ---
     int x = saisieNombre("Coord X", -20, 20);
     int y = saisieNombre("Coord Y", -20, 20);
     int z = saisieNombre("Coord Z (Niveau)", 0, 10);
 
     // On passe 0 et false car la tuile a déjà été tournée visuellement sur le pointeur du chantier
+=======
+    // Placement (Inchangé)
+    int x = saisieNombre("Coord X", -999, 999);
+    int y = saisieNombre("Coord Y", -99, 999);
+    int z = saisieNombre("Coord Z (Niveau)", 0, 10);
+
+    cout << "\n\nLa tuile\n\n" << tuileAffichee->getDesign() << "\n\nva etre placee en (" << x << ", " << y << ", " << z << ").\n" << endl;
+
+>>>>>>> Stashed changes
     if (saisieOuiNon("Valider ce choix ?")) {
         try {
             bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, 0, false);
@@ -209,17 +293,29 @@ void JeuConsole::jouerTour() {
                 jouerTour();
             }
         }
+<<<<<<< Updated upstream
         catch (CiteException& e) {
             cout << ">> ECHEC : " << e.getInfos() << endl;
+=======
+        catch (const std::exception& e) {
+            cout << ">> ECHEC : " << e.what() << endl;
+            cout << "Appuyez sur Entree pour reessayer...";
+>>>>>>> Stashed changes
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cin.get();
             jouerTour();
         }
     }
     else {
+<<<<<<< Updated upstream
         // Annulation finale : on remet l'état initial
         if (tuileAffichee->getInversion() != invInitial) tuileAffichee->inverser();
         for (int i = 0; i < (3 - (rotationCompteur % 3)) % 3; ++i) tuileAffichee->tourner();
+=======
+        // Annulation finale
+        if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser(); 
+        for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) tuileAffichee->tourner(); 
+>>>>>>> Stashed changes
         jouerTour();
     }
 }
@@ -340,7 +436,11 @@ void JeuConsole::lancer() {
 
     cout << "\n--- CLASSEMENT ---" << endl;
     for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
+<<<<<<< Updated upstream
         Joueur* j = Partie::getInstance().getJoueur(i);
+=======
+        Joueur* j = Partie::getInstance().getJoueurs()[i];
+>>>>>>> Stashed changes
 
         IA* ia = dynamic_cast<IA*>(j);
         if (ia) ia->calculerScoreIA(); // Mise à jour score IA

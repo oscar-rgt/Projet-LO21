@@ -38,7 +38,10 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
     const vector<Pile*>& piles = partie.getPiles();
     f << piles.size() << endl;
     for (Pile* p : piles) {
+<<<<<<< Updated upstream
         // On utilise getTuiles() défini dans pile.h
+=======
+>>>>>>> Stashed changes
         const auto& contenu = p->getTuiles();
         f << contenu.size() << endl;
         for (Tuile* t : contenu) {
@@ -66,8 +69,20 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
             f << historique.size() << endl;
             
             for (const Action& a : historique) {
+<<<<<<< Updated upstream
                 // On sauvegarde ID, X, Y, Z, Inversion
                 f << a.tuileId << " " << a.x << " " << a.y << " " << a.z << " " << a.inversion << endl;
+=======
+                // Métadonnées de l'action
+                f << a.tuileId << " " << a.x << " " << a.y << " " << a.z 
+                  << " " << a.inversion << " " << a.rotation << endl;
+
+                // SAUVEGARDE DU CONTENU VISUEL (Type + Etoiles pour les 3 hexagones)
+                for(int k=0; k<3; ++k) {
+                    f << a.hexas[k].type << " " << a.hexas[k].etoiles << " ";
+                }
+                f << endl; // Saut de ligne pour lisibilité
+>>>>>>> Stashed changes
             }
 
             // IA (Inventaire)
@@ -88,6 +103,7 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
 
     f.close();
     return true;
+<<<<<<< Updated upstream
 }
 
 // =========================================================
@@ -220,6 +236,155 @@ bool SaveManager::charger(Partie& partie, const string& nomFichier) {
     return true;
 }
 
+=======
+}
+// =========================================================
+// CHARGER
+// =========================================================
+bool SaveManager::charger(Partie& partie, const string& nomFichier) {
+    ifstream f(nomFichier);
+    if (!f) return false;
+
+    // RESET TOTAL
+    partie.resetPourChargement(); 
+
+    int codeModeJeu, idxJ, idxP;
+    unsigned int niveauIA;
+
+    if (!(f >> codeModeJeu >> idxJ >> idxP >> niveauIA)) return false;
+
+    bool modeSolo = (codeModeJeu == 1);
+    int nombreParticipants = modeSolo ? 2 : codeModeJeu;
+
+    partie.setNbJoueurs(nombreParticipants);
+    partie.setIndexJoueurActuel(idxJ);
+    partie.setIndexPileActuelle(idxP);
+    partie.setNiveauIllustreConstructeur(niveauIA);
+
+    // --- CHARGEMENT DES PILES ---
+    size_t nbPiles;
+    f >> nbPiles;
+    const vector<Pile*>& pilesExistantes = partie.getPiles();
+
+    for (size_t i = 0; i < nbPiles; i++) {
+        size_t nbTuilesDansPile;
+        f >> nbTuilesDansPile;
+
+        if (i < pilesExistantes.size()) {
+            Pile* p = pilesExistantes[i];
+            p->vider(); 
+            for (size_t k = 0; k < nbTuilesDansPile; k++) {
+                unsigned int id, prix;
+                f >> id >> prix;
+                Tuile* t = Tuile::fabriquer(id, prix);
+                p->ajouterTuile(t);
+            }
+        } else {
+            for (size_t k = 0; k < nbTuilesDansPile; k++) { 
+                unsigned int d1, d2; f >> d1 >> d2; 
+            }
+        }
+    }
+
+    // --- CHARGEMENT DU CHANTIER ---
+    size_t nbTuilesChantier;
+    f >> nbTuilesChantier;
+    partie.getChantier().vider(); 
+
+    for (size_t i = 0; i < nbTuilesChantier; ++i) {
+        unsigned int id, prix;
+        f >> id >> prix;
+        Tuile* t = Tuile::fabriquer(id, prix);
+        partie.getChantier().ajouterTuileSpecifique(t);
+    }
+
+    // --- CHARGEMENT DES JOUEURS ---
+    for (int i = 0; i < nombreParticipants; i++) {
+        string nom;
+        f >> nom; 
+
+        Joueur* j = nullptr;
+        IA* ptrIA = nullptr;
+
+        if (modeSolo && i == 1) {
+            ptrIA = new IA(nom, niveauIA);
+            j = ptrIA;
+        } else {
+            j = new Joueur(nom);
+        }
+        partie.ajouterJoueur(j);
+
+        int pierresSauvegardees;
+        f >> pierresSauvegardees;
+
+        // --- RECONSTRUCTION CITE ---
+        size_t nbActions;
+        f >> nbActions;
+        Cite* cite = j->getCite();
+        
+        for(size_t k = 0; k < nbActions; k++) {
+            int tid, x, y, z, rot;
+            bool inv;
+            
+            // 1. Lecture métadonnées
+            f >> tid >> x >> y >> z >> inv >> rot;
+
+            // 2. Lecture des détails des hexagones (Type et Etoiles)
+            struct HexaInfo { int type; int etoiles; };
+            HexaInfo infos[3];
+            for(int h=0; h<3; ++h) {
+                f >> infos[h].type >> infos[h].etoiles;
+            }
+
+            // 3. Création de la tuile (aléatoire pour l'instant)
+            Tuile* t = Tuile::fabriquer(tid, 0); 
+            
+            // 4. APPLICATION DE L'ORIENTATION (CRUCIAL : AVANT LA RECONSTRUCTION)
+            // On tourne/inverse la tuile pour que ses indices 0,1,2 correspondent
+            // à la position physique sauvegardée.
+            if (inv) t->inverser();
+            for (int r = 0; r < rot; ++r) {
+                t->tourner();
+            }
+
+            // 5. RECONSTRUCTION DU CONTENU
+            // Maintenant que la tuile est orientée, on injecte les bons types/étoiles
+            for(int h=0; h<3; ++h) {
+                t->reconstruireHexagone(h, infos[h].type, infos[h].etoiles);
+            }
+            
+            // 6. PLACEMENT
+            Coord c = {x, y, z};
+            try {
+                cite->placer(t, c, j, rot);
+            } catch (...) {
+                // En cas d'erreur (ex: tuile de départ), on continue
+            }
+        }
+
+        // Restauration pierres
+        int pierresActuelles = j->getPierres();
+        if (pierresActuelles > 0) j->utiliserPierres(pierresActuelles);
+        j->ajouterPierres(pierresSauvegardees);
+
+        // Inventaire IA
+        size_t nbTuilesIA;
+        f >> nbTuilesIA;
+        for (size_t k = 0; k < nbTuilesIA; k++) {
+            unsigned int id, prix;
+            f >> id >> prix;
+            if (ptrIA) {
+                Tuile* t = Tuile::fabriquer(id, prix);
+                ptrIA->ajouterTuile(t); 
+            }
+        }
+    }
+
+    f.close();
+    return true;
+}
+
+>>>>>>> Stashed changes
 bool SaveManager::supprimerSauvegarde(const string& nomFichier) {
     if (std::remove(nomFichier.c_str()) == 0) return true;
     return false;

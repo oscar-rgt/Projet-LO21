@@ -30,6 +30,8 @@ public:
 
     // Helper pour vérifier si une tuile contient une Place
     static bool tuileContientPlace(Tuile* t);
+    bool estIA() const override { return true; }
+    const std::vector<Tuile*>& getTuilesAcquises() const { return tuilesAcquises; }
 };
 
 #endif

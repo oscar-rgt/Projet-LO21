@@ -27,6 +27,7 @@ public:
     bool utiliserPierres(unsigned int n = 1);
     virtual bool estIA() const { return false; }
     virtual ~Joueur();
+    virtual bool estIA() const { return false; }
 };
 
 #endif

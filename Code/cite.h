@@ -14,10 +14,18 @@ struct InfoHexa {
 };
 
 struct Action {
+<<<<<<< Updated upstream
 	int tuileId;
 	int x, y, z;
 	bool inversion;
 	InfoHexa hexas[3];
+=======
+    int tuileId;
+    int x, y, z;
+    bool inversion;
+    int rotation;
+    InfoHexa hexas[3];
+>>>>>>> Stashed changes
 };
 
 struct Coord { //Tuple de coordonnées 
@@ -52,6 +60,7 @@ private:
 	TuileDepart* t;
 	vector<Action> historique;
 public:
+<<<<<<< Updated upstream
 	Cite() : quadrillage(R"(
           _____         _____         _____         _____         _____         _____         _____          
          /     \       /     \       /     \       /     \       /     \       /     \       /     \          
@@ -96,3 +105,41 @@ public:
 	void agrandirQ(char dir);
 	const vector<Action>& getHistorique() const { return historique; }
 };
+=======
+    // ==========================================
+    // ITERATOR CONST 
+    // ==========================================
+    class ConstIterator {
+        friend class Cite;
+        unordered_map<Coord, Hexagone*, CoordHash>::const_iterator current;
+        ConstIterator(unordered_map<Coord, Hexagone*, CoordHash>::const_iterator it) : current(it) {}
+    public:
+        ConstIterator() {}
+        ConstIterator& operator++() { ++current; return *this; }
+        bool operator!=(const ConstIterator& other) const { return current != other.current; }
+        bool operator==(const ConstIterator& other) const { return current == other.current; }
+
+        // Renvoie la paire {Coord, Hexagone*}
+        const pair<const Coord, Hexagone*>& operator*() const { return *current; }
+        const pair<const Coord, Hexagone*>* operator->() const { return &(*current); }
+    };
+
+    ConstIterator begin() const { return ConstIterator(carte.begin()); }
+    ConstIterator end() const { return ConstIterator(carte.end()); }
+
+    const Hexagone* getHexagone(Coord c) const;
+
+    Cite() : quadrillage(), t(new TuileDepart) {}
+    ~Cite() { delete t; }
+    void placer(Tuile* t, Coord c, Joueur* j, int rotation = 0);
+    void placerTuileDepart();
+    const bool estLibre(Coord c) const { return (carte.find(c) == carte.end()); }
+    const bool estRecouvert(Coord c) const { return (!estLibre({ c.x, c.y, c.z + 1 })); }
+    void afficher() const;
+    void remplirQuadrillage(Coord c, Tuile& t);
+    vector<Hexagone*> getAdjacents(Coord c) const;
+    vector<Coord> getVecteursVoisins(bool isXOdd) const;
+    void agrandirQ(char dir);
+    const vector<Action>& getHistorique() const { return historique; }
+};
+>>>>>>> Stashed changes

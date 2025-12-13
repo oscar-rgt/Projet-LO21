@@ -26,6 +26,17 @@ public:
 
     bool estVide() const;
     void vider();
+<<<<<<< Updated upstream
+=======
+
+    // Accesseurs pour l'affichage (références constantes)
+    const Tuile* getTuile(size_t index) const{
+    if (index >= tuiles.size()) return nullptr;
+    return tuiles[index];}
+
+
+
+>>>>>>> Stashed changes
     void ajouterTuileSpecifique(Tuile* t);
 
 // ... (reste du fichier avec Iterator)

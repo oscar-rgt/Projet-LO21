@@ -176,9 +176,16 @@ string& Tuile::getDesign() {
 }
 
 void Tuile::reconstruireHexagone(int index, int typeInt, int etoiles) {
-    if (index < 0 || index >= 3) return;
+    // Vérification de sécurité
+    if (index < 0 || index >= (int)hexagones.size()) return;
+    
     Hexagone* h = hexagones[index];
+    
+    // On écrase les valeurs aléatoires par les valeurs sauvegardées
     h->type = (TypeQuartier)typeInt;
     h->etoiles = etoiles;
-    h->place = (h->estPlace());
+    
+    // Mise à jour de la propriété "place" :
+    // Dans Akropolis, si un hexagone a des étoiles, c'est une Place.
+    h->place = (etoiles > 0); 
 }

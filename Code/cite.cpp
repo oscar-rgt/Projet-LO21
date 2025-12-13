@@ -34,7 +34,7 @@ const bool Cite::toucheCite(Coord c) { //marche pas (jsp pk)
 // 2. MÉTHODE PLACER (Version Finale)
 // =========================================================
 
-void Cite::placer(Tuile* t, Coord c, Joueur* j) {
+void Cite::placer(Tuile* t, Coord c, Joueur* j, int rotation) {
     // A. CALCUL DES POSITIONS (SLOTS)
     // Nouvelle géométrie demandée :
     Coord pos[3];
@@ -96,6 +96,7 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j) {
     act.y = c.y;
     act.z = c.z;
     act.inversion = t->getInversion();
+    act.rotation = rotation;
 
     // On sauvegarde l'état VISUEL actuel des hexagones (après rotation éventuelle)
     for (int k = 0; k < 3; k++) {
