@@ -253,8 +253,7 @@ void MainWindow::mettreAJourInterface()
     dessinerChantier();
 }
 
-void MainWindow::dessinerCite(Joueur* joueur)
-{
+void MainWindow::dessinerCite(Joueur* joueur) {
     sceneCite->clear();
     Cite* cite = joueur->getCite();
     double taille = 30.0;
@@ -270,7 +269,10 @@ void MainWindow::dessinerCite(Joueur* joueur)
         pixelY -= (pos.z * 10.0);
 
         QColor couleur = getTypeColor(hex->getType());
-        HexagoneItem* item = new HexagoneItem(pixelX, pixelY, taille, couleur, pos.x, pos.y, pos.z);
+        int nbEtoiles = hex->estPlace() ? hex->getEtoiles() : 0;
+
+        // Création de l'hexagone avec les étoiles
+        HexagoneItem* item = new HexagoneItem(pixelX, pixelY, taille, couleur, pos.x, pos.y, pos.z, nbEtoiles);
         sceneCite->addItem(item);
 
         QGraphicsTextItem* txt = sceneCite->addText(QString("%1, %2, %3").arg(pos.x).arg(pos.y).arg(pos.z));
@@ -279,6 +281,7 @@ void MainWindow::dessinerCite(Joueur* joueur)
         txt->setDefaultTextColor(Qt::white);
     }
 }
+
 
 
 
@@ -473,7 +476,11 @@ void MainWindow::afficherFinDePartie() {
         message += "<<<";
     }
     QMessageBox::information(this, "Fin de Partie", message);
+
+    // Retour à l'écran principal après la fermeture de la boîte de dialogue
+    stackedWidget->setCurrentWidget(pageMenuPrincipal);
 }
+
 
 
 QColor MainWindow::getTypeColor(TypeQuartier t)
