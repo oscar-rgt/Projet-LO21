@@ -18,13 +18,10 @@ public:
     Tuile* getTuile(unsigned int id_);
     size_t getNbTuiles() const { return tuiles.size(); }
     bool estVide() { return tuiles.empty(); }
-<<<<<<< Updated upstream
-=======
     //Pour sauvegarder
     void vider() { tuiles.clear(); } // INDISPENSABLE
     void ajouterTuile(Tuile* t) { tuiles.push_back(t); }
     const vector<Tuile*>& getTuiles() const { return tuiles; }
->>>>>>> Stashed changes
 
 private:
     friend class Partie;

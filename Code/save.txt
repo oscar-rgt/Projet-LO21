@@ -1,22 +1,13 @@
-2
-<<<<<<< Updated upstream
+1
 0
 2
-2
-1 0
-2 1
 1
-Illustre Architecte
-=======
-1
-2
-0
 12
 4
 0 0
 1 0
 2 1
-3 2
+3 1
 3
 10 1
 11 2
@@ -61,17 +52,16 @@ Illustre Architecte
 110 1
 111 2
 112 3
-3
+2
 1 0
-2 1
-3 2
-Lol
-2
+3 1
+Kk
 1
-0 0 -1 0 0
+1
+0 1 -1 0 0
 0
-Mdrr
-2
+Illustre
 0
+1
+0 1 -1 0 0
 0
->>>>>>> Stashed changes
