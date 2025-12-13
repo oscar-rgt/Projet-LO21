@@ -50,6 +50,8 @@ public:
             // On centre le texte par rapport à l'origine (0,0) de l'hexagone
             QRectF bound = txt->boundingRect();
             txt->setPos(-bound.width() / 2, -bound.height() / 2);
+            txt->setZValue(2); // Assure que le texte est au-dessus de l'hexagone
+
         }
     }
 
