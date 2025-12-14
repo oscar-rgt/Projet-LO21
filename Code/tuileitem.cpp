@@ -30,6 +30,8 @@ TuileItem::TuileItem(Tuile* t, int index, double rayon)
         offsets.push_back({-1.0, 0.5}); // À gauche
     }
 
+    double sideX = offsets[2].x * w;
+    double shiftX = -(sideX / 3.0); // Ajout d'un décalage pour centrer la tuile
     // Création des HexagoneItem pour chaque hexagone de la tuile
     for (int i = 0; i < 3; ++i) {
         Hexagone* hexModel = t->getHexagone(i);
@@ -40,8 +42,7 @@ TuileItem::TuileItem(Tuile* t, int index, double rayon)
         double pixelX = relX * w;
         double pixelY = relY * h;
 
-        // Ajout d'un décalage pour centrer la tuile
-        double shiftX = -w / 2.0;
+
         pixelX += shiftX;
 
         // Récupération de la couleur et du nombre d'étoiles
@@ -53,6 +54,7 @@ TuileItem::TuileItem(Tuile* t, int index, double rayon)
         addToGroup(item);
     }
 }
+
 
 // Gestion de l'événement de clic
 void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent *event)

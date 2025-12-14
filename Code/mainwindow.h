@@ -10,6 +10,11 @@
 #include <QHBoxLayout>
 #include <QStackedWidget>
 #include <QMessageBox>
+#include <QLineEdit>
+#include <QCheckBox>
+#include <QRadioButton>
+#include <QButtonGroup>
+#include <QGroupBox>
 #include "partie.h"
 #include "tuileitem.h"
 #include "ia.h"
@@ -27,9 +32,12 @@ protected:
 
 private slots:
     void afficherMenuJeu();
+    void afficherMenuConfig(); // Nouveau slot pour afficher la page config
+    void mettreAJourVisibiliteConfig();
+    void validerConfiguration(); // Slot pour lancer la partie depuis la config
+    void resetConfiguration(); // Slot pour réinitialiser la config
     void afficherMenuRegles();
     void quitterJeu();
-    void demarrerPartie();
     void mettreAJourInterface();
     void onRotationClicked();
     void onInversionClicked();
@@ -43,6 +51,18 @@ private:
     QWidget *pageMenuPrincipal;
     QWidget *pageRegles;
     QWidget *pageJeu;
+
+    // Widgets pour la page de configuration
+    QWidget *pageConfig;
+    QButtonGroup *groupeNbJoueurs;
+    QGroupBox *groupeIA;
+    QButtonGroup *groupeNiveauIA;
+    std::vector<QLineEdit*> champsNomsJoueurs;
+    std::vector<QCheckBox*> checkBoxesVariantes;
+    QCheckBox *checkModeAugmente;
+    void initialiserPageConfiguration();
+
+
 
     // Widgets pour la page de jeu
     QGraphicsScene *sceneCite;
