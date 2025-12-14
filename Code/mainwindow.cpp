@@ -989,14 +989,14 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
 
     // 2. Titre
     QGraphicsTextItem* titre = sceneCite->addText("L'ILLUSTRE ARCHITECTE A JOUÉ");
-    //titre->setDefaultTextColor(Qt::white);
+    titre->setDefaultTextColor(Qt::black);
     //titre->setFont(QFont("Arial", 20, QFont::Bold));
     titre->setPos(-100, -200);
 
     // 3. Info sur l'action
     QString actionText = QString("Il a pris la tuile n°%1 du chantier.").arg(dernierIndexIA + 1);
     QGraphicsTextItem* info = sceneCite->addText(actionText);
-    //info->setDefaultTextColor(Qt::yellow);
+    info->setDefaultTextColor(Qt::black);
     //info->setFont(QFont("Arial", 14));
     info->setPos(-100, -150);
 
@@ -1030,14 +1030,14 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
 
     // 5. Afficher ses pierres
     QGraphicsTextItem* pierres = sceneCite->addText(QString("Pierres : %1").arg(ia->getPierres()));
-    //pierres->setDefaultTextColor(Qt::white);
+    pierres->setDefaultTextColor(Qt::black);
     //pierres->setFont(QFont("Arial", 12));
     pierres->setPos(-50, -100);
 
     // 6. score
     ia->getScore()->calculerScore();
     QGraphicsTextItem* score = sceneCite->addText(QString("Score : %1").arg(ia->getScore()->getTotal()));
-    //score->setDefaultTextColor(Qt::cyan);
+    score->setDefaultTextColor(Qt::black);
     //score->setFont(QFont("Arial", 16, QFont::Bold));
     score->setPos(-50, -60);
 
