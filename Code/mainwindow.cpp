@@ -229,30 +229,63 @@ void MainWindow::initialiserPageMenuPrincipal()
 
 
 
-void MainWindow::initialiserPageRegles()
-{
+void MainWindow::initialiserPageRegles() {
     pageRegles = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(pageRegles);
+    layout->setContentsMargins(20, 20, 20, 20); // Marges externes
+    layout->setSpacing(10); // Espacement entre les éléments
 
+    // Titre
     QLabel *titleLabel = new QLabel("RÈGLES D'AKROPOLIS", pageRegles);
     titleLabel->setStyleSheet("font-size: 24px; font-weight: bold; color: #dc8d55; margin-bottom: 20px;");
     layout->addWidget(titleLabel, 0, Qt::AlignCenter);
 
-    QTextEdit *textRegles = new QTextEdit(pageRegles);
+    // Zone de défilement (occupe tout l'espace disponible)
+    QScrollArea *scrollArea = new QScrollArea(pageRegles);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setFrameShape(QFrame::NoFrame);
+    scrollArea->setStyleSheet(
+        "QScrollArea { background-color: transparent; border: none; }"
+        "QScrollBar:vertical {"
+        "    border: none;"
+        "    background: #f0f0f0;"
+        "    width: 12px;"
+        "    margin: 0px;"
+        "}"
+        "QScrollBar::handle:vertical {"
+        "    background: #dc8d55;"
+        "    min-height: 20px;"
+        "    border-radius: 6px;"
+        "}"
+        "QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {"
+        "    height: 0px;"
+        "}"
+        );
+
+    // Widget interne pour le texte (avec layout centré)
+    QWidget *textContainer = new QWidget();
+    QVBoxLayout *textContainerLayout = new QVBoxLayout(textContainer);
+    textContainerLayout->setContentsMargins(20, 20, 20, 20); // Marges internes
+
+    // Widget pour centrer le texte (largeur fixe)
+    QWidget *centerWidget = new QWidget();
+    centerWidget->setFixedWidth(1400); // Largeur fixe pour le texte
+    centerWidget->setFixedHeight(1000);
+    QVBoxLayout *centerLayout = new QVBoxLayout(centerWidget);
+    centerLayout->setContentsMargins(0, 0, 0, 0);
+
+    QTextEdit *textRegles = new QTextEdit(centerWidget);
     textRegles->setReadOnly(true);
-    textRegles->setFixedWidth(800);
-    textRegles->setFixedHeight(850);
-    // On enlève la bordure moche par défaut et on met un fond transparent (ou blanc si vous préférez)
     textRegles->setFrameShape(QFrame::NoFrame);
-    textRegles->setStyleSheet("background-color: transparent; color: #2C3E50;");
+    textRegles->setStyleSheet("background-color: transparent; color: #2C3E50; font-size: 16px;");
+    textRegles->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
     QString contenuHtml = R"(
         <div style='font-size: 16px; line-height: 1.4;'>
-
             <h3 style='color: #dc8d55;'>1. LE BUT</h3>
             <p style='text-align: justify;'>
                 Construisez la cité la plus prestigieuse. Les points sont marqués grâce aux Quartiers multipliés par les Places correspondantes.
             </p>
-
             <h3 style='color: #dc8d55;'>2. LES QUARTIERS</h3>
             <p style='text-align: justify;'>
                 <b>- Habitation (H) :</b> 1 point pour chaque quartier habitation adjacent à un autre. (Ne compte que pour votre plus grand groupe d'habitations)<br>
@@ -262,14 +295,12 @@ void MainWindow::initialiserPageRegles()
                 <b>- Jardin (J) :</b> 1 point pour chaque jardin posé sans condition.<br>
                 <b>- Carrière (X) :</b> Permet d'agrandir votre cité mais ne donne pas de points.
             </p>
-
             <h3 style='color: #dc8d55;'>3. LES PLACES</h3>
             <p style='text-align: justify;'>
                 Les places de chaque type vous permettent de multiplier vos points en fonction du chiffre qui est écrit dessus.<br>
                 Par exemple, un hexagone 2H est une place Habitation à 2 étoiles. Elle multiplie donc par 2 les points gagnés par vos quartiers Habitation.<br>
                 <i>/!\ ATTENTION : Si vous n'avez aucune place d'un certain type, vous ne marquez aucun point pour ses quartiers correspondants.</i>
             </p>
-
             <h3 style='color: #dc8d55;'>4. LA PIERRE</h3>
             <p style='text-align: justify;'>
                 Vous commencez avec un nombre de 2 pierres. Ces dernières vous permettront d'acheter des tuiles.<br>
@@ -277,7 +308,6 @@ void MainWindow::initialiserPageRegles()
                 De plus, en cas d'égalité en fin de partie, le joueur avec le plus de pierres l'emporte.<br>
                 Les pierres s'obtiennent en construisant au-dessus d'une carrière. Chaque carrière recouverte donne une pierre.
             </p>
-
             <h3 style='color: #dc8d55;'>5. PLACEMENT</h3>
             <p style='text-align: justify;'>
                 Votre cité peut s'étendre aussi bien en surface qu'en hauteur. Lorsqu'un hexagone est placé en hauteur, son nombre de points est multiplié par son niveau d'élévation.<br>
@@ -286,16 +316,26 @@ void MainWindow::initialiserPageRegles()
             </p>
         </div>
     )";
-
     textRegles->setHtml(contenuHtml);
+    centerLayout->addWidget(textRegles);
 
-    // On ajoute le widget centré dans le layout
-    layout->addWidget(textRegles, 1, Qt::AlignCenter);
+    // Ajoute le widget centré au conteneur principal
+    textContainerLayout->addWidget(centerWidget, 0, Qt::AlignCenter);
+    scrollArea->setWidget(textContainer);
+
+    // Ajoute la scrollArea au layout principal avec un stretch maximal
+    layout->addWidget(scrollArea, 1); // Le "1" permet à la scrollArea de prendre tout l'espace disponible
+
+    // Bouton Retour (toujours visible en bas)
     QPushButton *btnRetour = new QPushButton("RETOUR", pageRegles);
     btnRetour->setFixedSize(150, 40);
+    btnRetour->setStyleSheet("font-weight: bold; background-color: #dc8d55; color: white; border-radius: 5px;");
     layout->addWidget(btnRetour, 0, Qt::AlignCenter);
 
-    connect(btnRetour, &QPushButton::clicked, [this]() { stackedWidget->setCurrentWidget(pageMenuPrincipal); });
+    // Connexion du bouton
+    connect(btnRetour, &QPushButton::clicked, [this]() {
+        stackedWidget->setCurrentWidget(pageMenuPrincipal);
+    });
 
     stackedWidget->addWidget(pageRegles);
 }
@@ -1276,3 +1316,4 @@ QColor MainWindow::getTypeColor(TypeQuartier t)
     default:         return Qt::white;
     }
 }
+
