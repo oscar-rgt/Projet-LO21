@@ -8,9 +8,16 @@
 #include <QTextEdit>
 #include<QApplication>
 #include <QInputDialog>
+#include <QMouseEvent>
+
+using namespace std;
+
+const double TUILE_TAILLE = 30.0;
+const double COEFF_X = 1.53;
+const double OFFSET_Y = sqrt(3.0) * TUILE_TAILLE;
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), indexTuileSelectionnee(-1), rotationCompteur(0), inversionEtat(false)
+    : QMainWindow(parent), indexTuileSelectionnee(-1), rotationCompteur(0), inversionEtat(false), previewActive(false), previewX(0), previewY(0), previewZ(0)
 {
     setWindowTitle("Akropolis - Qt");
     resize(1024, 768);
@@ -143,7 +150,11 @@ void MainWindow::initialiserPageJeu()
     sceneCite = new QGraphicsScene(this);
     viewCite = new QGraphicsView(sceneCite);
     viewCite->setRenderHint(QPainter::Antialiasing);
+    viewCite->viewport()->installEventFilter(this);
     mainLayout->addWidget(viewCite, 2);
+
+
+
 
     // 3. Zone droite : Contrôles et Chantier
     QVBoxLayout *sideLayout = new QVBoxLayout();
@@ -183,6 +194,81 @@ void MainWindow::initialiserPageJeu()
 
     stackedWidget->addWidget(pageJeu);
 }
+
+bool MainWindow::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == viewCite->viewport() && event->type() == QEvent::MouseButtonPress) {
+        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
+        if (mouseEvent->button() == Qt::LeftButton) {
+            QPointF scenePos = viewCite->mapToScene(mouseEvent->pos());
+            traiterClicPlateau(scenePos);
+            return true;
+        }
+    }
+    return QMainWindow::eventFilter(watched, event);
+}
+
+void MainWindow::traiterClicPlateau(QPointF positionScene)
+{
+    if (indexTuileSelectionnee == -1) {
+        QMessageBox::warning(this, "Attention", "Sélectionnez d'abord une tuile dans le chantier.");
+        return;
+    }
+
+    // 1. Conversion Pixels -> Grille (Algorithme plus proche voisin)
+    double w = COEFF_X * TUILE_TAILLE;
+    double h = sqrt(3.0) * TUILE_TAILLE;
+
+    // On estime la grille en ignorant le Z pour l'instant (on vise le sol)
+    int x_est = round(positionScene.x() / w);
+
+    double minDistance = 1000000.0;
+    int bestX = 0, bestY = 0;
+
+    // Recherche locale du centre d'hexagone le plus proche du clic
+    for (int i = -2; i <= 2; ++i) {
+        for (int j = -3; j <= 3; ++j) {
+            int tx = x_est + i;
+            // Formule inverse de Y : pixelY = y*-h + offset => y ~ (pixelY - offset)/-h
+            double offset = abs(tx % 2) * (h / 2.0);
+            int ty = round((positionScene.y() - offset) / -h) + j;
+
+            // Recalcul du centre exact de ce candidat (au niveau 0)
+            double cx = tx * w;
+            double cy = ty * -h + offset;
+
+            // On compare la distance (en 2D, vue de dessus)
+            double dist = pow(positionScene.x() - cx, 2) + pow(positionScene.y() - cy, 2);
+            if (dist < minDistance) {
+                minDistance = dist;
+                bestX = tx;
+                bestY = ty;
+            }
+        }
+    }
+
+    // 2. CALCUL AUTOMATIQUE DE LA HAUTEUR (Z)
+    // On regarde si la case est occupée. Si oui, on monte.
+    int autoZ = 0;
+    Joueur* j = Partie::getInstance().getJoueurActuel();
+    Cite* cite = j->getCite();
+
+    // On cherche le premier étage libre à ces coordonnées (x,y)
+    while (!cite->estLibre({bestX, bestY, autoZ}) && autoZ < 10) {
+        autoZ++;
+    }
+
+    // 3. Mise à jour de l'état de prévisualisation
+    previewX = bestX;
+    previewY = bestY;
+    previewZ = autoZ;
+    previewActive = true;
+
+
+    mettreAJourInterface();
+}
+
+
 
 void MainWindow::afficherMenuJeu()
 {
@@ -249,7 +335,11 @@ void MainWindow::mettreAJourInterface()
         "\nPierres : " + QString::number(j->getPierres()) +
         "\nScore : " + QString::number(j->getScore()->getTotal())
         );
+
+    btnValidation->setEnabled(previewActive);
+
     dessinerCite(j);
+    dessinerPreview();
     dessinerChantier();
 }
 
@@ -262,7 +352,7 @@ void MainWindow::dessinerCite(Joueur* joueur) {
         Coord pos = it->first;
         Hexagone* hex = it->second;
 
-        double w = 1.53 * taille;
+        double w = COEFF_X * taille;
         double h = (sqrt(3.) * taille);
         double pixelX = pos.x * w;
         double pixelY = pos.y * -h + abs((pos.x % 2)) * (h / 2);
@@ -283,13 +373,70 @@ void MainWindow::dessinerCite(Joueur* joueur) {
 }
 
 
+void MainWindow::dessinerPreview() {
+    if (!previewActive || indexTuileSelectionnee == -1) return;
 
+    // Récupération de la tuile sélectionnée
+    const Chantier& chantier = Partie::getInstance().getChantier();
+    auto it = chantier.begin();
+    for(int i =0; i < indexTuileSelectionnee; i++) ++it;
+    Tuile* t = *it;
+
+    // Calcul des 3 positions relatives des hexagones de la tuile
+    // On reproduit la logique de "cite.cpp" (placer) ici pour l'affichage
+    struct CoordSimule { int x, y; };
+    CoordSimule positions[3];
+
+    // Hexagone 1 (Ancre)
+    positions[0] = {previewX, previewY};
+
+    // Hexagone 2 (Sud)
+    positions[1] = {previewX, previewY - 1};
+
+    // Hexagone 3 (Côté - dépend de l'inversion)
+    if (inversionEtat) {
+        positions[2] = {previewX + 1, (previewX % 2 == 0) ? previewY : previewY - 1};
+    } else {
+        positions[2] = {previewX - 1, (previewX % 2 == 0) ? previewY : previewY - 1};
+    }
+
+    double taille = TUILE_TAILLE;
+    double w = COEFF_X * taille;
+    double h = sqrt(3.) * taille;
+
+    // Dessin des 3 hexagones "fantômes"
+    for(int k=0; k<3; k++) {
+        Hexagone* hex = t->getHexagone(k); // Hexagone visuel
+
+        int hx = positions[k].x;
+        int hy = positions[k].y;
+        int hz = previewZ; // On place tout au niveau calculé
+
+        double px = hx * w;
+        double py = hy * -h + abs((hx % 2)) * (h / 2);
+        py -= (hz * 10.0);
+
+        QColor col = getTypeColor(hex->getType());
+        col.setAlpha(150); // Transparence pour indiquer que c'est une prévisualisation
+
+        int nbEtoiles = hex->estPlace() ? hex->getEtoiles() : 0;
+
+        // On utilise HexagoneItem mais on ajoute un effet visuel
+        HexagoneItem* item = new HexagoneItem(px, py, taille, col, hx, hy, hz, nbEtoiles);
+        // Ajout d'une bordure blanche épaisse pour bien voir la sélection
+        item->setPen(QPen(Qt::white, 2, Qt::DashLine));
+        item->setZValue(1000); // Toujours au-dessus de tout
+        sceneCite->addItem(item);
+    }
+}
 
 
 void MainWindow::selectionnerTuileChantier(int index)
 {
     indexTuileSelectionnee = index;
     qDebug() << "Tuile selectionnee index :" << index;
+
+    previewActive = false;
 
     // On redessine pour mettre à jour l'affichage de la sélection (l'opacité changée ci-dessus)
     dessinerChantier();
@@ -377,45 +524,34 @@ void MainWindow::onRotationClicked() {
 
 void MainWindow::onValidationClicked()
 {
-    // Vérification qu'une tuile est sélectionnée
-    if (indexTuileSelectionnee == -1) {
-        QMessageBox::warning(this, "Erreur", "Veuillez sélectionner une tuile !");
+    if (!previewActive) {
+        QMessageBox::information(this, "Info", "Veuillez d'abord placer une tuile sur le plateau (cliquez sur la grille).");
         return;
     }
 
-    // Boîtes de dialogue pour saisir les coordonnées (x, y, z)
-    bool ok;
-    int x = QInputDialog::getInt(this, "Placement", "Coordonnée X:", 0, -999, 999, 1, &ok);
-    if (!ok) return; // Annulation par l'utilisateur
-    int y = QInputDialog::getInt(this, "Placement", "Coordonnée Y:", 0, -999, 999, 1, &ok);
-    if (!ok) return; // Annulation par l'utilisateur
-    int z = QInputDialog::getInt(this, "Placement", "Coordonnée Z (Niveau):", 0, 0, 10, 1, &ok);
-    if (!ok) return; // Annulation par l'utilisateur
-
     try {
-        // Tentative de placement de la tuile
         bool succes = Partie::getInstance().actionPlacerTuile(
-            indexTuileSelectionnee, x, y, z, rotationCompteur, inversionEtat
+            indexTuileSelectionnee, previewX, previewY, previewZ, rotationCompteur, inversionEtat
             );
 
-        if (!succes) {
-            // Échec du placement (ex : pas assez de pierres, règles non respectées)
-            QMessageBox::warning(this, "Erreur", "Impossible de placer la tuile ici. Vérifiez les coordonnées ou vos pierres.");
-        } else {
-            // Succès : réinitialisation des états et mise à jour de l'interface
+        if (succes) {
+            // Reset état
+            previewActive = false;
             rotationCompteur = 0;
             inversionEtat = false;
             indexTuileSelectionnee = -1;
             mettreAJourInterface();
 
-            // Vérification de la fin de partie
             if (Partie::getInstance().estFinDePartie()) {
                 afficherFinDePartie();
             }
+        } else {
+            // Le backend a renvoyé false
+            QMessageBox::warning(this, "Erreur", "Placement refusé par le jeu (vérifiez vos pierres ou les règles).");
         }
     } catch (const std::exception& e) {
-        // Gestion des exceptions (ex : coordonnées invalides, tuile inexistante)
-        QMessageBox::critical(this, "Erreur", QString("Une erreur est survenue : %1").arg(e.what()));
+        // Le backend a levé une exception
+        QMessageBox::warning(this, "Placement invalide", QString("Erreur : %1\n\nEssayez de déplacer la tuile.").arg(e.what()));
     }
 }
 

@@ -22,6 +22,9 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+protected:
+    bool eventFilter(QObject *watched, QEvent *event) override;
+
 private slots:
     void afficherMenuJeu();
     void afficherMenuRegles();
@@ -57,6 +60,13 @@ private:
     int rotationCompteur; // Nouveau : pour suivre le nombre de rotations
     bool inversionEtat;   // Nouveau : pour suivre l'état d'inversion
 
+    //preview tuile avant validation placement
+    bool previewActive;
+    int previewX;
+    int previewY;
+    int previewZ;
+    void dessinerPreview();
+
     // Méthodes d'affichage
     void initialiserPageMenuPrincipal();
     void initialiserPageRegles();
@@ -65,6 +75,7 @@ private:
     void dessinerChantier();
     QColor getTypeColor(TypeQuartier t);
     void onPasserTourClicked();
+    void traiterClicPlateau(QPointF positionScene);
 };
 
 #endif // MAINWINDOW_H
