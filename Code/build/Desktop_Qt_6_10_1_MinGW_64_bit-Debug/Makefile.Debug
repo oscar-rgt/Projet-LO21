@@ -433,7 +433,7 @@ debug/moc_mainwindow.cpp: ../../mainwindow.h \
 		../../ia.h \
 		debug/moc_predefs.h \
 		C:/Qt/6.10.1/mingw_64/bin/moc.exe
-	C:\Qt\6.10.1\mingw_64\bin\moc.exe $(DEFINES) --include C:/Users/2005a/Desktop/UTC/LO21/Projet/QtFinal/Projet-LO21/Code/build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.10.1/mingw_64/mkspecs/win32-g++ -IC:/Users/2005a/Desktop/UTC/LO21/Projet/QtFinal/Projet-LO21/Code -IC:/Qt/6.10.1/mingw_64/include -IC:/Qt/6.10.1/mingw_64/include/QtWidgets -IC:/Qt/6.10.1/mingw_64/include/QtGui -IC:/Qt/6.10.1/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\mainwindow.h -o debug\moc_mainwindow.cpp
+	C:\Qt\6.10.1\mingw_64\bin\moc.exe $(DEFINES) --include C:/Users/loulo/Documents/work/LO21/Projet/QT/Projet-LO21/Code/build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.10.1/mingw_64/mkspecs/win32-g++ -IC:/Users/loulo/Documents/work/LO21/Projet/QT/Projet-LO21/Code -IC:/Qt/6.10.1/mingw_64/include -IC:/Qt/6.10.1/mingw_64/include/QtWidgets -IC:/Qt/6.10.1/mingw_64/include/QtGui -IC:/Qt/6.10.1/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\mainwindow.h -o debug\moc_mainwindow.cpp
 
 debug/moc_tuileitem.cpp: ../../tuileitem.h \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/QGraphicsItemGroup \
@@ -605,7 +605,7 @@ debug/moc_tuileitem.cpp: ../../tuileitem.h \
 		C:/Qt/6.10.1/mingw_64/include/QtCore/qendian.h \
 		debug/moc_predefs.h \
 		C:/Qt/6.10.1/mingw_64/bin/moc.exe
-	C:\Qt\6.10.1\mingw_64\bin\moc.exe $(DEFINES) --include C:/Users/2005a/Desktop/UTC/LO21/Projet/QtFinal/Projet-LO21/Code/build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.10.1/mingw_64/mkspecs/win32-g++ -IC:/Users/2005a/Desktop/UTC/LO21/Projet/QtFinal/Projet-LO21/Code -IC:/Qt/6.10.1/mingw_64/include -IC:/Qt/6.10.1/mingw_64/include/QtWidgets -IC:/Qt/6.10.1/mingw_64/include/QtGui -IC:/Qt/6.10.1/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\tuileitem.h -o debug\moc_tuileitem.cpp
+	C:\Qt\6.10.1\mingw_64\bin\moc.exe $(DEFINES) --include C:/Users/loulo/Documents/work/LO21/Projet/QT/Projet-LO21/Code/build/Desktop_Qt_6_10_1_MinGW_64_bit-Debug/debug/moc_predefs.h -IC:/Qt/6.10.1/mingw_64/mkspecs/win32-g++ -IC:/Users/loulo/Documents/work/LO21/Projet/QT/Projet-LO21/Code -IC:/Qt/6.10.1/mingw_64/include -IC:/Qt/6.10.1/mingw_64/include/QtWidgets -IC:/Qt/6.10.1/mingw_64/include/QtGui -IC:/Qt/6.10.1/mingw_64/include/QtCore -I. -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++ -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32 -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/backward -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include -IC:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed -IC:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include ..\..\tuileitem.h -o debug\moc_tuileitem.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -1370,6 +1370,7 @@ debug/mainwindow.o: ../../mainwindow.cpp ../../mainwindow.h \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qapplication.h \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/QInputDialog \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qinputdialog.h \
+		C:/Qt/6.10.1/mingw_64/include/QtWidgets/QDialog \
 		C:/Qt/6.10.1/mingw_64/include/QtGui/QMouseEvent \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/QGraphicsProxyWidget \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qgraphicsproxywidget.h \

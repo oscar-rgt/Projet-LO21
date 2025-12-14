@@ -34,7 +34,7 @@ MainWindow::MainWindow(QWidget *parent)
             font-family: 'Segoe UI', Arial, sans-serif;
         }
 
-        /* 2. BOUTONS STANDARDS (Bleu Méditerranée) */
+        /* 2. BOUTONS STANDARDS */
         QPushButton {
             background-color: #dc8d55;
             color: white;
@@ -70,9 +70,9 @@ MainWindow::MainWindow(QWidget *parent)
         }
 
         /* 4. GROUPBOX */
-        GroupBox {
+        QGroupBox {
             background-color: transparent;
-            border: 1px solid #BDC3C7;
+            border: 1px solid #dc8d55;
             border-radius: 8px;
             margin-top: 25px; /* Laisse de la place pour le titre */
             font-weight: bold;
@@ -122,7 +122,7 @@ MainWindow::MainWindow(QWidget *parent)
         /* 6. CADRE SPÉCIFIQUE CONFIGURATION */
         /* Cible uniquement le widget nommé "cadreConfig" */
         #cadreConfig {
-            border: 1px solid #BDC3C7;
+            border: 1px solid #dc8d55;
             border-radius: 15px;
             background-color: transparent;
         }
