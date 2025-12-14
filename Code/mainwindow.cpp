@@ -852,7 +852,16 @@ void MainWindow::dessinerChantier()
 
 
         // Affichage du prix à droite de la tuile
-        QGraphicsTextItem* txt = sceneChantier->addText(QString("%1 pierres").arg(tuile->getPrix()));
+        // 1. Texte avec le carré (■) au lieu de "pierres"
+        QString textePrix = QString("%1 ■").arg(tuile->getPrix());
+        QGraphicsTextItem* txt = sceneChantier->addText(textePrix);
+
+        // 2. Style : Orange (#dc8d55), Gras, Plus gros
+        txt->setDefaultTextColor(QColor("#dc8d55"));
+        QFont fontPrix = txt->font();
+        fontPrix.setPixelSize(20); // Taille bien visible
+        fontPrix.setBold(true);
+        txt->setFont(fontPrix);
         txt->setPos(125, item->y()); // À droite de la tuile
 
         index++;
