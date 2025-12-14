@@ -63,43 +63,29 @@ int IA::calculerScoreIA() const {
     //niveau 2 : quartiers : 1pt / carriere : 2pt
     //niveau 3 : quartiers : *2 (points doublés) / carriere : 0pt
     int totalScore = 0;
-
+    
     int multiplicateurNiveau = (difficulte == 3) ? 2 : 1;
 
-    for (Tuile* t : tuilesAcquises) {
+    // --- 1. SIMPLIFICATION DU PARCOURS ---
+    for (auto it = begin(); it != end(); ++it) {
+        Tuile* t = *it; 
+
         for (int i = 0; i < t->getNbHexagones(); i++) {
-            Hexagone* h = t->getHexagone((int)i);
+            Hexagone* h = t->getHexagone(i);
             TypeQuartier type = h->getType();
 
+            // --- 2. SIMPLIFICATION DU SCORE ---
             if (type == Carriere) {
+                // Seul le niveau 2 (Métagénès) gagne des points avec les carrières
                 if (difficulte == 2) {
-                    totalScore += 2; // bonus Carriere niveau 2
+                    totalScore += 2; 
                 }
-                continue;
+            } 
+            else {
+                // Tous les autres quartiers (Habitation, Temple, etc.) rapportent 1 point de base
+                // On applique directement le multiplicateur de difficulté
+                totalScore += 1 * multiplicateurNiveau;
             }
-
-            int pts = 0;
-            switch (type) {
-            case Habitation:
-                pts = 1; // on considère le placement correct
-                break;
-            case Marche:
-                pts = 1;
-                break;
-            case Caserne:
-                pts = 1;
-                break;
-            case Temple:
-                pts = 1;
-                break;
-            case Jardin:
-                pts = 1;
-                break;
-            default:
-                pts = 0;
-            }
-
-            totalScore += pts * multiplicateurNiveau;
         }
     }
 
