@@ -170,12 +170,26 @@ void MainWindow::validerConfiguration()
 {
     int nbJoueurs = groupeNbJoueurs->checkedId();
 
-    // Récupération des noms
+    // Récupération des noms + verif erreurs (non saisie)
     std::vector<std::string> noms;
+
     for (int i = 0; i < nbJoueurs; ++i) {
-        QString txt = champsNomsJoueurs[i]->text();
-        if (txt.isEmpty()) txt = QString("Joueur %1").arg(i + 1); // Nom par défaut
-        noms.push_back(txt.toStdString());
+        // .trimmed() enlève les espaces au début et à la fin
+        // Cela empêche un joueur de s'appeler juste "   "
+        QString nomSaisi = champsNomsJoueurs[i]->text().trimmed();
+
+        if (nomSaisi.isEmpty()) {
+            // Affichage de l'erreur
+            QMessageBox::warning(this, "Configuration incomplète",
+                                 QString("Le nom du Joueur %1 est obligatoire !").arg(i + 1));
+
+            // UX : On met le focus (le curseur) directement dans la case fautive
+            champsNomsJoueurs[i]->setFocus();
+
+            return; // <--- STOP ! On n'exécute pas la suite, le jeu ne se lance pas.
+        }
+
+        noms.push_back(nomSaisi.toStdString());
     }
 
     // Mode IA
