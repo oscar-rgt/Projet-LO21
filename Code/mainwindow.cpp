@@ -23,6 +23,7 @@ MainWindow::MainWindow(QWidget *parent)
     initialiserPageMenuPrincipal();
     initialiserPageRegles();
     initialiserPageJeu();
+    initialiserPageConfiguration();
 
     // Affichage du menu principal par défaut
     stackedWidget->setCurrentWidget(pageMenuPrincipal);
@@ -70,7 +71,7 @@ void MainWindow::initialiserPageMenuPrincipal()
     layout->addWidget(btnRegles, 0, Qt::AlignCenter);
     layout->addWidget(btnQuitter, 0, Qt::AlignCenter);
 
-    connect(btnJouer, &QPushButton::clicked, this, &MainWindow::afficherMenuJeu);
+    connect(btnJouer, &QPushButton::clicked, this, &MainWindow::afficherMenuConfig);
     connect(btnRegles, &QPushButton::clicked, this, &MainWindow::afficherMenuRegles);
     connect(btnQuitter, &QPushButton::clicked, this, &MainWindow::quitterJeu);
 
@@ -86,6 +87,8 @@ void MainWindow::initialiserPageMenuPrincipal()
 
     stackedWidget->addWidget(pageMenuPrincipal);
 }
+
+
 
 void MainWindow::initialiserPageRegles()
 {
@@ -132,6 +135,236 @@ void MainWindow::initialiserPageRegles()
     connect(btnRetour, &QPushButton::clicked, [this]() { stackedWidget->setCurrentWidget(pageMenuPrincipal); });
 
     stackedWidget->addWidget(pageRegles);
+}
+
+void MainWindow::mettreAJourVisibiliteConfig()
+{
+    int nbJoueurs = groupeNbJoueurs->checkedId(); // Récupère l'ID (1, 2, 3 ou 4)
+
+    // 1. Gestion de l'IA
+    if (nbJoueurs == 1) {
+        groupeIA->setVisible(true);
+        // En mode solo, on force le nom du joueur 2 à être l'IA pour la logique interne (optionnel mais propre)
+        champsNomsJoueurs[1]->setText("Illustre Architecte");
+        champsNomsJoueurs[1]->setEnabled(false); // On ne peut pas renommer l'IA
+    } else {
+        groupeIA->setVisible(false);
+        champsNomsJoueurs[1]->setEnabled(true);
+        if (champsNomsJoueurs[1]->text() == "Illustre Architecte") champsNomsJoueurs[1]->clear();
+    }
+
+    // 2. Gestion des champs de noms
+    // On affiche autant de champs que de joueurs
+    // Si mode solo (1 joueur), on affiche quand même le champ 1
+    // Pour simplifier, on affiche les champs 1 à nbJoueurs
+
+    for (int i = 0; i < 4; ++i) {
+        // Le champ est visible si son index < nbJoueurs
+        // Exception: en mode solo, on veut juste le nom du joueur 1, l'IA est gérée à part
+        bool visible = (i < nbJoueurs);
+        champsNomsJoueurs[i]->setVisible(visible);
+    }
+}
+
+void MainWindow::validerConfiguration()
+{
+    int nbJoueurs = groupeNbJoueurs->checkedId();
+
+    // Récupération des noms
+    std::vector<std::string> noms;
+    for (int i = 0; i < nbJoueurs; ++i) {
+        QString txt = champsNomsJoueurs[i]->text();
+        if (txt.isEmpty()) txt = QString("Joueur %1").arg(i + 1); // Nom par défaut
+        noms.push_back(txt.toStdString());
+    }
+
+    // Mode IA
+    int niveauIA = 0;
+    if (nbJoueurs == 1) {
+        niveauIA = groupeNiveauIA->checkedId();
+    }
+
+    // Variantes
+    std::array<bool, 5> variantes;
+    for (int i = 0; i < 5; ++i) {
+        variantes[i] = checkBoxesVariantes[i]->isChecked();
+    }
+
+    // Mode Tuiles
+    Partie::TuileCite mode = checkModeAugmente->isChecked() ? Partie::TuileCite::AUGMENTE : Partie::TuileCite::STANDARD;
+
+    // --- LANCEMENT DU MOTEUR ---
+    try {
+        Partie::getInstance().initialiser(nbJoueurs, noms, mode, variantes, niveauIA);
+
+        // Changement de page
+        stackedWidget->setCurrentWidget(pageJeu);
+        mettreAJourInterface(); // Premier dessin
+
+    } catch (const std::exception &e) {
+        QMessageBox::critical(this, "Erreur", e.what());
+    }
+}
+
+void MainWindow::initialiserPageConfiguration()
+{
+    pageConfig = new QWidget();
+
+    // 1. Layout GLOBAL de la page (pour centrer le cadre)
+    QVBoxLayout *layoutPage = new QVBoxLayout(pageConfig);
+    layoutPage->setAlignment(Qt::AlignCenter); // C'est ça qui centre le rectangle !
+
+    // 2. LE CADRE (Le "petit rectangle")
+    QFrame *cadreConfig = new QFrame(pageConfig);
+    cadreConfig->setFixedWidth(600); // Largeur fixe élégante
+    // Style : Fond blanc, contour gris, coins arrondis
+    cadreConfig->setStyleSheet(
+        ".QFrame { "
+        "   border: 1px solid #bdc3c7; "
+        "   border-radius: 15px; "
+        "}"
+        "QLabel { border: none; background: transparent; }" // Pour éviter que le style s'applique aux labels
+        );
+
+    // Layout INTERNE du cadre
+    QVBoxLayout *layoutCadre = new QVBoxLayout(cadreConfig);
+    layoutCadre->setSpacing(15); // Espace entre les éléments
+    layoutCadre->setContentsMargins(30, 30, 30, 30); // Marges intérieures (padding)
+
+    // --- CONTENU DU CADRE ---
+
+    // 1. TITRE
+    QLabel *titre = new QLabel("CONFIGURATION DE LA PARTIE", cadreConfig);
+    titre->setStyleSheet("font-size: 22px; font-weight: bold; color: white; margin-bottom: 10px;");
+    titre->setAlignment(Qt::AlignCenter);
+    layoutCadre->addWidget(titre);
+
+    // 2. NOMBRE DE JOUEURS
+    QGroupBox *boxJoueurs = new QGroupBox("Nombre de joueurs", cadreConfig);
+    QHBoxLayout *layoutJoueurs = new QHBoxLayout(boxJoueurs);
+    groupeNbJoueurs = new QButtonGroup(this);
+
+    for (int i = 1; i <= 4; ++i) {
+        QRadioButton *btn = new QRadioButton(QString::number(i), boxJoueurs);
+        if (i == 2) btn->setChecked(true);
+        groupeNbJoueurs->addButton(btn, i);
+        layoutJoueurs->addWidget(btn);
+    }
+    layoutCadre->addWidget(boxJoueurs);
+
+    // 3. NOMS DES JOUEURS
+    QGroupBox *boxNoms = new QGroupBox("Noms des architectes", cadreConfig);
+    QVBoxLayout *layoutNoms = new QVBoxLayout(boxNoms);
+
+    champsNomsJoueurs.clear();
+    for (int i = 0; i < 4; ++i) {
+        QLineEdit *edit = new QLineEdit(boxNoms);
+        edit->setPlaceholderText(QString("Nom du Joueur %1").arg(i + 1));
+        edit->setStyleSheet("padding: 5px;");
+        champsNomsJoueurs.push_back(edit);
+        layoutNoms->addWidget(edit);
+    }
+    layoutCadre->addWidget(boxNoms);
+
+    // 4. CONFIGURATION IA
+    groupeIA = new QGroupBox("L'Illustre Constructeur (IA)", cadreConfig);
+    QHBoxLayout *layoutIA = new QHBoxLayout(groupeIA);
+    groupeNiveauIA = new QButtonGroup(this);
+
+    QStringList niveaux = {"Hippodamos (Facile)", "Métagénès (Moyen)", "Callicratès (Difficile)"};
+    for (int i = 0; i < 3; ++i) {
+        QRadioButton *btn = new QRadioButton(niveaux[i], groupeIA);
+        if (i == 0) btn->setChecked(true);
+        groupeNiveauIA->addButton(btn, i + 1);
+        layoutIA->addWidget(btn);
+    }
+    layoutCadre->addWidget(groupeIA);
+
+    // 5. MODE DE JEU
+    QGroupBox *boxMode = new QGroupBox("Mode de jeu", cadreConfig);
+    QVBoxLayout *layoutMode = new QVBoxLayout(boxMode);
+    checkModeAugmente = new QCheckBox("Tuiles Cité Augmentée", boxMode);
+    layoutMode->addWidget(checkModeAugmente);
+    layoutCadre->addWidget(boxMode);
+
+    // 6. VARIANTES
+    QGroupBox *boxVariantes = new QGroupBox("Variantes", cadreConfig);
+    QVBoxLayout *layoutVariantes = new QVBoxLayout(boxVariantes);
+    QStringList nomsVariantes = {
+        "Habitations", "Marchés", "Casernes", "Temples", "Jardins"
+    };
+
+    checkBoxesVariantes.clear();
+    for (const QString &nom : nomsVariantes) {
+        QCheckBox *cb = new QCheckBox(nom, boxVariantes);
+        checkBoxesVariantes.push_back(cb);
+        layoutVariantes->addWidget(cb);
+    }
+    layoutCadre->addWidget(boxVariantes);
+
+    // 7. BOUTONS ACTION
+    QHBoxLayout *layoutAction = new QHBoxLayout();
+    layoutAction->setContentsMargins(0, 20, 0, 0); // Un peu d'espace au dessus
+
+    QPushButton *btnRetour = new QPushButton("ANNULER", cadreConfig);
+    QPushButton *btnValider = new QPushButton("JOUER", cadreConfig);
+
+    btnValider->setStyleSheet("QPushButton { background-color: #27ae60; color: white; font-weight: bold; border-radius: 5px; padding: 10px; }"
+                              "QPushButton:hover { background-color: #2ecc71; }");
+    btnRetour->setStyleSheet("QPushButton { background-color: #95a5a6; color: white; border-radius: 5px; padding: 10px; }"
+                             "QPushButton:hover { background-color: #7f8c8d; }");
+
+    btnValider->setCursor(Qt::PointingHandCursor);
+    btnRetour->setCursor(Qt::PointingHandCursor);
+
+    layoutAction->addWidget(btnRetour);
+    layoutAction->addSpacing(20);
+    layoutAction->addWidget(btnValider);
+
+    layoutCadre->addLayout(layoutAction);
+
+    // --- FIN CONTENU CADRE ---
+
+    // On ajoute le cadre centré à la page
+    layoutPage->addWidget(cadreConfig);
+
+    // Connexions
+    connect(groupeNbJoueurs, &QButtonGroup::idClicked, this, &MainWindow::mettreAJourVisibiliteConfig);
+    connect(btnRetour, &QPushButton::clicked, [this]() { stackedWidget->setCurrentWidget(pageMenuPrincipal); });
+    connect(btnValider, &QPushButton::clicked, this, &MainWindow::validerConfiguration);
+
+    mettreAJourVisibiliteConfig();
+    stackedWidget->addWidget(pageConfig);
+}
+
+void MainWindow::resetConfiguration()
+{
+    // 1. Remettre 2 joueurs par défaut
+    // Note : QButtonGroup::button(id) permet d'accéder au bouton via son ID
+    if (QAbstractButton *btn = groupeNbJoueurs->button(2)) {
+        btn->setChecked(true);
+    }
+
+    // 2. Vider les noms
+    for (QLineEdit *champ : champsNomsJoueurs) {
+        champ->clear();
+    }
+
+    // 3. Remettre l'IA au niveau 1 (Hippodamos)
+    if (QAbstractButton *btn = groupeNiveauIA->button(1)) {
+        btn->setChecked(true);
+    }
+
+    // 4. Décocher le mode augmenté
+    checkModeAugmente->setChecked(false);
+
+    // 5. Décocher toutes les variantes
+    for (QCheckBox *cb : checkBoxesVariantes) {
+        cb->setChecked(false);
+    }
+
+    // 6. Forcer la mise à jour visuelle (cacher l'IA car on est repassé à 2 joueurs)
+    mettreAJourVisibiliteConfig();
 }
 
 void MainWindow::initialiserPageJeu()
@@ -187,7 +420,6 @@ void MainWindow::initialiserPageJeu()
 void MainWindow::afficherMenuJeu()
 {
     stackedWidget->setCurrentWidget(pageJeu);
-    demarrerPartie();
 }
 
 void MainWindow::afficherMenuRegles()
@@ -200,45 +432,11 @@ void MainWindow::quitterJeu()
     QApplication::quit();
 }
 
-void MainWindow::demarrerPartie()
+void MainWindow::afficherMenuConfig()
 {
-    // Boîte de dialogue pour le nombre de joueurs
-    int nbJoueurs = QInputDialog::getInt(this, "Configuration", "Nombre de joueurs (1-4):", 2, 1, 4, 1);
-    std::vector<std::string> noms;
-
-    // Saisie des noms des joueurs
-    for (int i = 0; i < nbJoueurs; ++i) {
-        QString nom = QInputDialog::getText(this, "Configuration", "Nom du joueur " + QString::number(i+1) + ":");
-        noms.push_back(nom.toStdString());
-    }
-
-    // Configuration du niveau de difficulté de l'IA (uniquement en mode solo)
-    int niveauIA = 0; // Valeur par défaut (niveau 1 si non modifié)
-    if (nbJoueurs == 1) {
-        niveauIA = QInputDialog::getInt(this, "Configuration IA", "Niveau de l'Illustre Constructeur (1-3):", 1, 1, 3, 1);
-    }
-
-    // Boîte de dialogue pour le mode tuile cité augmentée
-    bool modeTuileCite = QMessageBox::question(this, "Configuration", "Mode tuile cité augmentée ?") == QMessageBox::Yes;
-
-    // Boîte de dialogue pour activer les variantes
-    std::array<bool, 5> variantesActives = {false, false, false, false, false};
-    if (QMessageBox::question(this, "Configuration", "Activer les variantes ?") == QMessageBox::Yes) {
-        variantesActives[0] = QMessageBox::question(this, "Configuration", "Variante habitations ?") == QMessageBox::Yes;
-        variantesActives[1] = QMessageBox::question(this, "Configuration", "Variante marchés ?") == QMessageBox::Yes;
-        variantesActives[2] = QMessageBox::question(this, "Configuration", "Variante casernes ?") == QMessageBox::Yes;
-        variantesActives[3] = QMessageBox::question(this, "Configuration", "Variante temples ?") == QMessageBox::Yes;
-        variantesActives[4] = QMessageBox::question(this, "Configuration", "Variante jardins ?") == QMessageBox::Yes;
-    }
-
-    // Initialisation de la partie
-    Partie::TuileCite mode = modeTuileCite ? Partie::TuileCite::AUGMENTE : Partie::TuileCite::STANDARD;
-    Partie::getInstance().initialiser(nbJoueurs, noms, mode, variantesActives, niveauIA);
-
-    // Mise à jour de l'interface
-    mettreAJourInterface();
+    resetConfiguration(); // <--- On nettoie d'abord
+    stackedWidget->setCurrentWidget(pageConfig); // Ensuite on affiche
 }
-
 
 
 void MainWindow::mettreAJourInterface()
@@ -341,14 +539,14 @@ void MainWindow::dessinerChantier()
         // Mise en évidence de la tuile sélectionnée
         if (index == indexTuileSelectionnee) {
             QGraphicsRectItem* border = new QGraphicsRectItem(item->boundingRect());
-            border->setPen(QPen(Qt::red, 2));
+            border->setPen(QPen(Qt::white, 2));
             border->setPos(item->pos());
             sceneChantier->addItem(border);
         }
 
         // Affichage du prix à droite de la tuile
         QGraphicsTextItem* txt = sceneChantier->addText(QString("%1 pierres").arg(tuile->getPrix()));
-        txt->setPos(item->boundingRect().right() + 10, item->y());
+        txt->setPos(125, item->y()); // À droite de la tuile
 
         index++;
     }
