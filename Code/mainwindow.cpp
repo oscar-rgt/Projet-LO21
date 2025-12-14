@@ -1245,7 +1245,7 @@ QColor MainWindow::getTypeColor(TypeQuartier t)
     case Habitation: return Qt::blue;
     case Marche:     return Qt::yellow;
     case Caserne:    return Qt::red;
-    case Temple:     return Qt::magenta;
+    case Temple:     return Qt::darkMagenta;
     case Jardin:     return Qt::green;
     case Carriere:   return Qt::gray;
     default:         return Qt::white;
