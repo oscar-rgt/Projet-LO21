@@ -215,12 +215,13 @@ void MainWindow::initialiserPageMenuPrincipal()
 
     QLabel *credits = new QLabel(
         "-----------------------------------------------------------\n"
-        " LO21 - Programmation C++ | Semestre Automne 2025          \n"
-        " Oscar.R, Louane.R, Valentin.R, Noemie.M, Jeanne.D     \n"
+        "LO21 - Programmation et conception orientée objet         \n"
+        "                       Semestre Automne 2025\n"
+        "Oscar R., Louane R., Valentin R., Noemie M., Jeanne D.     \n"
         "-----------------------------------------------------------",
         pageMenuPrincipal
         );
-    credits->setStyleSheet("font-size: 12px; margin-top: 20px;");
+    credits->setStyleSheet("font-size: 12px; margin-top: 20px; text-align: justify;");
     layout->addWidget(credits, 0, Qt::AlignCenter);
 
     stackedWidget->addWidget(pageMenuPrincipal);
@@ -239,33 +240,57 @@ void MainWindow::initialiserPageRegles()
 
     QTextEdit *textRegles = new QTextEdit(pageRegles);
     textRegles->setReadOnly(true);
-    textRegles->setPlainText(
-        "1. LE BUT :\n"
-        "Construisez la cité la plus prestigieuse. Les points sont marqués grâce aux Quartiers multipliés par les Places correspondantes.\n\n"
-        "2. LES QUARTIERS :\n"
-        "- Habitation (H) : 1 point pour chaque quartier habitation adjacent à un autre.\n"
-        "(Ne compte que pour votre plus grand groupe d'habitations)\n"
-        "- Marche (M) : 1 point si votre marché n'est adjacent à aucun autre.\n"
-        "- Caserne (C) : 1 point si votre caserne n'est pas complètement entourée par d'autres hexagones.\n"
-        "- Temple (T) : 1 point si votre temple est complètement entouré par d'autres hexagones.\n"
-        "- Jardin (J) : 1 point pour chaque jardin posé sans condition.\n"
-        "- Carrière (X) : Permet d'agrandir votre cité mais ne donne pas de points.\n\n"
-        "3. LES PLACES :\n"
-        "Les places de chaque type vous permettent de multiplier vos points en fonction du chiffre qui est écrit dessus.\n"
-        "Par exemple, un hexagone 2H est une place Habitation à 2 étoiles. Elle multiplie donc par 2 les points gagnés par vos quartiers Habitation.\n"
-        "/!\\ ATTENTION : Si vous n'avez aucune place d'un certain type, vous ne marquez aucun point pour ses quartiers correspondants.\n\n"
-        "4. LA PIERRE :\n"
-        "Vous commencez avec un nombre de 2 pierres. Ces dernières vous permettront d'acheter des tuiles.\n"
-        "Les pierres influent aussi sur votre score. En effet, chaque pierre vous rapporte un point.\n"
-        "De plus, en cas d'égalité en fin de partie, le joueur avec le plus de pierres l'emporte.\n"
-        "Les pierres s'obtiennent en construisant au-dessus d'une carrière. Chaque carrière recouverte donne une pierre.\n\n"
-        "5. PLACEMENT :\n"
-        "Votre cité peut s'étendre aussi bien en surface qu'en hauteur. Lorsqu'un hexagone est placé en hauteur, son nombre de points est multiplié par son niveau d'élévation.\n"
-        "Par exemple, un quartier Jardin placé au niveau 3 rapporte 3 points.\n"
-        "À vous de trouver le bon équilibre pour devenir le plus prestigieux des architectes !"
-        );
-    layout->addWidget(textRegles);
+    textRegles->setFixedWidth(800);
+    textRegles->setFixedHeight(850);
+    // On enlève la bordure moche par défaut et on met un fond transparent (ou blanc si vous préférez)
+    textRegles->setFrameShape(QFrame::NoFrame);
+    textRegles->setStyleSheet("background-color: transparent; color: #2C3E50;");
+    QString contenuHtml = R"(
+        <div style='font-size: 16px; line-height: 1.4;'>
 
+            <h3 style='color: #dc8d55;'>1. LE BUT</h3>
+            <p style='text-align: justify;'>
+                Construisez la cité la plus prestigieuse. Les points sont marqués grâce aux Quartiers multipliés par les Places correspondantes.
+            </p>
+
+            <h3 style='color: #dc8d55;'>2. LES QUARTIERS</h3>
+            <p style='text-align: justify;'>
+                <b>- Habitation (H) :</b> 1 point pour chaque quartier habitation adjacent à un autre. (Ne compte que pour votre plus grand groupe d'habitations)<br>
+                <b>- Marché (M) :</b> 1 point si votre marché n'est adjacent à aucun autre.<br>
+                <b>- Caserne (C) :</b> 1 point si votre caserne n'est pas complètement entourée par d'autres hexagones.<br>
+                <b>- Temple (T) :</b> 1 point si votre temple est complètement entouré par d'autres hexagones.<br>
+                <b>- Jardin (J) :</b> 1 point pour chaque jardin posé sans condition.<br>
+                <b>- Carrière (X) :</b> Permet d'agrandir votre cité mais ne donne pas de points.
+            </p>
+
+            <h3 style='color: #dc8d55;'>3. LES PLACES</h3>
+            <p style='text-align: justify;'>
+                Les places de chaque type vous permettent de multiplier vos points en fonction du chiffre qui est écrit dessus.<br>
+                Par exemple, un hexagone 2H est une place Habitation à 2 étoiles. Elle multiplie donc par 2 les points gagnés par vos quartiers Habitation.<br>
+                <i>/!\ ATTENTION : Si vous n'avez aucune place d'un certain type, vous ne marquez aucun point pour ses quartiers correspondants.</i>
+            </p>
+
+            <h3 style='color: #dc8d55;'>4. LA PIERRE</h3>
+            <p style='text-align: justify;'>
+                Vous commencez avec un nombre de 2 pierres. Ces dernières vous permettront d'acheter des tuiles.<br>
+                Les pierres influent aussi sur votre score. En effet, chaque pierre vous rapporte un point.<br>
+                De plus, en cas d'égalité en fin de partie, le joueur avec le plus de pierres l'emporte.<br>
+                Les pierres s'obtiennent en construisant au-dessus d'une carrière. Chaque carrière recouverte donne une pierre.
+            </p>
+
+            <h3 style='color: #dc8d55;'>5. PLACEMENT</h3>
+            <p style='text-align: justify;'>
+                Votre cité peut s'étendre aussi bien en surface qu'en hauteur. Lorsqu'un hexagone est placé en hauteur, son nombre de points est multiplié par son niveau d'élévation.<br>
+                Par exemple, un quartier Jardin placé au niveau 3 rapporte 3 points.<br>
+                À vous de trouver le bon équilibre pour devenir le plus prestigieux des architectes !
+            </p>
+        </div>
+    )";
+
+    textRegles->setHtml(contenuHtml);
+
+    // On ajoute le widget centré dans le layout
+    layout->addWidget(textRegles, 1, Qt::AlignCenter);
     QPushButton *btnRetour = new QPushButton("RETOUR", pageRegles);
     btnRetour->setFixedSize(150, 40);
     layout->addWidget(btnRetour, 0, Qt::AlignCenter);
