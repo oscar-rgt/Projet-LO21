@@ -706,7 +706,9 @@ void MainWindow::mettreAJourInterface()
             "\nScore : " + QString::number(j->getScore()->getTotal())
             );
 
+        btnRotation->setEnabled(indexTuileSelectionnee!=-1);
         btnRotation->show();
+        btnInversion->setEnabled(indexTuileSelectionnee!=-1);
         btnInversion->show();
 
         btnValidation->setEnabled(previewActive);
@@ -981,77 +983,123 @@ void MainWindow::onContinuerIAClicked()
 void MainWindow::dessinerInterfaceIA(IA* ia) {
     sceneCite->clear();
 
-    // 1. Fond ou cadre pour bien distinguer (Optionnel)
-    //sceneCite->setBackgroundBrush(QBrush(QColor(40, 40, 60))); // Fond sombre bleuté
+    // --- COULEURS & FONTS ---
+    QColor colorTitre("#dc8d55");    // Orange
+    QColor colorTexte("#4E2E1E");    // Marron
+    QColor colorBorder("#734526");   // Cuivre
+    QColor colorCardBg("#D9B48F");   // Beige
 
-    // 2. Titre
+    QFont fontTitre; fontTitre.setPixelSize(24); fontTitre.setBold(true);
+    QFont fontTexte; fontTexte.setPixelSize(16);
+    QFont fontSousTitre; fontSousTitre.setPixelSize(18); fontSousTitre.setBold(true);
+    QFont fontStats; fontStats.setPixelSize(16); fontStats.setBold(true);
+
+    // --- 1. TITRE PRINCIPAL (Centré en 0) ---
     QGraphicsTextItem* titre = sceneCite->addText("L'ILLUSTRE ARCHITECTE A JOUÉ");
-    titre->setDefaultTextColor(Qt::black);
-    //titre->setFont(QFont("Arial", 20, QFont::Bold));
-    titre->setPos(-100, -200);
+    titre->setDefaultTextColor(colorTitre);
+    titre->setFont(fontTitre);
+    // Centrage : Position X = 0 - (Largeur / 2)
+    titre->setPos(-titre->boundingRect().width() / 2, -260);
 
-    // 3. Info sur l'action
+    // --- 2. INFO ACTION (Centré) ---
     QString actionText = QString("Il a pris la tuile n°%1 du chantier.").arg(dernierIndexIA + 1);
     QGraphicsTextItem* info = sceneCite->addText(actionText);
-    info->setDefaultTextColor(Qt::black);
-    //info->setFont(QFont("Arial", 14));
-    info->setPos(-100, -150);
+    info->setDefaultTextColor(colorTexte);
+    info->setFont(fontTexte);
+    info->setPos(-info->boundingRect().width() / 2, -220);
 
-    // 4. Afficher le "Trésor" de l'IA
+    // --- 3. CADRE STATISTIQUES (PIERRES & SCORE) ---
+    double statsW = 260; // Un peu plus large pour être à l'aise
+    double statsH = 80;
+    double statsX = -statsW / 2; // Centré en 0
+    double statsY = -160;
+
+    QGraphicsRectItem* statsBg = sceneCite->addRect(0, 0, statsW, statsH, QPen(colorBorder, 2), QBrush(QColor("white")));
+    statsBg->setPos(statsX, statsY);
+
+    // Pierre (Centré dans le cadre)
+    QGraphicsTextItem* pierres = sceneCite->addText(QString("Pierres : %1 ■").arg(ia->getPierres()));
+    pierres->setDefaultTextColor(colorTitre);
+    pierres->setFont(fontStats);
+    // On calcule la position relative au cadre pour centrer
+    double pX = statsX + (statsW - pierres->boundingRect().width()) / 2;
+    pierres->setPos(pX, statsY + 10);
+
+    // Score (Centré dans le cadre)
+    ia->getScore()->calculerScore();
+    QGraphicsTextItem* score = sceneCite->addText(QString("Score Actuel : %1").arg(ia->getScore()->getTotal()));
+    score->setDefaultTextColor(colorTexte);
+    score->setFont(fontStats);
+    double sX = statsX + (statsW - score->boundingRect().width()) / 2;
+    score->setPos(sX, statsY + 45);
 
 
-    int startX = -300;
-    int currentX = startX;
-    int currentY = 0;
+    // --- 4. COLLECTION (GRILLE CENTRÉE) ---
+
+    // Titre Collection
+    QGraphicsTextItem* stashTitle = sceneCite->addText("SA COLLECTION :");
+    stashTitle->setDefaultTextColor(colorBorder);
+    stashTitle->setFont(fontSousTitre);
+    stashTitle->setPos(-stashTitle->boundingRect().width() / 2, -50);
+
+    // Paramètres Grille
+    double cardW = 90;
+    double cardH = 110;
+    double space = 15;
+    int cols = 6; // Nombre de colonnes
+
+    // Calcul de la largeur totale de la grille pour la centrer
+    // Largeur = (NbCols * LargeurCarte) + ((NbCols - 1) * Espace)
+    double gridTotalWidth = (cols * cardW) + ((cols - 1) * space);
+    double startX = -gridTotalWidth / 2; // Point de départ X pour être centré
+
+    double currentX = startX;
+    double currentY = 0;
     int count = 0;
-
-    QGraphicsTextItem* stashTitle = sceneCite->addText("Tuile(s) Capturée(s) :");
-    stashTitle->setDefaultTextColor(Qt::black);
-    stashTitle->setPos(startX, currentY - 50);
 
     for (auto it = ia->begin(); it != ia->end(); ++it) {
 
+        // A. Carte Fond
+        QGraphicsRectItem* card = new QGraphicsRectItem(0, 0, cardW, cardH);
+        card->setBrush(QBrush(colorCardBg));
+        card->setPen(QPen(colorBorder, 3));
+        card->setPos(currentX, currentY);
+        sceneCite->addItem(card);
 
+        // B. Tuile
         TuileItem* item = new TuileItem((*it), -1);
-
-
-        item->setScale(0.6);
-
-        item->setPos(currentX, currentY);
-
+        item->setScale(0.55);
+        item->setPos(currentX + cardW/2, currentY + cardH/2);
+        item->setZValue(1);
         sceneCite->addItem(item);
 
-        // Calcul pour la suivante
-        currentX += 80;
+        currentX += cardW + space;
         count++;
 
-        // Retour à la ligne tous les 8 ou 10 tuiles
-        if (count % 8 == 0) {
-            currentX = startX;
-            currentY += 80; // On descend d'un cran
+        // Retour à la ligne
+        if (count % cols == 0) {
+            currentX = startX; // On revient au début de la ligne centrée
+            currentY += cardH + space;
         }
     }
 
-
-    // 5. Afficher ses pierres
-    QGraphicsTextItem* pierres = sceneCite->addText(QString("Pierres : %1").arg(ia->getPierres()));
-    pierres->setDefaultTextColor(Qt::black);
-    //pierres->setFont(QFont("Arial", 12));
-    pierres->setPos(-50, -100);
-
-    // 6. score
-    ia->getScore()->calculerScore();
-    QGraphicsTextItem* score = sceneCite->addText(QString("Score : %1").arg(ia->getScore()->getTotal()));
-    score->setDefaultTextColor(Qt::black);
-    //score->setFont(QFont("Arial", 16, QFont::Bold));
-    score->setPos(-50, -60);
-
+    // --- 5. BOUTON CONTINUER (Centré en bas) ---
     QPushButton* btnLocal = new QPushButton("CONTINUER");
-    btnLocal->setFixedWidth(200);
-    connect(btnLocal, &QPushButton::clicked, this, &MainWindow::onContinuerIAClicked, Qt::QueuedConnection);
-    QGraphicsProxyWidget* proxy = sceneCite->addWidget(btnLocal);
-    proxy->setPos(-100, currentY + 100);
+    btnLocal->setStyleSheet(
+        "QPushButton { "
+        "   background-color: #dc8d55; color: white; border: 2px solid #b56d38; "
+        "   border-radius: 8px; font-weight: bold; font-size: 16px; padding: 10px;"
+        "}"
+        "QPushButton:hover { background-color: #e89e6b; }"
+        );
+    btnLocal->setCursor(Qt::PointingHandCursor);
+    btnLocal->setFixedWidth(220);
 
+    connect(btnLocal, &QPushButton::clicked, this, &MainWindow::onContinuerIAClicked, Qt::QueuedConnection);
+
+    QGraphicsProxyWidget* proxy = sceneCite->addWidget(btnLocal);
+    // On centre le bouton : X = -LargeurBouton / 2
+    proxy->setPos(-110, currentY + cardH + 40);
 }
 
 
