@@ -108,7 +108,7 @@ int RegleMarche::calculer(Cite* cite) const {
             bool isole = true;
             auto voisins = cite->getAdjacents(it->first);
             for (Hexagone* v : voisins) {
-                if (v->getType() == Marche) { isole = false; break; }
+                if (v->getType() == Marche && !v->estPlace()) { isole = false; break; }
             }
             if (isole) valeur += (it->first.z + 1);
         }
