@@ -882,7 +882,7 @@ void MainWindow::dessinerChantier()
         QGraphicsTextItem* txt = sceneChantier->addText(textePrix);
 
         // 2. Style : Orange (#dc8d55), Gras, Plus gros
-        txt->setDefaultTextColor(QColor("#dc8d55"));
+        txt->setDefaultTextColor(QColor(14454101));
         QFont fontPrix = txt->font();
         fontPrix.setPixelSize(20); // Taille bien visible
         fontPrix.setBold(true);
@@ -1018,10 +1018,10 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
     sceneCite->clear();
 
     // --- COULEURS & FONTS ---
-    QColor colorTitre("#dc8d55");    // Orange
-    QColor colorTexte("#4E2E1E");    // Marron
-    QColor colorBorder("#734526");   // Cuivre
-    QColor colorCardBg("#D9B48F");   // Beige
+    QColor colorTitre(14454101);    // Orange
+    QColor colorTexte(5123614);    // Marron
+    QColor colorBorder(7554342);   // Cuivre
+    QColor colorCardBg(14267535);   // Beige
 
     QFont fontTitre; fontTitre.setPixelSize(24); fontTitre.setBold(true);
     QFont fontTexte; fontTexte.setPixelSize(16);
