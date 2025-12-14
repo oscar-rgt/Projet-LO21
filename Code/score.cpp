@@ -14,7 +14,7 @@ using namespace std;
 
 int RegleScore::compterEtoiles(Cite* cite, TypeQuartier typeQ) const {
     int etoiles = 0;
-    // Boucle via itérateur
+    // Boucle via itÃ©rateur
     for (auto it = cite->begin(); it != cite->end(); ++it) {
         Hexagone* h = it->second;
         if (h && h->estPlace() && h->getType() == typeQ) {
@@ -38,13 +38,13 @@ int RegleHabitation::getValeurPlusGrandGroupe(Cite* cite) const {
         Coord depart = it->first;
         Hexagone* h = it->second;
 
-        // Vérification si déjà visité
+        // VÃ©rification si dÃ©jÃ  visitÃ©
         bool dejaVu = false;
         for (const auto& v : globalVisites) { if (v == depart) { dejaVu = true; break; } }
 
         if (h->getType() == Habitation && !h->estPlace() && !dejaVu) {
 
-            // --- DÉBUT PARCOURS GROUPE ---
+            // --- DÃ‰BUT PARCOURS GROUPE ---
             int valeurGroupe = 0;
             vector<Coord> aTraiter;
 
@@ -97,7 +97,7 @@ int RegleHabitationVariante::calculer(Cite* cite) const {
 }
 
 // =========================================================
-// 2. MARCHÉS (Jaune)
+// 2. MARCHÃ‰S (Jaune)
 // =========================================================
 
 int RegleMarche::calculer(Cite* cite) const {
@@ -108,7 +108,7 @@ int RegleMarche::calculer(Cite* cite) const {
             bool isole = true;
             auto voisins = cite->getAdjacents(it->first);
             for (Hexagone* v : voisins) {
-                if (v->getType() == Marche) { isole = false; break; }
+                if (v->getType() == Marche && !v->estPlace()) { isole = false; break; }
             }
             if (isole) valeur += (it->first.z + 1);
         }
@@ -127,7 +127,7 @@ int RegleMarcheVariante::calculer(Cite* cite) const {
             bool adjacentPlace = false;
             auto voisins = cite->getAdjacents(it->first);
             for (Hexagone* v : voisins) {
-                if (v->getType() == Marche) isole = false;
+                if (v->getType() == Marche && !v->estPlace()) isole = false;
                 if (v->estPlace() && v->getType() == Marche) adjacentPlace = true;
             }
             if (isole) {
