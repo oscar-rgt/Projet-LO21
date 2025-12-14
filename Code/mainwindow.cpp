@@ -594,52 +594,36 @@ void MainWindow::dessinerPreview() {
     for(int i =0; i < indexTuileSelectionnee; i++) ++it;
     Tuile* t = *it;
 
-    // Calcul des 3 positions relatives des hexagones de la tuile
-    // On reproduit la logique de "cite.cpp" (placer) ici pour l'affichage
-    struct CoordSimule { int x, y; };
-    CoordSimule positions[3];
+    // Création du "Fantôme" en utilisant TuileItem
+    // On passe -1 en index car c'est un objet temporaire hors chantier
+    TuileItem* ghost = new TuileItem(t, -1, TUILE_TAILLE);
+    // Application du style (Pointillés blancs + Transparence)
+    ghost->setSelection(true);
+    ghost->setZValue(1000); // Toujours au-dessus de tout
 
-    // Hexagone 1 (Ancre)
-    positions[0] = {previewX, previewY};
 
-    // Hexagone 2 (Sud)
-    positions[1] = {previewX, previewY - 1};
-
-    // Hexagone 3 (Côté - dépend de l'inversion)
-    if (inversionEtat) {
-        positions[2] = {previewX + 1, (previewX % 2 == 0) ? previewY : previewY - 1};
-    } else {
-        positions[2] = {previewX - 1, (previewX % 2 == 0) ? previewY : previewY - 1};
-    }
 
     double taille = TUILE_TAILLE;
     double w = COEFF_X * taille;
     double h = sqrt(3.) * taille;
 
-    // Dessin des 3 hexagones "fantômes"
-    for(int k=0; k<3; k++) {
-        Hexagone* hex = t->getHexagone(k); // Hexagone visuel
+    double anchorPixelX = previewX * w;
+    double anchorPixelY = previewY * -h + abs((previewX % 2)) * (h / 2);
+    anchorPixelY -= (previewZ * 10.0);
 
-        int hx = positions[k].x;
-        int hy = positions[k].y;
-        int hz = previewZ; // On place tout au niveau calculé
+    // b. Compensation du centrage de TuileItem
+    // TuileItem décale ses hexagones pour être centré.
+    // L'ancre (Index 0) se trouve donc décalée de 'shiftX' à l'intérieur de l'item.
+    // Il faut soustraire ce décalage pour que l'Ancre tombe pile sur la souris.
 
-        double px = hx * w;
-        double py = hy * -h + abs((hx % 2)) * (h / 2);
-        py -= (hz * 10.0);
+    double sideOffset = (t->getInversion() ? 1.0 : -1.0) * w;
+    double shiftX = -(sideOffset / 3.0); // Le même calcul que dans TuileItem.cpp
 
-        QColor col = getTypeColor(hex->getType());
-        col.setAlpha(150); // Transparence pour indiquer que c'est une prévisualisation
+    // 6. Placement final
+    ghost->setPos(anchorPixelX - shiftX, anchorPixelY);
 
-        int nbEtoiles = hex->estPlace() ? hex->getEtoiles() : 0;
-
-        // On utilise HexagoneItem mais on ajoute un effet visuel
-        HexagoneItem* item = new HexagoneItem(px, py, taille, col, hx, hy, hz, nbEtoiles);
-        // Ajout d'une bordure blanche épaisse pour bien voir la sélection
-        item->setPen(QPen(Qt::white, 2, Qt::DashLine));
-        item->setZValue(1000); // Toujours au-dessus de tout
-        sceneCite->addItem(item);
-    }
+    // 7. Ajout à la scène
+    sceneCite->addItem(ghost);
 }
 
 
