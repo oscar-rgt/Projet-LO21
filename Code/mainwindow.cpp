@@ -998,31 +998,39 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
 
     // 4. Afficher le "Trésor" de l'IA
 
-    /*
-    int x = -300;
-    int y = 0;
+
+    int startX = -300;
+    int currentX = startX;
+    int currentY = 0;
     int count = 0;
 
-    QGraphicsTextItem* stashTitle = sceneCite->addText("Tuiles Capturées :");
-    stashTitle->setDefaultTextColor(Qt::white);
-    stashTitle->setPos(x, y - 40);
+    QGraphicsTextItem* stashTitle = sceneCite->addText("Tuile(s) Capturée(s) :");
+    stashTitle->setDefaultTextColor(Qt::black);
+    stashTitle->setPos(startX, currentY - 50);
+
+    for (auto it = ia->begin(); it != ia->end(); ++it) {
 
 
-    for (auto it = ia->getCite()->begin(); it != ia->getCite()->end(); ++it) {
-        Hexagone* h = it->second;
-        QColor c = getTypeColor(h->getType());
+        TuileItem* item = new TuileItem((*it), -1);
 
-        HexagoneItem* item = new HexagoneItem(x, y, 15.0, c, 0, 0, 0, h->getEtoiles());
+
+        item->setScale(0.6);
+
+        item->setPos(currentX, currentY);
+
         sceneCite->addItem(item);
 
-        x += 40;
+        // Calcul pour la suivante
+        currentX += 80;
         count++;
-        if (count % 15 == 0) { // Retour à la ligne
-            x = -300;
-            y += 40;
+
+        // Retour à la ligne tous les 8 ou 10 tuiles
+        if (count % 8 == 0) {
+            currentX = startX;
+            currentY += 80; // On descend d'un cran
         }
     }
-    */
+
 
     // 5. Afficher ses pierres
     QGraphicsTextItem* pierres = sceneCite->addText(QString("Pierres : %1").arg(ia->getPierres()));
@@ -1041,7 +1049,7 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
     btnLocal->setFixedWidth(200);
     connect(btnLocal, &QPushButton::clicked, this, &MainWindow::onContinuerIAClicked, Qt::QueuedConnection);
     QGraphicsProxyWidget* proxy = sceneCite->addWidget(btnLocal);
-    proxy->setPos(-100, -40);
+    proxy->setPos(-100, currentY + 100);
 
 }
 
