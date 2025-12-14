@@ -24,8 +24,31 @@ public:
     // Calcule le score selon la difficulté
     int calculerScoreIA() const;
 
+    // ==========================================
+    // ITERATEUR POUR LES TUILES ACQUISES
+    // ==========================================
+    class Iterator {
+        friend class IA;
+        std::vector<Tuile*>::const_iterator current;
+        Iterator(std::vector<Tuile*>::const_iterator it) : current(it) {}
+    public:
+        Iterator() {}
+        Iterator& operator++() { ++current; return *this; }
+        bool operator!=(const Iterator& other) const { return current != other.current; }
+        bool operator==(const Iterator& other) const { return current == other.current; }
+        Tuile* operator*() const { return *current; }
+    };
+
+    // Méthodes pour récupérer l'itérateur
+    Iterator begin() const { return Iterator(tuilesAcquises.begin()); }
+    Iterator end() const { return Iterator(tuilesAcquises.end()); }
+
+
     // Helper pour vérifier si une tuile contient une Place
     static bool tuileContientPlace(Tuile* t);
+
+    // Helper pratique pour savoir combien de tuiles afficher (QT)
+    int getNbTuilesAcquises() const { return static_cast<int>(tuilesAcquises.size()); }
 };
 
 #endif
