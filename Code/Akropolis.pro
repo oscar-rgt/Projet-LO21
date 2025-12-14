@@ -8,6 +8,7 @@ HEADERS += \
     ia.h \
     joueur.h \
     main.h \
+    main.h \
     mainwindow.h \
     partie.h \
     pile.h \
@@ -34,3 +35,5 @@ SOURCES += \
 
 RESOURCES += \
     ressources.qrc
+
+QMAKE_CXXFLAGS += -Wno-backslash-newline-escape

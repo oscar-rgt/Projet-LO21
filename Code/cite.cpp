@@ -32,7 +32,7 @@ vector<Coord> Cite::getVecteursVoisins(bool isXOdd) const{
     };
 }
 
-const bool Cite::toucheCite(Coord c) { //marche pas (jsp pk)
+bool Cite::toucheCite(Coord c) { //marche pas (jsp pk)
     for (const auto& vec : getVecteursVoisins((c.x)%2)) {
         if (!estLibre({ c.x + vec.x, c.y + vec.y, c.z })) return true;
     }
