@@ -740,10 +740,6 @@ void MainWindow::dessinerCite(Joueur* joueur) {
         HexagoneItem* item = new HexagoneItem(pixelX, pixelY, taille, couleur, pos.x, pos.y, pos.z, nbEtoiles);
         sceneCite->addItem(item);
 
-        QGraphicsTextItem* txt = sceneCite->addText(QString("%1, %2, %3").arg(pos.x).arg(pos.y).arg(pos.z));
-        txt->setPos(pixelX, pixelY);
-        txt->setZValue(pos.z + 0.1);
-        txt->setDefaultTextColor(Qt::white);
     }
 }
 
