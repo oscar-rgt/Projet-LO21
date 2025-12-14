@@ -31,7 +31,7 @@ public:
 	unsigned int getEtoiles() const { return etoiles; }
 	string affiche();
 	void setNiveau(unsigned int n) { niveau = n; }
-	const bool estPlace() const { return place; }
+    const bool estPlace() const { return place; }
 };
 
 #endif // HEXAGONE_H

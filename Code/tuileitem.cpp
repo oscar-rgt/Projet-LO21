@@ -76,3 +76,14 @@ QColor TuileItem::getTypeColor(TypeQuartier t)
     default:         return Qt::white;
     }
 }
+
+void TuileItem::setSelection(bool estSelectionne) {
+    // On parcourt les enfants du groupe (les 3 hexagones)
+    for (QGraphicsItem* enfant : childItems()) {
+        // On vérifie que c'est bien un HexagoneItem
+        HexagoneItem* hex = dynamic_cast<HexagoneItem*>(enfant);
+        if (hex) {
+            hex->setSelection(estSelectionne);
+        }
+    }
+}

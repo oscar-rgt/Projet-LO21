@@ -22,6 +22,8 @@ public:
     // Méthode pour obtenir la couleur associée à un type de quartier
     static QColor getTypeColor(TypeQuartier t);
 
+    void setSelection(bool estSelectionne);
+
 protected:
     // Gestion de l'événement de clic sur la tuile
     void mousePressEvent(QGraphicsSceneMouseEvent *event) override;

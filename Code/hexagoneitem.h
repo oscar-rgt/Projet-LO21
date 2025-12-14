@@ -54,6 +54,32 @@ public:
 
         }
     }
+    void setSelection(bool estSelectionne) {
+        if (estSelectionne) {
+            // Style : Blanc, Epais, Pointillé
+            QPen pen(Qt::white);
+            pen.setWidth(2);
+            pen.setStyle(Qt::DashLine); // <--- C'est ça qui fait le pointillé
+            setPen(pen);
+
+            // Optionnel : Passer au premier plan
+            setZValue(gridZ + 10);
+        } else {
+            // Retour au style normal
+            setPen(QPen(Qt::black));
+            setZValue(gridZ);
+        }
+        // 2. GESTION DE LA TRANSPARENCE (PINCEAU)
+        QColor c = brush().color(); // On récupère la couleur actuelle (Bleu, Rouge...)
+
+        if (estSelectionne) {
+            c.setAlpha(170); // Semi-transparent (0-255)
+        } else {
+            c.setAlpha(255); // Totalement opaque
+        }
+
+        setBrush(QBrush(c)); // On réapplique la couleur modifiée
+    }
 
 
 protected:

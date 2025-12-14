@@ -686,6 +686,11 @@ void MainWindow::dessinerChantier()
 
         // Création de la tuile graphique
         TuileItem* item = new TuileItem(tuile, index, rayon);
+        if (index == indexTuileSelectionnee) {
+            item->setSelection(true); // <--- Ça active les pointillés blancs !
+        } else {
+            item->setSelection(false);
+        }
         item->setPos(xPos, yPos); // Position ajustée
         yPos += 120; // Espace entre les tuiles
 
@@ -697,13 +702,7 @@ void MainWindow::dessinerChantier()
             selectionnerTuileChantier(index);
         });
 
-        // Mise en évidence de la tuile sélectionnée
-        if (index == indexTuileSelectionnee) {
-            QGraphicsRectItem* border = new QGraphicsRectItem(item->boundingRect());
-            border->setPen(QPen(Qt::white, 2));
-            border->setPos(item->pos());
-            sceneChantier->addItem(border);
-        }
+
 
         // Affichage du prix à droite de la tuile
         QGraphicsTextItem* txt = sceneChantier->addText(QString("%1 pierres").arg(tuile->getPrix()));
