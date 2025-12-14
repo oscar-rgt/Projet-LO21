@@ -9,6 +9,7 @@
 #include<QApplication>
 #include <QInputDialog>
 #include <QMouseEvent>
+#include <QGraphicsProxyWidget>
 
 using namespace std;
 
@@ -17,7 +18,7 @@ const double COEFF_X = 1.53;
 const double OFFSET_Y = sqrt(3.0) * TUILE_TAILLE;
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), indexTuileSelectionnee(-1), rotationCompteur(0), inversionEtat(false), previewActive(false), previewX(0), previewY(0), previewZ(0)
+    : QMainWindow(parent), indexTuileSelectionnee(-1), rotationCompteur(0), inversionEtat(false), previewActive(false), previewX(0), previewY(0), previewZ(0), affichageResultatIA(false)
 {
     setWindowTitle("Akropolis - Qt");
     resize(1024, 768);
@@ -559,11 +560,18 @@ void MainWindow::initialiserPageJeu()
     mainLayout->addLayout(sideLayout, 1); // Prend 1/3 de la largeur
 
     stackedWidget->addWidget(pageJeu);
+
+    labelPilesRestantes = new QLabel("Piles : -", pageJeu);
+    labelPilesRestantes->setAlignment(Qt::AlignCenter);
+    sideLayout->addWidget(labelPilesRestantes);
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched == viewCite->viewport() && event->type() == QEvent::MouseButtonPress) {
+        if (affichageResultatIA) {
+            return false;
+        }
         QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
         if (mouseEvent->button() == Qt::LeftButton) {
             QPointF scenePos = viewCite->mapToScene(mouseEvent->pos());
@@ -660,17 +668,53 @@ void MainWindow::afficherMenuConfig()
 
 void MainWindow::mettreAJourInterface()
 {
-    Joueur* j = Partie::getInstance().getJoueurActuel();
-    labelInfoJoueur->setText(
-        "Tour de : " + QString::fromStdString(j->getNom()) +
-        "\nPierres : " + QString::number(j->getPierres()) +
-        "\nScore : " + QString::number(j->getScore()->getTotal())
-        );
+    int pilesRestantes = Partie::getInstance().getNbPiles() - Partie::getInstance().getIndexPileActuelle();
+    if (pilesRestantes < 0) pilesRestantes = 0;
+    labelPilesRestantes->setText(QString("%1 pile(s) restante(s)").arg(pilesRestantes));
 
-    btnValidation->setEnabled(previewActive);
+    if (affichageResultatIA) {
+        // Mode IA : on cache les contrôles de jeu, on montre "Continuer"
+        btnRotation->hide();
+        btnInversion->hide();
+        btnValidation->hide();
+        btnPasserTour->hide();
 
-    dessinerCite(j);
-    dessinerPreview();
+        // On récupère l'IA (Attention : comme jouerTourIA() a déjà passé le tour,
+        // l'IA n'est plus le "joueur actuel" dans le backend.
+        // Il faut la retrouver dans la liste des joueurs).
+        IA* iaTrouvee = nullptr;
+        auto it = Partie::getInstance().debutJoueurs();
+        while(it != Partie::getInstance().finJoueurs()) {
+            if (dynamic_cast<IA*>(*it)) {
+                iaTrouvee = dynamic_cast<IA*>(*it);
+                break;
+            }
+            ++it;
+        }
+
+        if (iaTrouvee) {
+            labelInfoJoueur->setText("Tour de : " + QString::fromStdString(iaTrouvee->getNom()));
+            dessinerInterfaceIA(iaTrouvee);
+        }
+    }
+    else{
+        Joueur* j = Partie::getInstance().getJoueurActuel();
+        labelInfoJoueur->setText(
+            "Tour de : " + QString::fromStdString(j->getNom()) +
+            "\nPierres : " + QString::number(j->getPierres()) +
+            "\nScore : " + QString::number(j->getScore()->getTotal())
+            );
+
+        btnRotation->show();
+        btnInversion->show();
+
+        btnValidation->setEnabled(previewActive);
+        btnValidation->show();
+
+        dessinerCite(j);
+        dessinerPreview();
+
+    }
     dessinerChantier();
 }
 
@@ -858,8 +902,25 @@ void MainWindow::onValidationClicked()
             mettreAJourInterface();
 
             if (Partie::getInstance().estFinDePartie()) {
+                mettreAJourInterface();
                 afficherFinDePartie();
+                return;
             }
+
+            //Tour IA
+            Joueur* joueurSuivant = Partie::getInstance().getJoueurActuel(); //joueur suivant a été fait par placer tuile
+            IA* ia = dynamic_cast<IA*>(joueurSuivant); //renvoie null si joueur pas IA
+
+            if (ia) {
+                dernierIndexIA = Partie::getInstance().jouerTourIA();
+
+                //active le mode "Écran de l'IA"
+                affichageResultatIA = true;
+            }
+
+            // Mise à jour de l'interface (affichera soit le tour de l'humain suivant, soit l'écran IA)
+            mettreAJourInterface();
+
         } else {
             // Le backend a renvoyé false
             QMessageBox::warning(this, "Erreur", "Placement refusé par le jeu (vérifiez vos pierres ou les règles).");
@@ -907,6 +968,86 @@ void MainWindow::onPasserTourClicked()
     }
 }
 
+void MainWindow::onContinuerIAClicked()
+{
+    //désactive le mode IA
+    affichageResultatIA = false;
+
+    if (Partie::getInstance().estFinDePartie()) {
+        afficherFinDePartie();
+    } else {
+        // La partie continue, on rafraîchit pour afficher le plateau du joueur humain
+        mettreAJourInterface();
+    }
+}
+
+void MainWindow::dessinerInterfaceIA(IA* ia) {
+    sceneCite->clear();
+
+    // 1. Fond ou cadre pour bien distinguer (Optionnel)
+    //sceneCite->setBackgroundBrush(QBrush(QColor(40, 40, 60))); // Fond sombre bleuté
+
+    // 2. Titre
+    QGraphicsTextItem* titre = sceneCite->addText("L'ILLUSTRE ARCHITECTE A JOUÉ");
+    //titre->setDefaultTextColor(Qt::white);
+    //titre->setFont(QFont("Arial", 20, QFont::Bold));
+    titre->setPos(-100, -200);
+
+    // 3. Info sur l'action
+    QString actionText = QString("Il a pris la tuile n°%1 du chantier.").arg(dernierIndexIA + 1);
+    QGraphicsTextItem* info = sceneCite->addText(actionText);
+    //info->setDefaultTextColor(Qt::yellow);
+    //info->setFont(QFont("Arial", 14));
+    info->setPos(-100, -150);
+
+    // 4. Afficher le "Trésor" de l'IA
+
+    /*
+    int x = -300;
+    int y = 0;
+    int count = 0;
+
+    QGraphicsTextItem* stashTitle = sceneCite->addText("Tuiles Capturées :");
+    stashTitle->setDefaultTextColor(Qt::white);
+    stashTitle->setPos(x, y - 40);
+
+
+    for (auto it = ia->getCite()->begin(); it != ia->getCite()->end(); ++it) {
+        Hexagone* h = it->second;
+        QColor c = getTypeColor(h->getType());
+
+        HexagoneItem* item = new HexagoneItem(x, y, 15.0, c, 0, 0, 0, h->getEtoiles());
+        sceneCite->addItem(item);
+
+        x += 40;
+        count++;
+        if (count % 15 == 0) { // Retour à la ligne
+            x = -300;
+            y += 40;
+        }
+    }
+    */
+
+    // 5. Afficher ses pierres
+    QGraphicsTextItem* pierres = sceneCite->addText(QString("Pierres : %1").arg(ia->getPierres()));
+    //pierres->setDefaultTextColor(Qt::white);
+    //pierres->setFont(QFont("Arial", 12));
+    pierres->setPos(-50, -100);
+
+    // 6. score
+    ia->getScore()->calculerScore();
+    QGraphicsTextItem* score = sceneCite->addText(QString("Score : %1").arg(ia->getScore()->getTotal()));
+    //score->setDefaultTextColor(Qt::cyan);
+    //score->setFont(QFont("Arial", 16, QFont::Bold));
+    score->setPos(-50, -60);
+
+    QPushButton* btnLocal = new QPushButton("CONTINUER");
+    btnLocal->setFixedWidth(200);
+    connect(btnLocal, &QPushButton::clicked, this, &MainWindow::onContinuerIAClicked, Qt::QueuedConnection);
+    QGraphicsProxyWidget* proxy = sceneCite->addWidget(btnLocal);
+    proxy->setPos(-100, -40);
+
+}
 
 
 

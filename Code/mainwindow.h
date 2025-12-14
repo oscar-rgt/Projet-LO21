@@ -44,6 +44,7 @@ private slots:
     void onValidationClicked();
     void selectionnerTuileChantier(int index);
     void afficherFinDePartie();   // Nouveau : pour afficher les résultats
+    void onContinuerIAClicked();
 
 private:
     // Widgets pour le menu principal
@@ -74,6 +75,7 @@ private:
     QPushButton *btnInversion;
     QPushButton *btnValidation;
     QPushButton* btnPasserTour;
+    QLabel *labelPilesRestantes;
 
     // État de la partie
     int indexTuileSelectionnee;
@@ -86,6 +88,11 @@ private:
     int previewY;
     int previewZ;
     void dessinerPreview();
+
+    //IA
+    bool affichageResultatIA;
+    int dernierIndexIA;
+    void dessinerInterfaceIA(IA* ia);
 
     // Méthodes d'affichage
     void initialiserPageMenuPrincipal();

@@ -1362,7 +1362,11 @@ release/mainwindow.o: ../../mainwindow.cpp ../../mainwindow.h \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qapplication.h \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/QInputDialog \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qinputdialog.h \
-		C:/Qt/6.10.1/mingw_64/include/QtGui/QMouseEvent
+		C:/Qt/6.10.1/mingw_64/include/QtGui/QMouseEvent \
+		C:/Qt/6.10.1/mingw_64/include/QtWidgets/QGraphicsProxyWidget \
+		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qgraphicsproxywidget.h \
+		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qgraphicswidget.h \
+		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qgraphicslayoutitem.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\mainwindow.o ..\..\mainwindow.cpp
 
 release/partie.o: ../../partie.cpp ../../partie.h \
