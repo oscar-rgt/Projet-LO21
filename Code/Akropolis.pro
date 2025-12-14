@@ -31,3 +31,6 @@ SOURCES += \
     score.cpp \
     tuileitem.cpp \
     tuiles.cpp
+
+RESOURCES += \
+    ressources.qrc

@@ -22,6 +22,106 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("Akropolis - Qt");
     resize(1024, 768);
 
+    // --- THEME GRAPHIQUE AKROPOLIS ---
+    // On définit une palette globale inspirée du jeu
+    QString styleGlobal = R"(
+        /* 1. FOND GÉNÉRAL (Effet Pierre Chaude / Marbre) */
+        QMainWindow, QWidget {
+            background-color: #FAF8EF;
+            color: #2C3E50; /* Texte Gris Foncé (Lisible) */
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        /* 2. BOUTONS STANDARDS (Bleu Méditerranée) */
+        QPushButton {
+            background-color: #dc8d55;
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            padding: 8px 15px;
+            border: 2px solid #b56d38;
+        }
+        QPushButton:hover {
+            background-color: #e89e6b; /* Plus clair au survol */
+            border-color: #dc8d55;
+        }
+        QPushButton:pressed {
+            background-color: #bf703d; /* Un peu plus foncé au clic */
+            border-color: #a05828;
+        }
+        QPushButton:disabled {
+            background-color: #e0e0e0;
+            color: #a0a0a0;
+            border: 2px solid #cccccc;
+        }
+
+        /* 3. CHAMPS DE TEXTE (Style Parchemin/Papier) */
+        QLineEdit {
+            background-color: #FFFFFF;
+            border: 2px solid #BDC3C7;
+            border-radius: 5px;
+            padding: 5px;
+            selection-background-color: #F39C12;
+        }
+        QLineEdit:focus {
+            border-color: #F39C12; /* Bordure Orange quand on écrit */
+        }
+
+        /* 4. GROUPBOX */
+        QFrame, GroupBox {
+            background-color: transparent;
+            border: 1px solid #BDC3C7;
+            border-radius: 8px;
+            margin-top: 25px; /* Laisse de la place pour le titre */
+            font-weight: bold;
+        }
+        QGroupBox::title {
+            subcontrol-origin: margin;
+            subcontrol-position: top left; /* Titre en haut à gauche */
+            left: 10px;
+            padding: 0 5px;
+            color: #dc8d55; /* Titre Orange */
+            font-size: 14px;
+        }
+
+        /* 5. CHECKBOX & RADIOBUTTON (CORRIGÉ - VISIBILITÉ) */
+        QCheckBox, QRadioButton {
+            spacing: 8px;
+            font-size: 13px;
+            color: #2C3E50;
+        }
+
+        /* L'indicateur (le petit carré ou rond) */
+        QCheckBox::indicator, QRadioButton::indicator {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #BDC3C7;
+            background-color: white; /* Fond blanc bien visible */
+            border-radius: 4px; /* Coins arrondis pour checkbox */
+        }
+
+        /* Quand on passe la souris dessus */
+        QCheckBox::indicator:hover, QRadioButton::indicator:hover {
+            border-color: #dc8d55;
+        }
+
+        /* Quand c'est COCHÉ */
+        QCheckBox::indicator:checked, QRadioButton::indicator:checked {
+            background-color: #dc8d55; /* Fond Orange */
+            border-color: #dc8d55;
+            image: none; /* On remplit juste de couleur pour faire simple et visible */
+        }
+
+        /* Arrondi spécifique pour les boutons radio */
+        QRadioButton::indicator {
+            border-radius: 10px; /* Cercle parfait */
+        }
+    )";
+
+    // Application du style à toute l'application
+    this->setStyleSheet(styleGlobal);
+    // ---------------------------------
+
     // StackedWidget pour gérer les différentes pages
     stackedWidget = new QStackedWidget(this);
     setCentralWidget(stackedWidget);
@@ -43,44 +143,65 @@ void MainWindow::initialiserPageMenuPrincipal()
     pageMenuPrincipal = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(pageMenuPrincipal);
 
-    QLabel *titleLabel = new QLabel("AKROPOLIS", pageMenuPrincipal);
-    titleLabel->setStyleSheet("font-size: 36px; font-weight: bold; margin-bottom: 30px;");
-    layout->addWidget(titleLabel, 0, Qt::AlignCenter);
+    // --- DESIGN GÉNÉRAL ---
+    layout->setAlignment(Qt::AlignCenter);
+    layout->setSpacing(30);
+    layout->setContentsMargins(50, 50, 50, 50);
 
-    // Ascii Art pour le titre
-    QLabel *asciiArt = new QLabel(
-        "                __       __   ___   _______     ______    _______    ______    ___        __      ________  \n"
-        "               /\"\"\\     |/\"| /  \") /\"      \\   /    \" \\  |   __ \"\\  /    \" \\  |\"  |      |\" \\    /\"       ) \n"
-        "              /    \\    (: |/   / |:        | // ____  \\ (. |__) :)// ____  \\ ||  |      ||  |  (:   \\___/  \n"
-        "             /' /\\  \\   |    __/  |_____/   )/  /    ) :)|:  ____//  /    ) :)|:  |      |:  |   \\___  \\    \n"
-        "            //  __'  \\  (// _  \\   //      /(: (____/ // (|  /   (: (____/ //  \\  |___   |.  |    __/  \\\\   \n"
-        "           /   /  \\\\  \\ |: | \\  \\ |:  __   \\ \\        / /|__/ \\   \\        /  ( \\_|:  \\  /\\  |\\  /\" \\   :)  \n"
-        "          (___/    \\___)(__|  \\__)|__|  \\___) \\\"_____/ (_______)   \\\"_____/    \\_______)(__\\_|_)(_______/   \n"
-        "\n\n"
-        "                              ===========================================================\n"
-        "                                         B I E N V E N U E   D A N S   L A               \n"
-        "                                            C I T E   D E S   D I E U X                  \n"
-        "                              ===========================================================\n",
-        pageMenuPrincipal
-        );
-    asciiArt->setStyleSheet("font-family: Courier; font-size: 14px;");
-    layout->addWidget(asciiArt, 0, Qt::AlignCenter);
+    // --- 1. LE LOGO (IMAGE) ---
+    QLabel *labelLogo = new QLabel(pageMenuPrincipal);
 
+    labelLogo->setStyleSheet("border: none; background-color: transparent; margin-bottom: 10px;");
+    // Chargement de l'image depuis les ressources
+    QPixmap logoPixmap(":/images/akropolis-title.png");
+
+    if (logoPixmap.isNull()) {
+        labelLogo->setText("AKROPOLIS");
+        labelLogo->setStyleSheet("font-size: 50px; font-weight: bold; color: #2c3e50;");
+    } else {
+        QPixmap scaledLogo = logoPixmap.scaledToWidth(600, Qt::SmoothTransformation);
+        labelLogo->setPixmap(scaledLogo);
+    }
+
+    labelLogo->setAlignment(Qt::AlignCenter);
+    layout->addWidget(labelLogo);
+
+    layout->addSpacing(20);
+
+    // --- 2. LES BOUTONS ---
+    QVBoxLayout *layoutBoutons = new QVBoxLayout();
+    layoutBoutons->setSpacing(20);
+
+    // On garde juste la taille et le padding, on retire les couleurs !
+    QString styleBoutonMenu = "min-width: 220px; padding: 12px; font-size: 18px;";
+
+    // Bouton JOUER
     QPushButton *btnJouer = new QPushButton("JOUER UNE PARTIE", pageMenuPrincipal);
-    QPushButton *btnRegles = new QPushButton("REGLES DU JEU", pageMenuPrincipal);
-    QPushButton *btnQuitter = new QPushButton("QUITTER", pageMenuPrincipal);
-
-    btnJouer->setFixedSize(200, 50);
-    btnRegles->setFixedSize(200, 50);
-    btnQuitter->setFixedSize(200, 50);
-
-    layout->addWidget(btnJouer, 0, Qt::AlignCenter);
-    layout->addWidget(btnRegles, 0, Qt::AlignCenter);
-    layout->addWidget(btnQuitter, 0, Qt::AlignCenter);
-
+    // On applique seulement la taille, la couleur viendra du style global (#dc8d55)
+    btnJouer->setStyleSheet(styleBoutonMenu);
+    btnJouer->setCursor(Qt::PointingHandCursor);
     connect(btnJouer, &QPushButton::clicked, this, &MainWindow::afficherMenuConfig);
+    layoutBoutons->addWidget(btnJouer, 0, Qt::AlignCenter);
+
+    // Bouton RÈGLES
+    QPushButton *btnRegles = new QPushButton("RÈGLES DU JEU", pageMenuPrincipal);
+    btnRegles->setStyleSheet(styleBoutonMenu);
+    btnRegles->setCursor(Qt::PointingHandCursor);
     connect(btnRegles, &QPushButton::clicked, this, &MainWindow::afficherMenuRegles);
+    layoutBoutons->addWidget(btnRegles, 0, Qt::AlignCenter);
+
+    // Bouton QUITTER
+    QPushButton *btnQuitter = new QPushButton("QUITTER", pageMenuPrincipal);
+    // Pour quitter, on peut garder le rouge si on veut, ou mettre le style global
+    // Si tu veux TOUS les boutons pareils, mets juste : btnQuitter->setStyleSheet(styleBoutonMenu);
+    // Si tu veux garder le rouge pour quitter (conseillé pour l'UX), garde cette ligne :
+    btnQuitter->setStyleSheet(styleBoutonMenu + "background-color: #c0392b; border-color: #922B21;");
+
+    btnQuitter->setCursor(Qt::PointingHandCursor);
     connect(btnQuitter, &QPushButton::clicked, this, &MainWindow::quitterJeu);
+    layoutBoutons->addWidget(btnQuitter, 0, Qt::AlignCenter);
+
+    layout->addLayout(layoutBoutons);
 
     QLabel *credits = new QLabel(
         "-----------------------------------------------------------\n"
@@ -103,7 +224,7 @@ void MainWindow::initialiserPageRegles()
     QVBoxLayout *layout = new QVBoxLayout(pageRegles);
 
     QLabel *titleLabel = new QLabel("RÈGLES D'AKROPOLIS", pageRegles);
-    titleLabel->setStyleSheet("font-size: 24px; font-weight: bold; margin-bottom: 20px;");
+    titleLabel->setStyleSheet("font-size: 24px; font-weight: bold; color: #dc8d55; margin-bottom: 20px;");
     layout->addWidget(titleLabel, 0, Qt::AlignCenter);
 
     QTextEdit *textRegles = new QTextEdit(pageRegles);
@@ -238,14 +359,6 @@ void MainWindow::initialiserPageConfiguration()
     // 2. LE CADRE (Le "petit rectangle")
     QFrame *cadreConfig = new QFrame(pageConfig);
     cadreConfig->setFixedWidth(600); // Largeur fixe élégante
-    // Style : Fond blanc, contour gris, coins arrondis
-    cadreConfig->setStyleSheet(
-        ".QFrame { "
-        "   border: 1px solid #bdc3c7; "
-        "   border-radius: 15px; "
-        "}"
-        "QLabel { border: none; background: transparent; }" // Pour éviter que le style s'applique aux labels
-        );
 
     // Layout INTERNE du cadre
     QVBoxLayout *layoutCadre = new QVBoxLayout(cadreConfig);
@@ -256,7 +369,7 @@ void MainWindow::initialiserPageConfiguration()
 
     // 1. TITRE
     QLabel *titre = new QLabel("CONFIGURATION DE LA PARTIE", cadreConfig);
-    titre->setStyleSheet("font-size: 22px; font-weight: bold; color: white; margin-bottom: 10px;");
+    titre->setStyleSheet("font-size: 22px; font-weight: bold; color: #dc8d55; margin-bottom: 10px;");
     titre->setAlignment(Qt::AlignCenter);
     layoutCadre->addWidget(titre);
 
@@ -329,11 +442,6 @@ void MainWindow::initialiserPageConfiguration()
 
     QPushButton *btnRetour = new QPushButton("ANNULER", cadreConfig);
     QPushButton *btnValider = new QPushButton("JOUER", cadreConfig);
-
-    btnValider->setStyleSheet("QPushButton { background-color: #27ae60; color: white; font-weight: bold; border-radius: 5px; padding: 10px; }"
-                              "QPushButton:hover { background-color: #2ecc71; }");
-    btnRetour->setStyleSheet("QPushButton { background-color: #95a5a6; color: white; border-radius: 5px; padding: 10px; }"
-                             "QPushButton:hover { background-color: #7f8c8d; }");
 
     btnValider->setCursor(Qt::PointingHandCursor);
     btnRetour->setCursor(Qt::PointingHandCursor);

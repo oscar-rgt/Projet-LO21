@@ -55,9 +55,9 @@ public:
         }
     }
     void setSelection(bool estSelectionne) {
+        QPen pen(Qt::black);
         if (estSelectionne) {
-            // Style : Blanc, Epais, Pointillé
-            QPen pen(Qt::white);
+            // Style : Noir, Epais, Pointillé
             pen.setWidth(2);
             pen.setStyle(Qt::DashLine); // <--- C'est ça qui fait le pointillé
             setPen(pen);
@@ -66,7 +66,6 @@ public:
             setZValue(gridZ + 10);
         } else {
             // Retour au style normal
-            setPen(QPen(Qt::black));
             setZValue(gridZ);
         }
         // 2. GESTION DE LA TRANSPARENCE (PINCEAU)
