@@ -636,6 +636,7 @@ void MainWindow::selectionnerTuileChantier(int index)
 
     // On redessine pour mettre à jour l'affichage de la sélection (l'opacité changée ci-dessus)
     dessinerChantier();
+    mettreAJourInterface();
 }
 
 void MainWindow::onInversionClicked() {
