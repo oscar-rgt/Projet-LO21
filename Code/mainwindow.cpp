@@ -8,6 +8,7 @@
 #include <QTextEdit>
 #include<QApplication>
 #include <QInputDialog>
+#include <QDialog>
 #include <QMouseEvent>
 #include <QGraphicsProxyWidget>
 
@@ -1055,26 +1056,128 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
 
 
 
+// N'oubliez pas d'ajouter #include <QDialog> tout en haut si ce n'est pas fait !
+
 void MainWindow::afficherFinDePartie() {
-    QString message = "=== FIN DE PARTIE ===\n\n--- SCORES ---\n";
+    // --- 1. CALCUL DES SCORES (Logique existante) ---
+    QString texteScores = "";
+
+    // On récupère les scores
     for (auto it = Partie::getInstance().debutJoueurs(); it != Partie::getInstance().finJoueurs(); ++it) {
         Joueur* j = *it;
-        message += QString::fromStdString(j->getNom()) + " : " + QString::number(j->getScore()->getTotal()) + " points\n";
+        texteScores += QString("%1 : <b>%2 points</b><br>")
+                           .arg(QString::fromStdString(j->getNom()))
+                           .arg(j->getScore()->getTotal());
     }
-    vector<Joueur*> gagnants = Partie::getInstance().determinerGagnants();
-    if (gagnants.size() == 1) {
-        message += "\n>>> VAINQUEUR : " + QString::fromStdString(gagnants[0]->getNom()) + " ! <<<";
-    } else {
-        message += "\n>>> ÉGALITÉ ENTRE : ";
-        for (Joueur* g : gagnants) {
-            message += QString::fromStdString(g->getNom()) + " ";
-        }
-        message += "<<<";
-    }
-    QMessageBox::information(this, "Fin de Partie", message);
 
-    // Retour à l'écran principal après la fermeture de la boîte de dialogue
-    stackedWidget->setCurrentWidget(pageMenuPrincipal);
+    // On détermine le gagnant
+    vector<Joueur*> gagnants = Partie::getInstance().determinerGagnants();
+    QString texteVainqueur;
+    if (gagnants.size() == 1) {
+        texteVainqueur = QString("GLOIRE À <span style='color:#E67E22'>%1</span> !").arg(QString::fromStdString(gagnants[0]->getNom()).toUpper());
+    } else {
+        texteVainqueur = "ÉGALITÉ OLYMPIQUE !";
+    }
+
+    // --- 2. CRÉATION DE LA FENÊTRE PERSONNALISÉE (OVERLAY) ---
+    QDialog overlay(this);
+
+    // On enlève la barre de titre de Windows/Mac pour faire un style "Jeu Vidéo"
+    overlay.setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
+    overlay.setAttribute(Qt::WA_TranslucentBackground); // Permet la transparence pour les coins arrondis
+
+    // --- 3. STYLE DE LA FENÊTRE ---
+    // On définit un style spécifique pour cette pop-up
+    QString stylePopup = R"(
+        QFrame#mainFrame {
+            background-color: #FAF8EF;
+            border: 3px solid #b56d38; /* Bordure épaisse couleur brique */
+            border-radius: 20px;
+        }
+        QLabel {
+            color: #2C3E50;
+            font-size: 16px;
+        }
+        QLabel#titreFin {
+            font-size: 30px;
+            font-weight: bold;
+            color: #dc8d55;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+        QLabel#vainqueur {
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 20px;
+        }
+    )";
+    overlay.setStyleSheet(stylePopup);
+
+    // --- 4. CONTENU ---
+    QVBoxLayout* layout = new QVBoxLayout(&overlay);
+
+    // Cadre principal (pour la bordure et le fond)
+    QFrame* frame = new QFrame();
+    frame->setObjectName("mainFrame");
+    QVBoxLayout* frameLayout = new QVBoxLayout(frame);
+    frameLayout->setContentsMargins(40, 40, 40, 40);
+    frameLayout->setSpacing(20);
+
+    // Titre
+    QLabel* lblTitre = new QLabel("FIN DE PARTIE", frame);
+    lblTitre->setObjectName("titreFin");
+    lblTitre->setAlignment(Qt::AlignCenter);
+    frameLayout->addWidget(lblTitre);
+
+    // Liste des scores
+    QLabel* lblScores = new QLabel(texteScores, frame);
+    lblScores->setAlignment(Qt::AlignCenter);
+    lblScores->setTextFormat(Qt::RichText); // Pour le gras <b>
+    frameLayout->addWidget(lblScores);
+
+    // Vainqueur
+    QLabel* lblVainqueur = new QLabel(texteVainqueur, frame);
+    lblVainqueur->setObjectName("vainqueur");
+    lblVainqueur->setAlignment(Qt::AlignCenter);
+    lblVainqueur->setTextFormat(Qt::RichText); // Pour la couleur
+    frameLayout->addWidget(lblVainqueur);
+
+    // Boutons
+    QHBoxLayout* btnLayout = new QHBoxLayout();
+
+    QPushButton* btnMenu = new QPushButton("MENU PRINCIPAL", frame);
+    btnMenu->setCursor(Qt::PointingHandCursor);
+    btnMenu->setMinimumHeight(40);
+
+    QPushButton* btnQuitter = new QPushButton("QUITTER", frame);
+    btnQuitter->setCursor(Qt::PointingHandCursor);
+    btnQuitter->setMinimumHeight(40);
+    // Style rouge pour quitter
+    btnQuitter->setStyleSheet("background-color: #c0392b; border-color: #922B21;");
+
+    btnLayout->addWidget(btnMenu);
+    btnLayout->addWidget(btnQuitter);
+    frameLayout->addLayout(btnLayout);
+
+    layout->addWidget(frame);
+
+    // --- 5. CONNEXIONS ---
+    // "Menu" ferme la dialog avec le code Accepted
+    connect(btnMenu, &QPushButton::clicked, &overlay, &QDialog::accept);
+    // "Quitter" ferme tout le jeu
+    connect(btnQuitter, &QPushButton::clicked, this, &MainWindow::quitterJeu);
+
+    // --- 6. AFFICHAGE MODAL ---
+    // exec() bloque le jeu jusqu'à ce qu'on clique
+    if (overlay.exec() == QDialog::Accepted) {
+        // Si on a cliqué sur Menu Principal :
+        stackedWidget->setCurrentWidget(pageMenuPrincipal);
+
+        // Optionnel : Réinitialiser la vue du jeu (caméra, zoom...)
+        sceneCite->clear();
+        sceneChantier->clear();
+    }
 }
 
 
