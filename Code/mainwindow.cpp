@@ -68,7 +68,7 @@ MainWindow::MainWindow(QWidget *parent)
         }
 
         /* 4. GROUPBOX */
-        QFrame, GroupBox {
+        GroupBox {
             background-color: transparent;
             border: 1px solid #BDC3C7;
             border-radius: 8px;
@@ -115,6 +115,14 @@ MainWindow::MainWindow(QWidget *parent)
         /* Arrondi spécifique pour les boutons radio */
         QRadioButton::indicator {
             border-radius: 10px; /* Cercle parfait */
+        }
+
+        /* 6. CADRE SPÉCIFIQUE CONFIGURATION */
+        /* Cible uniquement le widget nommé "cadreConfig" */
+        #cadreConfig {
+            border: 1px solid #BDC3C7;
+            border-radius: 15px;
+            background-color: transparent;
         }
     )";
 
@@ -358,6 +366,7 @@ void MainWindow::initialiserPageConfiguration()
 
     // 2. LE CADRE (Le "petit rectangle")
     QFrame *cadreConfig = new QFrame(pageConfig);
+    cadreConfig->setObjectName("cadreConfig");
     cadreConfig->setFixedWidth(600); // Largeur fixe élégante
 
     // Layout INTERNE du cadre
@@ -532,8 +541,10 @@ void MainWindow::initialiserPageJeu()
     connect(btnPasserTour, &QPushButton::clicked, this, &MainWindow::onPasserTourClicked);
     sideLayout->addWidget(btnPasserTour);
 
-    // ... Zone droite ...
-    sideLayout->addWidget(new QLabel("--- CHANTIER ---", pageJeu));
+    QLabel *labelChantier = new QLabel("--- CHANTIER ---", pageJeu);
+    labelChantier->setAlignment(Qt::AlignCenter);
+    labelChantier->setStyleSheet("font-size: 16px; font-weight: bold; color: #dc8d55; margin-top: 20px; margin-bottom: 5px;");
+    sideLayout->addWidget(labelChantier);
 
     // Création de la scène et de la vue pour le chantier
     sceneChantier = new QGraphicsScene(this);
