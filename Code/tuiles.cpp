@@ -191,6 +191,8 @@ void Tuile::reconstruireHexagone(int index, int typeInt, int etoiles) {
     }
 
     Hexagone* h = hexagones[index];
+    
+    // On écrase les valeurs aléatoires par les valeurs sauvegardées
     h->type = (TypeQuartier)typeInt;
     h->etoiles = etoiles;
     h->place = (etoiles > 0);
