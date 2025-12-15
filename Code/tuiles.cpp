@@ -183,11 +183,6 @@ string& Tuile::getDesign() {
 }
 
 void Tuile::reconstruireHexagone(int index, int typeInt, int etoiles) {
-<<<<<<< Updated upstream
-    // Vérification de sécurité
-    if (index < 0 || index >= (int)hexagones.size()) return;
-    
-=======
     cout << "[DEBUG] Reconstruction de l'hexagone " << index << " : Type=" << typeInt << ", Étoiles=" << etoiles << endl;
 
     if (index < 0 || index >= (int)hexagones.size()) {
@@ -195,21 +190,10 @@ void Tuile::reconstruireHexagone(int index, int typeInt, int etoiles) {
         return;
     }
 
->>>>>>> Stashed changes
     Hexagone* h = hexagones[index];
-    
-    // On écrase les valeurs aléatoires par les valeurs sauvegardées
     h->type = (TypeQuartier)typeInt;
     h->etoiles = etoiles;
-<<<<<<< Updated upstream
-    
-    // Mise à jour de la propriété "place" :
-    // Dans Akropolis, si un hexagone a des étoiles, c'est une Place.
-    h->place = (etoiles > 0); 
-}
-=======
     h->place = (etoiles > 0);
 
     cout << "[DEBUG]   Hexagone " << index << " reconstruit avec succès." << endl;
 }
->>>>>>> Stashed changes

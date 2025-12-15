@@ -34,16 +34,6 @@ Partie::~Partie() {
 
 // Nouvelle méthode indispensable pour le chargement
 void Partie::resetPourChargement() {
-<<<<<<< Updated upstream
-    // 1. SUPPRIMER LES PILES EXISTANTES
-    for (size_t i = 0; i < piles.size(); ++i) {
-        Pile::detruire(piles[i]); // ou delete piles[i];
-    }
-    piles.clear(); // Le vecteur redevient vide ! (Taille 0)
-
-    // 2. VIDER LE CHANTIER
-    chantier.vider();
-=======
     // 1. Nettoyer les joueurs
     for (auto j : joueurs) delete j;
     joueurs.clear();
@@ -62,20 +52,6 @@ void Partie::resetPourChargement() {
     
     // NE PAS appeler initialiserPiles() ici !
     // Les piles seront reconstruites manuellement dans charger()
-}
-
-void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, const array<bool, 5>& vars, unsigned int nivIC) {
-    // Nettoyage complet avant nouvelle partie
-    resetPourChargement();
->>>>>>> Stashed changes
-
-    // 3. SUPPRIMER LES JOUEURS
-    for (size_t i = 0; i < joueurs.size(); ++i) delete joueurs[i];
-    joueurs.clear();
-
-    // 4. RESET INDEX
-    indexJoueurActuel = 0;
-    indexPileActuelle = 0;
 }
 
 void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, const array<bool, 5>& vars, unsigned int nivIC) {
@@ -113,15 +89,9 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
 }
 
 void Partie::initialiserPiles() {
-<<<<<<< Updated upstream
-    int nbPiles = 11; // Standard
-    if (modeTuileCite == TuileCite::AUGMENTE) {
-        // Note : on utilise joueurs.size() car nbJoueurs n'existe plus en variable
-=======
     int nbPiles = 11; // Standard par défaut
     
     if (modeTuileCite == TuileCite::AUGMENTE) {
->>>>>>> Stashed changes
         size_t n = joueurs.size();
         if (n == 2) nbPiles = 19;
         else if (n == 3) nbPiles = 15;
@@ -166,11 +136,7 @@ void Partie::remplirChantier() {
         indexPileActuelle++; // On passe à la pile suivante
     }
 
-<<<<<<< Updated upstream
-    // Mise à jour des prix : 0, 1, 2...
-=======
     // Mise à jour des prix : 0, 1, 2, 3...
->>>>>>> Stashed changes
     int prix = 0;
     for (auto it = chantier.begin(); it != chantier.end(); ++it) {
         (*it)->setPrix(prix++);

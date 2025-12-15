@@ -33,10 +33,7 @@ public:
     int getIndexJoueurActuel() const { return indexJoueurActuel; }
     int getIndexPileActuelle() const { return indexPileActuelle; }
     unsigned int getNiveauIllustreConstructeur() const { return niveauIllustreConstructeur; }
-<<<<<<< Updated upstream
-=======
     TuileCite getModeTuileCite() const { return modeTuileCite; }
->>>>>>> Stashed changes
     
     int getNbJoueurs() const { return static_cast<int>(joueurs.size()); }
 
@@ -61,10 +58,6 @@ public:
     // Setter pour le nombre de joueurs (logique simplifiée pour compatibilité)
     void setNbJoueurs(int nb) { /* Géré dynamiquement par le vecteur */ }
 
-<<<<<<< Updated upstream
-    // Ajoute un joueur (utilisé lors de la reconstruction depuis le fichier)
-    void ajouterJoueur(Joueur* j) { joueurs.push_back(j); }
-=======
 
     void setModeTuileCite(TuileCite mode) { modeTuileCite = mode; }
     void setVariantes(const std::array<bool, 5>& vars) { variantes = vars; }
@@ -73,7 +66,6 @@ public:
     void ajouterJoueur(Joueur* j) { joueurs.push_back(j); }
     //Ajoute une pile (pour la reconstruction)
     void ajouterPile(Pile* p) { piles.push_back(p); }
->>>>>>> Stashed changes
 
     // Nettoie toute la mémoire avant de charger une sauvegarde
     void resetPourChargement();
