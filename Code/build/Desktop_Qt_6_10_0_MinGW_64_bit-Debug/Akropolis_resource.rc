@@ -1,6 +1,6 @@
 #include <windows.h>
 
-IDI_ICON1	ICON	"C:\\0 SCHOOL\\GI01\\LO21\\Projet-LO21\\Code\\images\\Untitled.ico"
+IDI_ICON1	ICON	"C:\\Users\\loulo\\Documents\\GitHub\\oscar-rgt\\Projet-LO21\\Code\\images\\Untitled.ico"
 
 VS_VERSION_INFO VERSIONINFO
 	FILEVERSION 0,0,0,0

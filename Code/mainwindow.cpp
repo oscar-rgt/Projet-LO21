@@ -14,6 +14,17 @@
 
 using namespace std;
 
+// --- PALETTE UNIFIÉE (Pour garder le même style partout) ---
+namespace Theme {
+const QColor ORANGE("#dc8d55");      // 14454101
+const QColor ORANGE_CLAIR("#e89e6b");
+const QColor MARRON_FONCE("#4E2E1E"); // 5123614
+const QColor CUIVRE("#734526");       // 7554342
+const QColor BEIGE_CARTE("#D9B48F");  // 14267535
+const QColor BEIGE_FOND("#FAF8EF");
+const QColor NOIR(Qt::black);
+}
+
 const double TUILE_TAILLE = 30.0;
 const double COEFF_X = 1.53;
 const double OFFSET_Y = sqrt(3.0) * TUILE_TAILLE;
@@ -168,7 +179,10 @@ void MainWindow::initialiserPageMenuPrincipal()
 
     if (logoPixmap.isNull()) {
         labelLogo->setText("AKROPOLIS");
-        labelLogo->setStyleSheet("font-size: 50px; font-weight: bold; color: #2c3e50;");
+        QFont fontLogo;
+        fontLogo.setPixelSize(50);
+        fontLogo.setBold(true);
+        labelLogo->setFont(fontLogo);
     } else {
         QPixmap scaledLogo = logoPixmap.scaledToWidth(600, Qt::SmoothTransformation);
         labelLogo->setPixmap(scaledLogo);
@@ -923,7 +937,7 @@ void MainWindow::dessinerChantier()
         QGraphicsTextItem* txt = sceneChantier->addText(textePrix);
 
         // 2. Style : Orange (#dc8d55), Gras, Plus gros
-        txt->setDefaultTextColor(QColor(14454101));
+        txt->setDefaultTextColor(Theme::ORANGE);
         QFont fontPrix = txt->font();
         fontPrix.setPixelSize(20); // Taille bien visible
         fontPrix.setBold(true);
@@ -1013,32 +1027,37 @@ void MainWindow::onPasserTourClicked()
     if (QMessageBox::question(this, "Passer son tour", "Êtes-vous sûr de vouloir passer votre tour ?") != QMessageBox::Yes) {
         return;
     }
+    try{
+        // Réinitialisation des états
+        rotationCompteur = 0;
+        inversionEtat = false;
+        indexTuileSelectionnee = -1;
 
-    // Réinitialisation des états
-    rotationCompteur = 0;
-    inversionEtat = false;
-    indexTuileSelectionnee = -1;
+        // Passer au joueur suivant
+        Partie::getInstance().passerAuJoueurSuivant();
 
-    // Passer au joueur suivant
-    Partie::getInstance().passerAuJoueurSuivant();
-
-    // Mise à jour de l'interface
-    mettreAJourInterface();
-
-    // Vérification de la fin de partie
-    if (Partie::getInstance().estFinDePartie()) {
-        afficherFinDePartie();
-        return;
-    }
-
-    // Si le joueur suivant est une IA, on joue son tour automatiquement
-    Joueur* j = Partie::getInstance().getJoueurActuel();
-    if (dynamic_cast<IA*>(j)) {
-        Partie::getInstance().jouerTourIA();
+        // Mise à jour de l'interface
         mettreAJourInterface();
+
+        // Vérification de la fin de partie
         if (Partie::getInstance().estFinDePartie()) {
             afficherFinDePartie();
+            return;
         }
+
+        // Si le joueur suivant est une IA, on joue son tour automatiquement
+        Joueur* j = Partie::getInstance().getJoueurActuel();
+        if (dynamic_cast<IA*>(j)) {
+            Partie::getInstance().jouerTourIA();
+            mettreAJourInterface();
+            if (Partie::getInstance().estFinDePartie()) {
+                afficherFinDePartie();
+            }
+        }
+    }
+    catch(const std::exception& e) {
+        // En cas de problème, on affiche l'erreur
+        QMessageBox::critical(this, "Erreur de Jeu", QString("Une erreur est survenue pendant le tour : %1").arg(e.what()));
     }
 }
 
@@ -1058,90 +1077,70 @@ void MainWindow::onContinuerIAClicked()
 void MainWindow::dessinerInterfaceIA(IA* ia) {
     sceneCite->clear();
 
-    // --- COULEURS & FONTS ---
-    QColor colorTitre(14454101);    // Orange
-    QColor colorTexte(5123614);    // Marron
-    QColor colorBorder(7554342);   // Cuivre
-    QColor colorCardBg(14267535);   // Beige
-
+    // --- 1. POLICES (Réglées comme avant) ---
     QFont fontTitre; fontTitre.setPixelSize(24); fontTitre.setBold(true);
     QFont fontTexte; fontTexte.setPixelSize(16);
     QFont fontSousTitre; fontSousTitre.setPixelSize(18); fontSousTitre.setBold(true);
     QFont fontStats; fontStats.setPixelSize(16); fontStats.setBold(true);
 
-    // --- 1. TITRE PRINCIPAL (Centré en 0) ---
+    // --- 2. TITRE ---
     QGraphicsTextItem* titre = sceneCite->addText("L'ILLUSTRE ARCHITECTE A JOUÉ");
-    titre->setDefaultTextColor(colorTitre);
+    titre->setDefaultTextColor(Theme::ORANGE); // Au lieu de 14454101
     titre->setFont(fontTitre);
-    // Centrage : Position X = 0 - (Largeur / 2)
     titre->setPos(-titre->boundingRect().width() / 2, -260);
 
-    // --- 2. INFO ACTION (Centré) ---
+    // --- 3. INFO ACTION ---
     QString actionText = QString("Il a pris la tuile n°%1 du chantier.").arg(dernierIndexIA + 1);
     QGraphicsTextItem* info = sceneCite->addText(actionText);
-    info->setDefaultTextColor(colorTexte);
+    info->setDefaultTextColor(Theme::MARRON_FONCE); // Au lieu de 5123614
     info->setFont(fontTexte);
     info->setPos(-info->boundingRect().width() / 2, -220);
 
-    // --- 3. CADRE STATISTIQUES (PIERRES & SCORE) ---
-    double statsW = 260; // Un peu plus large pour être à l'aise
+    // --- 4. STATS (Cadre centré) ---
+    double statsW = 260;
     double statsH = 80;
-    double statsX = -statsW / 2; // Centré en 0
-    double statsY = -160;
+    // Cadre blanc avec bordure CUIVRE (comme dans votre ancien code 7554342)
+    QGraphicsRectItem* statsBg = sceneCite->addRect(0, 0, statsW, statsH, QPen(Theme::CUIVRE, 2), QBrush(Qt::white));
+    statsBg->setPos(-statsW / 2, -160);
 
-    QGraphicsRectItem* statsBg = sceneCite->addRect(0, 0, statsW, statsH, QPen(colorBorder, 2), QBrush(QColor("white")));
-    statsBg->setPos(statsX, statsY);
-
-    // Pierre (Centré dans le cadre)
+    // Pierres
     QGraphicsTextItem* pierres = sceneCite->addText(QString("Pierres : %1 ■").arg(ia->getPierres()));
-    pierres->setDefaultTextColor(colorTitre);
+    pierres->setDefaultTextColor(Theme::ORANGE);
     pierres->setFont(fontStats);
-    // On calcule la position relative au cadre pour centrer
-    double pX = statsX + (statsW - pierres->boundingRect().width()) / 2;
-    pierres->setPos(pX, statsY + 10);
+    // Centrage relatif au cadre
+    pierres->setPos(-statsW/2 + (statsW - pierres->boundingRect().width())/2, -160 + 10);
 
-    // Score (Centré dans le cadre)
+    // Score
     ia->getScore()->calculerScore();
-    QGraphicsTextItem* score = sceneCite->addText(QString("Score Actuel : %1").arg(ia->getScore()->getTotal()));
-    score->setDefaultTextColor(colorTexte);
+    QGraphicsTextItem* score = sceneCite->addText(QString("Score Actuel : %1").arg(ia->calculerScoreIA()));
+    score->setDefaultTextColor(Theme::MARRON_FONCE);
     score->setFont(fontStats);
-    double sX = statsX + (statsW - score->boundingRect().width()) / 2;
-    score->setPos(sX, statsY + 45);
+    score->setPos(-statsW/2 + (statsW - score->boundingRect().width())/2, -160 + 45);
 
-
-    // --- 4. COLLECTION (GRILLE CENTRÉE) ---
-
-    // Titre Collection
+    // --- 5. COLLECTION ---
     QGraphicsTextItem* stashTitle = sceneCite->addText("SA COLLECTION :");
-    stashTitle->setDefaultTextColor(colorBorder);
+    stashTitle->setDefaultTextColor(Theme::CUIVRE);
     stashTitle->setFont(fontSousTitre);
     stashTitle->setPos(-stashTitle->boundingRect().width() / 2, -50);
 
     // Paramètres Grille
-    double cardW = 90;
-    double cardH = 110;
-    double space = 15;
-    int cols = 6; // Nombre de colonnes
-
-    // Calcul de la largeur totale de la grille pour la centrer
-    // Largeur = (NbCols * LargeurCarte) + ((NbCols - 1) * Espace)
+    double cardW = 90; double cardH = 110; double space = 15;
+    int cols = 6;
     double gridTotalWidth = (cols * cardW) + ((cols - 1) * space);
-    double startX = -gridTotalWidth / 2; // Point de départ X pour être centré
-
+    double startX = -gridTotalWidth / 2;
     double currentX = startX;
     double currentY = 0;
     int count = 0;
 
     for (auto it = ia->begin(); it != ia->end(); ++it) {
-
-        // A. Carte Fond
+        // Carte Fond
         QGraphicsRectItem* card = new QGraphicsRectItem(0, 0, cardW, cardH);
-        card->setBrush(QBrush(colorCardBg));
-        card->setPen(QPen(colorBorder, 3));
+        card->setBrush(QBrush(Theme::BEIGE_CARTE)); // Au lieu de 14267535
+        card->setPen(QPen(Theme::CUIVRE, 3));       // Bordure épaisse
         card->setPos(currentX, currentY);
         sceneCite->addItem(card);
 
-        // B. Tuile
+        // Tuile
         TuileItem* item = new TuileItem((*it), -1);
         item->setScale(0.55);
         item->setPos(currentX + cardW/2, currentY + cardH/2);
@@ -1150,16 +1149,15 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
 
         currentX += cardW + space;
         count++;
-
-        // Retour à la ligne
         if (count % cols == 0) {
-            currentX = startX; // On revient au début de la ligne centrée
+            currentX = startX;
             currentY += cardH + space;
         }
     }
 
-    // --- 5. BOUTON CONTINUER (Centré en bas) ---
+    // --- 6. BOUTON CONTINUER ---
     QPushButton* btnLocal = new QPushButton("CONTINUER");
+    // On garde votre style CSS qui marche bien ici
     btnLocal->setStyleSheet(
         "QPushButton { "
         "   background-color: #dc8d55; color: white; border: 2px solid #b56d38; "
@@ -1171,15 +1169,11 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
     btnLocal->setFixedWidth(220);
 
     connect(btnLocal, &QPushButton::clicked, this, &MainWindow::onContinuerIAClicked, Qt::QueuedConnection);
-
     QGraphicsProxyWidget* proxy = sceneCite->addWidget(btnLocal);
-    // On centre le bouton : X = -LargeurBouton / 2
     proxy->setPos(-110, currentY + cardH + 40);
 }
 
 
-
-// N'oubliez pas d'ajouter #include <QDialog> tout en haut si ce n'est pas fait !
 
 void MainWindow::afficherFinDePartie() {
     // --- 1. CALCUL DES SCORES (Logique existante) ---
@@ -1204,52 +1198,29 @@ void MainWindow::afficherFinDePartie() {
 
     // --- 2. CRÉATION DE LA FENÊTRE PERSONNALISÉE (OVERLAY) ---
     QDialog overlay(this);
-
-    // On enlève la barre de titre de Windows/Mac pour faire un style "Jeu Vidéo"
     overlay.setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
-    overlay.setAttribute(Qt::WA_TranslucentBackground); // Permet la transparence pour les coins arrondis
+    overlay.setAttribute(Qt::WA_TranslucentBackground);
 
-    // --- 3. STYLE DE LA FENÊTRE ---
-    // On définit un style spécifique pour cette pop-up
-    QString stylePopup = R"(
-        QFrame#mainFrame {
-            background-color: #FAF8EF;
-            border: 3px solid #b56d38; /* Bordure épaisse couleur brique */
-            border-radius: 20px;
-        }
-        QLabel {
-            color: #2C3E50;
-            font-size: 16px;
-        }
-        QLabel#titreFin {
-            font-size: 30px;
-            font-weight: bold;
-            color: #dc8d55;
-            text-transform: uppercase;
-            letter-spacing: 3px;
-        }
-        QLabel#vainqueur {
-            font-size: 22px;
-            font-weight: bold;
-            margin-top: 10px;
-            margin-bottom: 20px;
-        }
-    )";
-    overlay.setStyleSheet(stylePopup);
-
-    // --- 4. CONTENU ---
     QVBoxLayout* layout = new QVBoxLayout(&overlay);
 
-    // Cadre principal (pour la bordure et le fond)
+    // --- OPTIMISATION : On utilise la classe .CadreNoir définie dans le style global ---
     QFrame* frame = new QFrame();
-    frame->setObjectName("mainFrame");
+    frame->setProperty("class", "CadreNoir"); // Hop, fond blanc + bord noir auto !
+
     QVBoxLayout* frameLayout = new QVBoxLayout(frame);
     frameLayout->setContentsMargins(40, 40, 40, 40);
     frameLayout->setSpacing(20);
 
-    // Titre
+    // Titre (Utilise la classe .TitrePage ou on le style manuellement avec Theme)
     QLabel* lblTitre = new QLabel("FIN DE PARTIE", frame);
-    lblTitre->setObjectName("titreFin");
+    // On peut créer une classe .TitreFin dans le CSS global ou le faire ici proprement
+    QFont fontTitre; fontTitre.setPixelSize(30); fontTitre.setBold(true);
+    lblTitre->setFont(fontTitre);
+    // Pour la couleur, on utilise la palette
+    QPalette pal = lblTitre->palette();
+    pal.setColor(QPalette::WindowText, Theme::ORANGE);
+    lblTitre->setPalette(pal);
+
     lblTitre->setAlignment(Qt::AlignCenter);
     frameLayout->addWidget(lblTitre);
 
@@ -1270,12 +1241,13 @@ void MainWindow::afficherFinDePartie() {
     QHBoxLayout* btnLayout = new QHBoxLayout();
 
     QPushButton* btnMenu = new QPushButton("MENU PRINCIPAL", frame);
+    btnMenu->setProperty("class", "BoutonMenu"); // Style unifié
     btnMenu->setCursor(Qt::PointingHandCursor);
-    btnMenu->setMinimumHeight(40);
 
     QPushButton* btnQuitter = new QPushButton("QUITTER", frame);
+    btnQuitter->setProperty("class", "BoutonMenu BoutonDanger"); // Style unifié rouge
     btnQuitter->setCursor(Qt::PointingHandCursor);
-    btnQuitter->setMinimumHeight(40);
+
     // Style rouge pour quitter
     btnQuitter->setStyleSheet("background-color: #c0392b; border-color: #922B21;");
 

@@ -2,7 +2,7 @@
 #include "tuiles.h"
 #include "hexagone.h"
 #include "partie.h"
-
+#include<map>
 using namespace std;
 
 
@@ -56,37 +56,62 @@ int IA::choisirTuile(const Chantier& chantier) {
 
 
 //BONNE VERSION SCORE IA
+
 int IA::calculerScoreIA() const {
+    int scoreTotal = 0;
 
-    //niveau 1 : quartiers : 1pt / carriere : 0pt
-    //niveau 2 : quartiers : 1pt / carriere : 2pt
-    //niveau 3 : quartiers : *2 (points doublés) / carriere : 0pt
-    int totalScore = 0;
-    
-    int multiplicateurNiveau = (difficulte == 3) ? 2 : 1;
+    // Maps pour stocker les comptes (Type -> Nombre)
+    map<TypeQuartier, int> nbHexagones;
+    map<TypeQuartier, int> nbEtoiles;
+    int nbCarrieres = 0;
 
-    // --- 1. SIMPLIFICATION DU PARCOURS ---
+    // --- 1. INVENTAIRE TUILES ACQUISES ---
     for (auto it = begin(); it != end(); ++it) {
-        Tuile* t = *it;
+        Tuile* t = *it; 
 
-        for (int i = 0; i < t->getNbHexagones(); i++) {
+        for (int i = 0; i < t->getNbHexagones(); ++i) {
             Hexagone* h = t->getHexagone(i);
             TypeQuartier type = h->getType();
 
-            // --- 2. SIMPLIFICATION DU SCORE ---
             if (type == Carriere) {
-                // Seul le niveau 2 (Métagénès) gagne des points avec les carrières
-                if (difficulte == 2) {
-                    totalScore += 2; 
-                }
-            } 
+                nbCarrieres++;
+            }
             else {
-                // Tous les autres quartiers (Habitation, Temple, etc.) rapportent 1 point de base
-                // On applique directement le multiplicateur de difficulté
-                totalScore += 1 * multiplicateurNiveau;
+                if (nbHexagones.find(type) == nbHexagones.end()) {
+                    nbHexagones[type] = 0;
+                    nbEtoiles[type] = 0;
+                }
+
+                // On incrémente les compteurs
+                nbHexagones[type]++;
+                nbEtoiles[type] += h->getEtoiles();
             }
         }
     }
 
-    return totalScore;
+    // --- 2. RÈGLES DE DIFFICULTÉ (HAUTEUR) ---
+    // Hippodamos (1) & Métagénès (2) : Hauteur = 1
+    // Callicratès (3) : Hauteur = 2 (Tous les quartiers comptent double)
+    int hauteur = (difficulte == 3) ? 2 : 1;
+
+    // --- 3. CALCUL FINAL ---
+    for (map<TypeQuartier, int>::iterator it = nbHexagones.begin(); it != nbHexagones.end(); ++it) {
+        TypeQuartier type = it->first;
+        int count = it->second;
+        int stars = nbEtoiles[type]; // On récupère le nombre d'étoiles associées
+
+        // Formule : (Nombre de Tuiles) * (Nombre d'Étoiles) * (Hauteur)
+        scoreTotal += count * stars * hauteur;
+    }
+
+    // --- 4. POINTS DES PIERRES ---
+    scoreTotal += getPierres();
+
+    // --- 5. BONUS MÉTAGÉNÈS (Difficulté 2) ---
+    // Il gagne 2 points par carrière
+    if (difficulte == 2) {
+        scoreTotal += nbCarrieres * 2;
+    }
+
+    return scoreTotal;
 }
