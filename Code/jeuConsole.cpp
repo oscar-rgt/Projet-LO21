@@ -3,10 +3,6 @@
 #include "ia.h"
 #include "tuiles.h"
 #include "cite.h"
-<<<<<<< Updated upstream
-#include "partie.h"
-=======
->>>>>>> Stashed changes
 #include "save.h"
 #include <iostream>
 #include <limits>
@@ -14,10 +10,6 @@
 #include <cstdlib>
 
 using namespace std;
-
-// ==========================================
-// OUTILS ET AFFICHAGE (Parties conservées)
-// ==========================================
 
 void JeuConsole::nettoyerEcran() {
 #ifdef _WIN32
@@ -29,7 +21,7 @@ void JeuConsole::nettoyerEcran() {
 
 int JeuConsole::saisieNombre(const string& prompt, int min, int max) {
     int reponse = -1;
-    cout << prompt << " ( de " << min << " a " << max << ") : ";
+    cout << prompt << " (" << min << " - " << max << ") : ";
     while (!(cin >> reponse) || reponse < min || reponse > max) {
         cout << "Erreur. Entrez un nombre entre " << min << " et " << max << " : ";
         cin.clear();
@@ -52,20 +44,10 @@ bool JeuConsole::saisieOuiNon(const string& prompt) {
 
 void JeuConsole::afficherChantier() {
     const auto& chantier = Partie::getInstance().getChantier();
-    
-    // Petite sécurité : si le chantier est vide, on n'affiche rien pour éviter les bugs
-    if (chantier.getNbTuiles() == 0) return;
-
     vector<string> lignes(9, "");
     const int hauteur = 9;
     const int largeur_reelle = 20;
     const int largeur_visuelle = 19;
-<<<<<<< Updated upstream
-    
-    cout << "\n=== CHANTIER === " << Partie::getInstance().getNbPiles() - (Partie::getInstance().getIndexPileActuelle()) << " pile(s) restante(s)" << endl;
-    for (int i = 0; i < chantier.getNbTuiles(); ++i) {
-        Tuile* t = chantier.getTuile(i);
-=======
 
 
     // Calcul : Total piles - Index pile actuelle
@@ -75,7 +57,6 @@ void JeuConsole::afficherChantier() {
     // --- 2. AFFICHAGE DES TUILES VIA ITÉRATEUR ---
     for (auto it = chantier.begin(); it != chantier.end(); ++it) {
         Tuile* t = *it; // Accès à la tuile via l'itérateur
->>>>>>> Stashed changes
         string designTuile = t->getDesign();
         for (int j = 0; j < hauteur; j++) {
             string segment = designTuile.substr(j * largeur_reelle, largeur_visuelle);
@@ -87,8 +68,11 @@ void JeuConsole::afficherChantier() {
         cout << lignes[j] << endl;
     }
     cout << "\n\n";
-    for (int i = 0; i < chantier.getNbTuiles(); i++) {
-        int pierres = chantier.getTuile(i)->getPrix();
+
+    // --- 3. AFFICHAGE DES PRIX VIA ITÉRATEUR ---
+    for (auto it = chantier.begin(); it != chantier.end(); ++it) {
+        // (*it) donne le pointeur Tuile*, donc (*it)->getPrix() donne le prix
+        int pierres = (*it)->getPrix();
         cout << "    ";
         cout << pierres << " pierres";
         cout << "               ";
@@ -108,34 +92,27 @@ void JeuConsole::afficherEtatJeu() {
 
     if (dynamic_cast<IA*>(j)) {
         cout << "(Cite de l'IA - Gestion virtuelle)" << endl;
-        // On affiche quand même le chantier pour voir ce qu'il se passe
-        afficherChantier(); 
     }
     else {
         j->getCite()->afficher();
         afficherChantier();
     }
+
+
 }
 
-// ==========================================
-// LOGIQUE DU TOUR
-// ==========================================
-
 void JeuConsole::jouerTour() {
+
     nettoyerEcran();
     afficherEtatJeu();
 
     Joueur* j = Partie::getInstance().getJoueurActuel();
 
-<<<<<<< Updated upstream
-    // --- TOUR DE L'IA ---
-=======
     // --- TOUR IA (Inchangé) ---
->>>>>>> Stashed changes
     if (dynamic_cast<IA*>(j)) {
         cout << "\n\n--- TOUR DE L'IA ---" << endl;
         cout << "\nL'Illustre Constructeur reflechit..." << endl;
-        
+        afficherChantier();
         int indexChoisi = Partie::getInstance().jouerTourIA();
         try {
             cout << "\n\nL'IA choisit la tuile " << indexChoisi << endl;
@@ -144,34 +121,12 @@ void JeuConsole::jouerTour() {
             cin.get();
         }
         catch (const PartieException& e) {
-<<<<<<< Updated upstream
-            cout << "Erreur IA : " << e.getInfo() << endl;
-=======
             cout << "L'IA a rencontre une erreur : " << e.what() << endl;
->>>>>>> Stashed changes
         }
         return;
     }
 
     // --- TOUR HUMAIN ---
-<<<<<<< Updated upstream
-    size_t maxChoix = Partie::getInstance().getChantier().getNbTuiles() - 1;
-
-    cout << "\n--- ACTION ---" << endl;
-    int index = saisieNombre("Quelle tuile choisir ? (-1 pour SAUVEGARDER et QUITTER)", -1, (int)maxChoix);
-    
-    if (index == -1) {
-        cout << "\n>>> SAUVEGARDE EN COURS... <<<" << endl;
-        
-        if (SaveManager::sauvegarder(Partie::getInstance(), "save.txt")) {
-            cout << ">> SUCCES : Partie sauvegardee dans 'save.txt'" << endl;
-        } else {
-            cout << ">> ERREUR : Impossible de sauvegarder la partie." << endl;
-        }
-        
-        cout << "Au revoir !" << endl;
-        exit(0);
-=======
 
     const auto& chantier = Partie::getInstance().getChantier();
     size_t maxChoix = chantier.getNbTuiles() - 1;
@@ -204,33 +159,19 @@ void JeuConsole::jouerTour() {
     auto itTuile = chantier.begin();
     for (int k = 0; k < index; ++k) {
         ++itTuile;
->>>>>>> Stashed changes
     }
+    Tuile* tuileAffichee = *itTuile;
 
-    Tuile* tuileAffichee = Partie::getInstance().getChantier().getTuile(index);
-
-<<<<<<< Updated upstream
-    // --- MODE PREVISUALISATION ---
-=======
     // --- MODE PREVISUALISATION (Inchangé) ---
->>>>>>> Stashed changes
     bool placementValide = false;
     int rotationCompteur = 0;
     bool inversionEtat = false;
-    bool invInitial = tuileAffichee->getInversion(); // Pour pouvoir annuler proprement
 
     while (!placementValide) {
         nettoyerEcran();
-<<<<<<< Updated upstream
-        afficherEtatJeu();
-
-        cout << "\nTuile selectionnee :" << endl;
-        cout << tuileAffichee->getDesign() << endl;
-=======
         afficherEtatJeu(); 
->>>>>>> Stashed changes
 
-        cout << "\nCommandes : [R]otation | [I]nversion | [V]alider | [A]nnuler choix" << endl;
+        cout << "\n\nCommandes : [R]otation | [I]nversion | [V]alider | [A]nnuler choix" << endl;
         cout << "Votre choix : ";
 
         string choix;
@@ -242,22 +183,13 @@ void JeuConsole::jouerTour() {
         }
         else if (choix == "I" || choix == "i") {
             tuileAffichee->inverser();
-            inversionEtat = !inversionEtat;
         }
         else if (choix == "A" || choix == "a") {
-<<<<<<< Updated upstream
-            // Annuler : on remet tout comme avant
-            if (tuileAffichee->getInversion() != invInitial) tuileAffichee->inverser();
-            for (int i = 0; i < (3 - (rotationCompteur % 3)) % 3; ++i) tuileAffichee->tourner();
-            
-            jouerTour(); // On recommence le choix
-=======
             // Reset visuel avant d'annuler
             if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser();
             for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) tuileAffichee->tourner();
             
             jouerTour(); // On recommence le tour
->>>>>>> Stashed changes
             return;
         }
         else if (choix == "V" || choix == "v") {
@@ -265,14 +197,6 @@ void JeuConsole::jouerTour() {
         }
     }
 
-<<<<<<< Updated upstream
-    // --- PLACEMENT ---
-    int x = saisieNombre("Coord X", -20, 20);
-    int y = saisieNombre("Coord Y", -20, 20);
-    int z = saisieNombre("Coord Z (Niveau)", 0, 10);
-
-    // On passe 0 et false car la tuile a déjà été tournée visuellement sur le pointeur du chantier
-=======
     // Placement (Inchangé)
     int x = saisieNombre("Coord X", -999, 999);
     int y = saisieNombre("Coord Y", -99, 999);
@@ -280,10 +204,9 @@ void JeuConsole::jouerTour() {
 
     cout << "\n\nLa tuile\n\n" << tuileAffichee->getDesign() << "\n\nva etre placee en (" << x << ", " << y << ", " << z << ").\n" << endl;
 
->>>>>>> Stashed changes
     if (saisieOuiNon("Valider ce choix ?")) {
         try {
-            bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, 0, false);
+            bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, rotationCompteur, inversionEtat);
 
             if (!succes) {
                 cout << ">> ECHEC : Pas assez de pierres ou regle non respectee." << endl;
@@ -293,36 +216,21 @@ void JeuConsole::jouerTour() {
                 jouerTour();
             }
         }
-<<<<<<< Updated upstream
-        catch (CiteException& e) {
-            cout << ">> ECHEC : " << e.getInfos() << endl;
-=======
         catch (const std::exception& e) {
             cout << ">> ECHEC : " << e.what() << endl;
             cout << "Appuyez sur Entree pour reessayer...";
->>>>>>> Stashed changes
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cin.get();
             jouerTour();
         }
     }
     else {
-<<<<<<< Updated upstream
-        // Annulation finale : on remet l'état initial
-        if (tuileAffichee->getInversion() != invInitial) tuileAffichee->inverser();
-        for (int i = 0; i < (3 - (rotationCompteur % 3)) % 3; ++i) tuileAffichee->tourner();
-=======
         // Annulation finale
         if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser(); 
         for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) tuileAffichee->tourner(); 
->>>>>>> Stashed changes
         jouerTour();
     }
 }
-
-// ==========================================
-// MENU PRINCIPAL ET CONFIGURATION
-// ==========================================
 
 void JeuConsole::lancer() {
 
@@ -436,11 +344,7 @@ void JeuConsole::lancer() {
 
     cout << "\n--- CLASSEMENT ---" << endl;
     for (int i = 0; i < Partie::getInstance().getNbJoueurs(); i++) {
-<<<<<<< Updated upstream
-        Joueur* j = Partie::getInstance().getJoueur(i);
-=======
         Joueur* j = Partie::getInstance().getJoueurs()[i];
->>>>>>> Stashed changes
 
         IA* ia = dynamic_cast<IA*>(j);
         if (ia) ia->calculerScoreIA(); // Mise à jour score IA
@@ -458,23 +362,17 @@ void JeuConsole::lancer() {
 void JeuConsole::demanderConfiguration() {
     cout << "\n--- CONFIGURATION DE LA PARTIE ---" << endl;
     int nbJoueurs = saisieNombre("Combien de joueurs ?", 1, 4);
-    
     nomsJoueurs.clear();
     for (int i = 0; i < nbJoueurs; ++i) {
         string nom;
         cout << "Nom du joueur " << i + 1 << " : ";
         cin >> nom;
-        
-        // IMPORTANT : On remplace les espaces par des '_' pour éviter les bugs de sauvegarde
-        std::replace(nom.begin(), nom.end(), ' ', '_');
-        
         nomsJoueurs.push_back(nom);
     }
-    
-    int niveauIllustreConstructeur = 0;
+    int niveauIA = 0;
     if (nbJoueurs == 1) {
         cout << "Mode solo active" << endl;
-        niveauIllustreConstructeur = saisieNombre("Niveau Illustre Constructeur", 1, 3);
+        niveauIA = saisieNombre("Niveau Illustre Constructeur", 1, 3);
     }
 
     bool modeTuileCite = saisieOuiNon("Mode tuile cite augmente ?");
@@ -487,11 +385,10 @@ void JeuConsole::demanderConfiguration() {
         variantesActives[2] = saisieOuiNon("Variante casernes active ?");
         variantesActives[3] = saisieOuiNon("Variante temples active ?");
         variantesActives[4] = saisieOuiNon("Variante jardins active ?");
-    } else {
-        variantesActives.fill(false);
     }
 
-    Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIllustreConstructeur);
+
+    Partie::getInstance().initialiser(nbJoueurs, nomsJoueurs, mode, variantesActives, niveauIA);
 }
 
 void JeuConsole::afficherRegles() {
@@ -510,30 +407,30 @@ void JeuConsole::afficherRegles() {
     cout << "   - Caserne (C)   : 1 point si votre caserne n'est pas completement entouree par d'autres hexagones." << endl;
     cout << "   - Temple (T)   : 1 point si votre temple est completement entoure par d'autres hexagones." << endl;
     cout << "   - Jardin (J)     : 1 point pour chaque jardin pose sans condition." << endl;
-    cout << "   - Carriere (X)  : Permet d'agrandir votre cite mais ne donne pas de points." << endl;
+	cout << "   - Carriere (X)  : Permet d'agrandir votre cite mais ne donne pas de points." << endl;
     cout << "\n";
     cout << "3. LES PLACES :" << endl;
-    cout << "   Les places de chaque type vous permettent de multiplier vos points" << endl;
-    cout << "   en fonction du chiffre qui est ecrit dessus." << endl;
+	cout << "   Les places de chaque type vous permettent de multiplier vos points" << endl;
+	cout << "   en fonction du chiffre qui est ecrit dessus." << endl;
     cout << "   Par exemple, un hexagone 2H est une place Habitation a 2 etoiles." << endl;
     cout << "   Elle multiplie donc par 2 les points gagnes par vos quartiers Habitation." << endl;
     cout << "   /!\\ ATTENTION : Si vous n'avez aucune place d'un certain type," << endl;
-    cout << "       vous ne marquez aucun point pour ses quartiers correspondants." << endl;
+	cout << "       vous ne marquez aucun point pour ses quartiers correspondants." << endl;
     cout << "\n";
     cout << "4. LA PIERRE :" << endl;
     cout << "   Vous commencez avec un nombre de 2 pierres." << endl;
     cout << "   Ces dernieres vous permettront d'acheter des tuiles." << endl;
-    cout << "   Les pierres influent aussi sur votre score." << endl;
+	cout << "   Les pierres influent aussi sur votre score." << endl;
     cout << "   En effet, chaque pierre vous rapporte un point." << endl;
     cout << "   De plus, en cas d'egalite en fin de partie," << endl;
-    cout << "   le joueur avec le plus de pierres l'emporte." << endl;
+	cout << "   le joueur avec le plus de pierres l'emporte." << endl;
     cout << "   Les pierres s'obtiennent en construisant au dessus d'une carriere." << endl;
     cout << "   Chaque carriere recouverte donne une pierre." << endl;
     cout << "\n";
-    cout << "5. PLACEMENT :" << endl;
-    cout << "   Vous l'aurez compris, votre cite peut s'etendre aussi bien en surface qu'en hauteur." << endl;
+	cout << "5. PLACEMENT :" << endl;
+	cout << "   Vous l'aurez compris, votre cite peut s'etendre aussi bien en surface qu'en hauteur." << endl;
     cout << "   Lorsqu'un hexagone est place en hauteur, son nombre de points est multiplie par son niveau d'elevation." << endl;
-    cout << "   Par exemple, un quartier Jardin place au niveau 3 rapporte 3 points." << endl;
+	cout << "   Par exemple, un quartier Jardin place au niveau 3 rapporte 3 points." << endl;
     cout << "   A vous de trouver le bon equilibre pour devenir le plus prestigieux des architectes !" << endl;
     cout << "===========================================================" << endl;
     cout << "Appuyez sur Entree pour revenir au menu.";

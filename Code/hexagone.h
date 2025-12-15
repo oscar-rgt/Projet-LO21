@@ -7,13 +7,6 @@ using namespace std;
 
 class Tuile;
 
-class HexaException {
-	string info;
-public:
-	HexaException(const string& s) :info(s) {}
-	const string& getInfo() const { return info; }
-};
-
 
 typedef enum { Habitation, Marche, Caserne, Temple, Jardin, Carriere} TypeQuartier;
 

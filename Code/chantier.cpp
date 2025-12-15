@@ -1,6 +1,5 @@
 #include "chantier.h"
-#include <iostream>
-using namespace std;
+#include <algorithm> // Pour std::find
 
 Chantier::Chantier() {}
 
@@ -8,34 +7,23 @@ Chantier::~Chantier() {
     vider();
 }
 
-void Chantier::vider() {
-    tuiles.clear();
-}
 
 void Chantier::ajouterPile(Pile& p) {
-    for (int j = 0; j < p.getNbTuiles(); j++) {
-        try {
-            Tuile* t = p.getTuile(p.getId() * 10 + j);
-            tuiles.push_back(t);
-        }
-        catch (const PileException& e) {
-            cout << "erreur ; " << e.getInfo();
-            break;
-        }
+    // Utilisation de l'itérateur de Pile 
+    for (auto it = p.begin(); it != p.end(); ++it) {
+        tuiles.push_back(*it);
     }
 }
 
 
-Tuile* Chantier::getTuile(int index) const {
-    if (index < 0 || index >= (int)tuiles.size()) return nullptr;
-    return *(tuiles.begin() + index);
+
+void Chantier::retirerTuile(Tuile* t) {
+    auto it = std::find(tuiles.begin(), tuiles.end(), t);
+    if (it != tuiles.end()) {
+        tuiles.erase(it);
+    }
 }
 
-void Chantier::retirerTuile(int index) {
-    if (index < 0 || index >= (int)tuiles.size()) return;
-    // Le pointeur est retiré du vecteur
-    tuiles.erase(tuiles.begin() + index);
-}
 
 
 bool Chantier::estVide() const {

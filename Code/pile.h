@@ -1,29 +1,19 @@
 #ifndef PILE_H
 #define PILE_H
-#include"tuiles.h"
-#include<vector>
+#include "tuiles.h"
+#include <vector>
+
 
 class Partie;
 
-class PileException {
-    string info;
-public:
-    PileException(const string& s) :info(s) {}
-    const string& getInfo() const { return info; }
-};
 
 class Pile {
 public:
+    static void detruire(Pile* p) { delete p; }
+    static Pile* creer(unsigned int id) { 
+        return new Pile(id); 
+    }
     unsigned int getId() const { return id; }
-<<<<<<< Updated upstream
-    Tuile* getTuile(unsigned int id_);
-    size_t getNbTuiles() const { return tuiles.size(); }
-    bool estVide() { return tuiles.empty(); }
-    //Pour sauvegarder
-    void vider() { tuiles.clear(); } // INDISPENSABLE
-    void ajouterTuile(Tuile* t) { tuiles.push_back(t); }
-    const vector<Tuile*>& getTuiles() const { return tuiles; }
-=======
     int getNbTuiles() const { return static_cast<int>(tuiles.size()); }
     bool estVide() const { return tuiles.empty(); }
     const std::vector<Tuile*>& getTuiles() const { return tuiles; }
@@ -48,14 +38,13 @@ public:
 
     Iterator begin() const { return Iterator(tuiles.begin()); }
     Iterator end() const { return Iterator(tuiles.end()); }
->>>>>>> Stashed changes
 
 private:
     friend class Partie;
     ~Pile();
     Pile(unsigned int id_, unsigned int nb = 3);
     unsigned int id;
-    vector<Tuile*> tuiles;
+    std::vector<Tuile*> tuiles;
 };
 
 #endif
