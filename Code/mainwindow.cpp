@@ -1141,9 +1141,16 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
         sceneCite->addItem(card);
 
         // Tuile
+        Tuile* t = *it;
         TuileItem* item = new TuileItem((*it), -1);
-        item->setScale(0.55);
-        item->setPos(currentX + cardW/2, currentY + cardH/2);
+        if (t->getNbHexagones() == 4) {
+            item->setScale(0.45); // Plus petit pour rentrer (0.45 au lieu de 0.55)
+            item->setPos(currentX + cardW/2, currentY + cardH/2 + 5);
+        } else {
+            item->setScale(0.55); // Taille normale pour les trios
+            item->setPos(currentX + cardW/2 + 2, currentY + cardH/2 - 11);
+        }
+
         item->setZValue(1);
         sceneCite->addItem(item);
 

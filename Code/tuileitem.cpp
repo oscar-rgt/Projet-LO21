@@ -12,29 +12,62 @@ TuileItem::TuileItem(Tuile* t, int index, double rayon)
     double w = 1.53 * rayon;
     double h = sqrt(3.0) * rayon;
 
+    int nbHex = t->getNbHexagones();
     // Définition des offsets relatifs pour les 3 hexagones de la tuile
     // Ces offsets dépendent de l'inversion de la tuile
     struct Offset { double x; double y; };
     std::vector<Offset> offsets;
 
-    // Hexagone central (toujours au centre)
-    offsets.push_back({0.0, 0.0});
+    // --- LOGIQUE DE PLACEMENT ---
+    if (nbHex == 4) {
+        // CAS TUILE DE DÉPART (4 Hexagones)
+        // Forme en "trèfle" ou étoile : 1 centre + 3 autour
 
-    // Hexagone sud (toujours en bas)
-    offsets.push_back({0.0, 1.0});
+        // 0. Centre (Habitation)
+        offsets.push_back({0.0, 0.0});
 
-    // Hexagone latéral (gauche ou droite selon l'inversion)
-    if (t->getInversion()) {
-        offsets.push_back({1.0, 0.5}); // À droite
+        // 1. Haut (Carrière)
+        offsets.push_back({0.0, -1.0});
+
+        // 2. Bas-Gauche (Carrière)
+        offsets.push_back({-1.0, 0.5});
+
+        // 3. Bas-Droite (Carrière)
+        offsets.push_back({1.0, 0.5});
+
     } else {
-        offsets.push_back({-1.0, 0.5}); // À gauche
+        // CAS TUILE STANDARD (3 Hexagones)
+        // 0. Centre
+        offsets.push_back({0.0, 0.0});
+
+        // 1. Sud
+        offsets.push_back({0.0, 1.0});
+
+        // 2. Latéral (Gauche ou Droite selon inversion)
+        if (t->getInversion()) {
+            offsets.push_back({1.0, 0.5}); // À droite
+        } else {
+            offsets.push_back({-1.0, 0.5}); // À gauche
+        }
     }
 
-    double sideX = offsets[2].x * w;
-    double shiftX = -(sideX / 3.0); // Ajout d'un décalage pour centrer la tuile
-    // Création des HexagoneItem pour chaque hexagone de la tuile
-    for (int i = 0; i < 3; ++i) {
+    // Centrage approximatif
+    // Pour la tuile départ (centrée en 0,0 avec des voisins autour), le shift est 0.
+    // Pour les tuiles standards, on garde votre logique de décalage.
+    double shiftX = 0;
+    if (nbHex == 3) {
+        double sideX = offsets[2].x * w; 
+        shiftX = -(sideX / 3.0); // Ajout d'un décalage pour centrer la tuile
+    }
+
+    // --- CRÉATION DES ITEMS ---
+    // On boucle sur nbHex (3 ou 4) au lieu de 3 fixe
+    for (int i = 0; i < nbHex; ++i) {
         Hexagone* hexModel = t->getHexagone(i);
+
+        // Sécurité : si on a défini moins d'offsets que d'hexagones (ne devrait pas arriver)
+        if (i >= offsets.size()) break;
+
         double relX = offsets[i].x;
         double relY = offsets[i].y;
 
