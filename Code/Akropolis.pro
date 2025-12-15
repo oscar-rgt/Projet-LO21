@@ -36,4 +36,3 @@ SOURCES += \
 RESOURCES += \
     ressources.qrc
 
-QMAKE_CXXFLAGS += -Wno-backslash-newline-escape

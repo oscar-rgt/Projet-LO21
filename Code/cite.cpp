@@ -202,7 +202,7 @@ vector<Hexagone*> Cite::getAdjacents(Coord c) const {
 
 void Cite::remplirQuadrillage(Coord c, Tuile& t) {
     for (int i = 0; i < 3; i++) {
-        int j = 0;
+        size_t j = 0;
         Coord h;
         // bonnes coordonnees selon l'hexa
         if (i == 1) {

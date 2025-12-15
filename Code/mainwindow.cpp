@@ -963,7 +963,7 @@ void MainWindow::onValidationClicked()
 
     try {
         bool succes = Partie::getInstance().actionPlacerTuile(
-            indexTuileSelectionnee, previewX, previewY, previewZ, rotationCompteur, inversionEtat
+            indexTuileSelectionnee, previewX, previewY, previewZ, rotationCompteur
             );
 
         if (succes) {
