@@ -1,8 +1,6 @@
 #include <algorithm>
-#include <fstream>
 #include <cstdio>
 #include <random>
-#include <iostream>
 #include "partie.h"
 #include "ia.h"
 
@@ -98,7 +96,7 @@ void Partie::remplirChantier() {
     if (estFinDePartie()) return;
 
     if (chantier.estVide() || chantier.getNbTuiles() == 1) {
-        if (indexPileActuelle >= piles.size()) return;
+        if (indexPileActuelle >= getNbPiles()) return;
 
         Pile* p = piles[indexPileActuelle - 1];
         chantier.ajouterPile(*p);
@@ -119,7 +117,7 @@ void Partie::designerArchitecteChef() {
     indexJoueurActuel = 0;
 }
 
-bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation, int inversion) {
+bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
     // Récupération via itérateur
     auto itTuile = chantier.begin();
     for (int i = 0; i < index; ++i) {
@@ -215,7 +213,7 @@ void Partie::passerAuJoueurSuivant() {
 }
 
 bool Partie::estFinDePartie() const {
-    return (indexPileActuelle == piles.size() && chantier.getNbTuiles() == 1);
+    return (indexPileActuelle == getNbPiles() && chantier.getNbTuiles() == 1);
 }
 
 Joueur* Partie::getJoueurActuel() const {

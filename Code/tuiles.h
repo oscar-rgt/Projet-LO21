@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <iostream>
 #include <cstring>
 #include "hexagone.h"
 using namespace std;

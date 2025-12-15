@@ -32,7 +32,7 @@ vector<Coord> Cite::getVecteursVoisins(bool isXOdd) const{
     };
 }
 
-const bool Cite::toucheCite(Coord c) { //marche pas (jsp pk)
+bool Cite::toucheCite(Coord c) { //marche pas (jsp pk)
     for (const auto& vec : getVecteursVoisins((c.x)%2)) {
         if (!estLibre({ c.x + vec.x, c.y + vec.y, c.z })) return true;
     }
@@ -202,7 +202,7 @@ vector<Hexagone*> Cite::getAdjacents(Coord c) const {
 
 void Cite::remplirQuadrillage(Coord c, Tuile& t) {
     for (int i = 0; i < 3; i++) {
-        int j = 0;
+        size_t j = 0;
         Coord h;
         // bonnes coordonnees selon l'hexa
         if (i == 1) {

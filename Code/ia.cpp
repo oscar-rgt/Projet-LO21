@@ -2,7 +2,6 @@
 #include "tuiles.h"
 #include "hexagone.h"
 #include "partie.h"
-#include <iostream>
 
 using namespace std;
 
@@ -68,9 +67,9 @@ int IA::calculerScoreIA() const {
 
     // --- 1. SIMPLIFICATION DU PARCOURS ---
     for (auto it = begin(); it != end(); ++it) {
-        Tuile* t = *it; 
+        Tuile* t = *it;
 
-        for (int i = 0; i < t->getNbHexagones(); i++) {
+        for (size_t i = 0; i < t->getNbHexagones(); i++) {
             Hexagone* h = t->getHexagone(i);
             TypeQuartier type = h->getType();
 

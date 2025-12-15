@@ -48,7 +48,7 @@ struct CoordHash {
 class Cite {
 private:
 	unordered_map<Coord, Hexagone*, CoordHash> carte; // Espace 3D de pointeurs d'hexagones  / carte[{0, 0, 0}] = hexa0;
-    const bool toucheCite(Coord c);
+    bool toucheCite(Coord c);
     typedef struct Quadrillage {
         string txt = R"(
   /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
@@ -121,8 +121,8 @@ public:
     ~Cite() { delete t; }
     void placer(Tuile* t, Coord c, Joueur* j);
     void placerTuileDepart();
-    const bool estLibre(Coord c) const { return (carte.find(c) == carte.end()); }
-    const bool estRecouvert(Coord c) const { return (!estLibre({ c.x, c.y, c.z + 1 })); }
+    bool estLibre(Coord c) const { return (carte.find(c) == carte.end()); }
+    bool estRecouvert(Coord c) const { return (!estLibre({ c.x, c.y, c.z + 1 })); }
     void afficher() const;
     void remplirQuadrillage(Coord c, Tuile& t);
     vector<Hexagone*> getAdjacents(Coord c) const;

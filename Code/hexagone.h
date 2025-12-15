@@ -15,9 +15,10 @@ class Hexagone {
 private:
 	friend class Tuile;
 	friend class TuileDepart;
-	unsigned int niveau, etoiles;
+    TypeQuartier type;
+    unsigned int niveau;
 	Tuile* tuile;
-	TypeQuartier type;
+    unsigned int etoiles;
 	bool place;
 	Hexagone(TypeQuartier t, unsigned int n = 0, Tuile* tu = nullptr, unsigned int e = 0, bool p = false) : type(t), niveau(n), tuile(tu), etoiles(e), place(p) {}
 	~Hexagone() {}
@@ -31,7 +32,7 @@ public:
 	unsigned int getEtoiles() const { return etoiles; }
 	string affiche();
 	void setNiveau(unsigned int n) { niveau = n; }
-	const bool estPlace() const { return place; }
+    bool estPlace() const { return place; }
 };
 
 #endif // HEXAGONE_H

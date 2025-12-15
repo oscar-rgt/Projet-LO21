@@ -15,7 +15,6 @@ Joueur::Joueur(const string& n, unsigned int p)
 
 void Joueur::ajouterPierres(unsigned int n) {
     pierres += n;
-    if (pierres < 0) pierres = 0;
 }
 
 bool Joueur::utiliserPierres(unsigned int n) {
