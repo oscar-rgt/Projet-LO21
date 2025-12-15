@@ -30,7 +30,7 @@ public:
 	Tuile* getTuile() const { return tuile; }
 	TypeQuartier getType() const { return type; }
 	unsigned int getEtoiles() const { return etoiles; }
-	string affiche();
+	const string affiche() const;
 	void setNiveau(unsigned int n) { niveau = n; }
     bool estPlace() const { return place; }
 };

@@ -1,7 +1,7 @@
 #pragma once
 #include <exception>
 #include <string>
-
+;
 // Classe de base pour toutes les erreurs du jeu
 class AkropolisException : public std::exception {
 protected:

@@ -6,7 +6,7 @@
 using namespace std;
 
 
-string Hexagone::affiche() {
+const string Hexagone::affiche() const{
 	// Habitation, Marche, Caserne, Temple, Jardin, Place
 	string niv = to_string(getNiveau());
 	string res;

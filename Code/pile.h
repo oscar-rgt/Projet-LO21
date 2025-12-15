@@ -4,7 +4,7 @@
 #include <vector>
 
 
-class Partie;
+; class Partie;
 
 
 class Pile {

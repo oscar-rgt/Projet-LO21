@@ -96,7 +96,21 @@ void JeuConsole::afficherEtatJeu() {
     else {
         Cite * c = j->getCite();
         if (!c) throw AkropolisException("Cite non initialisée");
-        c->afficher();
+        // --- NOUVEAU CODE D'AFFICHAGE ---
+
+        // 1. On vide la vue des tours précédents
+        vue.reset(); // Assurez-vous d'avoir ajouté une méthode reset() dans Quadrillage qui remet txt à zéro
+
+        // 2. On remplit la vue avec les hexagones de la cité du joueur
+        for (auto it = c->begin(); it != c->end(); ++it) {
+            // it->first est la Coord, it->second est l'Hexagone*
+            vue.remplir(it->first, it->second);
+        }
+
+        // 3. On demande à la vue de dessiner le résultat
+        vue.afficher();
+
+        // --------------------------------
         afficherChantier();
     }
 

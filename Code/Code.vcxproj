@@ -30,6 +30,8 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="partie.cpp" />
     <ClCompile Include="pile.cpp" />
+    <ClCompile Include="quadrillageView.cpp" />
+    <ClCompile Include="quadrillageView.h" />
     <ClCompile Include="save.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="tuiles.cpp" />

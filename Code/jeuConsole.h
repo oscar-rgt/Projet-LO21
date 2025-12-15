@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include <array>
+#include "quadrillageView.h"
 #include "partie.h" // Lien vers le moteur
 
 class JeuConsole {
@@ -29,6 +30,7 @@ private:
     Partie::TuileCite modeTuileCite;
     std::vector<std::string> nomsJoueurs;
     std::array<bool, 5> variantesActives = { false };
+    Quadrillage vue;
 };
 
 #endif // JEU_CONSOLE_H
