@@ -5,6 +5,7 @@
 
 
 class Partie;
+class SaveManager;
 
 
 class Pile {
@@ -41,6 +42,7 @@ public:
 
 private:
     friend class Partie;
+    friend class SaveManager;
     ~Pile();
     Pile(unsigned int id_, unsigned int nb = 3);
     unsigned int id;

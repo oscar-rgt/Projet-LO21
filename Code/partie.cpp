@@ -34,6 +34,7 @@ Partie::~Partie() {
 
 // Nouvelle méthode indispensable pour le chargement
 void Partie::resetPourChargement() {
+<<<<<<< Updated upstream
     // 1. SUPPRIMER LES PILES EXISTANTES
     for (size_t i = 0; i < piles.size(); ++i) {
         Pile::detruire(piles[i]); // ou delete piles[i];
@@ -42,6 +43,31 @@ void Partie::resetPourChargement() {
 
     // 2. VIDER LE CHANTIER
     chantier.vider();
+=======
+    // 1. Nettoyer les joueurs
+    for (auto j : joueurs) delete j;
+    joueurs.clear();
+    
+    // 2. Vider le chantier (sans détruire les tuiles, elles sont dans les piles)
+    chantier.vider();
+    
+    // 3. IMPORTANT : Détruire ET vider les piles existantes
+    for (auto p : piles) delete p;
+    piles.clear();
+    
+    // 4. Réinitialiser les index
+    indexJoueurActuel = 0;
+    indexPileActuelle = 0;
+    niveauIllustreConstructeur = 0;
+    
+    // NE PAS appeler initialiserPiles() ici !
+    // Les piles seront reconstruites manuellement dans charger()
+}
+
+void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, const array<bool, 5>& vars, unsigned int nivIC) {
+    // Nettoyage complet avant nouvelle partie
+    resetPourChargement();
+>>>>>>> Stashed changes
 
     // 3. SUPPRIMER LES JOUEURS
     for (size_t i = 0; i < joueurs.size(); ++i) delete joueurs[i];
@@ -87,9 +113,15 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
 }
 
 void Partie::initialiserPiles() {
+<<<<<<< Updated upstream
     int nbPiles = 11; // Standard
     if (modeTuileCite == TuileCite::AUGMENTE) {
         // Note : on utilise joueurs.size() car nbJoueurs n'existe plus en variable
+=======
+    int nbPiles = 11; // Standard par défaut
+    
+    if (modeTuileCite == TuileCite::AUGMENTE) {
+>>>>>>> Stashed changes
         size_t n = joueurs.size();
         if (n == 2) nbPiles = 19;
         else if (n == 3) nbPiles = 15;
@@ -98,30 +130,47 @@ void Partie::initialiserPiles() {
 
     piles.reserve(nbPiles); 
 
-    // Pile de départ : nbJoueurs + 2 tuiles
-    piles.emplace_back(new Pile(0, static_cast<int>(joueurs.size()) + 2));
+    // ========================================
+    // CORRECTION : Pile de départ = nbJoueurs + 2 tuiles
+    // (Pas +1 comme les autres !)
+    // ========================================
+    int nbJoueursReel = joueurs.size();
+    piles.emplace_back(new Pile(0, nbJoueursReel + 2));
 
     // Autres piles : nbJoueurs + 1 tuiles
-    for (int i = 1; i <= nbPiles; i++) {
-        piles.emplace_back(new Pile(i, static_cast<int>(joueurs.size()) + 1));
+    for (int i = 1; i < nbPiles; i++) {
+        piles.emplace_back(new Pile(i, nbJoueursReel + 1));
     }
-    indexPileActuelle = 1;
+    
+    // ========================================
+    // CORRECTION : On commence à la pile 0 (pas 1 !)
+    // ========================================
+    indexPileActuelle = 0;
 
     remplirChantier();
-}
 
+}
 void Partie::remplirChantier() {
     if (estFinDePartie()) return;
 
+    // Le chantier est rempli uniquement quand il est vide OU qu'il ne reste qu'1 tuile
     if (chantier.estVide() || chantier.getNbTuiles() == 1) {
-        if (indexPileActuelle >= piles.size()) return;
+        if (indexPileActuelle >= piles.size()) return; // Plus de piles
 
-        Pile* p = piles[indexPileActuelle - 1];
+        // ========================================
+        // CORRECTION : On utilise indexPileActuelle directement
+        // (pas indexPileActuelle - 1)
+        // ========================================
+        Pile* p = piles[indexPileActuelle];
         chantier.ajouterPile(*p);
-        indexPileActuelle++;
+        indexPileActuelle++; // On passe à la pile suivante
     }
 
+<<<<<<< Updated upstream
     // Mise à jour des prix : 0, 1, 2...
+=======
+    // Mise à jour des prix : 0, 1, 2, 3...
+>>>>>>> Stashed changes
     int prix = 0;
     for (auto it = chantier.begin(); it != chantier.end(); ++it) {
         (*it)->setPrix(prix++);
