@@ -1,5 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>images/akropolis-title.png</file>
+        <file>images/Untitled.ico</file>
     </qresource>
 </RCC>

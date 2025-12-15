@@ -36,3 +36,4 @@ SOURCES += \
 RESOURCES += \
     ressources.qrc
 
+win32: RC_ICONS =images/Untitled.ico

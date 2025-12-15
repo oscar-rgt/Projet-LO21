@@ -21,6 +21,7 @@ const double OFFSET_Y = sqrt(3.0) * TUILE_TAILLE;
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), indexTuileSelectionnee(-1), rotationCompteur(0), inversionEtat(false), previewActive(false), previewX(0), previewY(0), previewZ(0), affichageResultatIA(false)
 {
+
     setWindowTitle("Akropolis - Qt");
     resize(1024, 768);
 
