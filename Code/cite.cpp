@@ -162,18 +162,35 @@ void Cite::placerTuileDepart() {
 
 vector<Hexagone*> Cite::getAdjacents(Coord c) const {
     vector<Hexagone*> ret;
-    for (const auto& vec : getVecteursVoisins(c.x%2)) {
-        Coord voisin = { c.x + vec.x, c.y + vec.y, c.z };
-        auto it = carte.find(voisin);
 
-        // Si l'itérateur n'est pas à la fin, c'est que l'élément existe
-        if (it != carte.end()) {
-            ret.push_back(it->second); // it->second donne la valeur (Hexagone*), obligé d'utliser ça car méthode const
+    // Pour chaque direction autour de la tuile...
+    for (const auto& vec : getVecteursVoisins(c.x % 2)) {
+        for (int z = 0; z <= getHauteurMax(); ++z) { // on regarde toutes les hauteurs possibles
+            Coord voisin = { c.x + vec.x, c.y + vec.y, z };
+            auto it = carte.find(voisin);
+
+            if (it != carte.end()) {
+                ret.push_back(it->second);
+                break; // On a trouvé le voisin visible, on passe à la direction suivante
+            }
         }
     }
     return ret;
 }
 
+
+int Cite::getHauteurMax() const {
+    int maxZ = 0;
+    // On utilise votre itérateur const
+    for (auto it = begin(); it != end(); ++it) {
+        // it->first est la clé (Coord), it->second est la valeur (Hexagone*)
+        int zActuel = it->first.z;
+        if (zActuel > maxZ) {
+            maxZ = zActuel;
+        }
+    }
+    return maxZ;
+}
 
 
 

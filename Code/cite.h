@@ -70,4 +70,5 @@ public:
     vector<Hexagone*> getAdjacents(Coord c) const;
     vector<Coord> getVecteursVoisins(bool isXOdd) const;
     const vector<Action>& getHistorique() const { return historique; }
+    int getHauteurMax() const;
 };

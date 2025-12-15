@@ -16,11 +16,11 @@ using namespace std;
 
 // --- PALETTE UNIFIÉE (Pour garder le même style partout) ---
 namespace Theme {
-const QColor ORANGE("#dc8d55");      // 14454101
+const QColor ORANGE("#dc8d55");
 const QColor ORANGE_CLAIR("#e89e6b");
-const QColor MARRON_FONCE("#4E2E1E"); // 5123614
-const QColor CUIVRE("#734526");       // 7554342
-const QColor BEIGE_CARTE("#D9B48F");  // 14267535
+const QColor MARRON_FONCE("#4E2E1E");
+const QColor CUIVRE("#734526");
+const QColor BEIGE_CARTE("#D9B48F");
 const QColor BEIGE_FOND("#FAF8EF");
 const QColor NOIR(Qt::black);
 }
@@ -132,11 +132,30 @@ MainWindow::MainWindow(QWidget *parent)
         }
 
         /* 6. CADRE SPÉCIFIQUE CONFIGURATION */
-        /* Cible uniquement le widget nommé "cadreConfig" */
-        #cadreConfig {
-            border: 1px solid #dc8d55;
+
+        /* Gros bouton pour les menus (Accueil, Config, Fin) */
+        .BoutonMenu {
+            min-width: 220px;
+            padding: 12px;
+            font-size: 18px;
+            /* La couleur orange est héritée du QPushButton standard */
+        }
+
+        /* Modificateur pour les boutons "Dangereux" (Quitter) */
+        .BoutonDanger {
+            background-color: #c0392b;
+            border-color: #922B21;
+        }
+        .BoutonDanger:hover {
+            background-color: #e74c3c;
+        }
+
+        /* CADRE UNIFIÉ (Transparent + Bord Orange) */
+        .CadreConfig {
+            border: 2px solid #dc8d55;
             border-radius: 15px;
-            background-color: transparent;
+            background-color: #FAF8EF; /* Fond semi-opaque pour lisibilité si besoin, ou transparent */
+            /* Si vous voulez 100% transparent comme avant, mettez : background-color: transparent; */
         }
     )";
 
@@ -197,31 +216,24 @@ void MainWindow::initialiserPageMenuPrincipal()
     QVBoxLayout *layoutBoutons = new QVBoxLayout();
     layoutBoutons->setSpacing(20);
 
-    // On garde juste la taille et le padding, on retire les couleurs !
-    QString styleBoutonMenu = "min-width: 220px; padding: 12px; font-size: 18px;";
-
     // Bouton JOUER
     QPushButton *btnJouer = new QPushButton("JOUER UNE PARTIE", pageMenuPrincipal);
-    // On applique seulement la taille, la couleur viendra du style global (#dc8d55)
-    btnJouer->setStyleSheet(styleBoutonMenu);
+    btnJouer->setProperty("class", "BoutonMenu"); // <--- Utilise la classe globale
     btnJouer->setCursor(Qt::PointingHandCursor);
     connect(btnJouer, &QPushButton::clicked, this, &MainWindow::afficherMenuConfig);
     layoutBoutons->addWidget(btnJouer, 0, Qt::AlignCenter);
 
     // Bouton RÈGLES
     QPushButton *btnRegles = new QPushButton("RÈGLES DU JEU", pageMenuPrincipal);
-    btnRegles->setStyleSheet(styleBoutonMenu);
+    btnRegles->setProperty("class", "BoutonMenu"); // <--- Utilise la classe globale
     btnRegles->setCursor(Qt::PointingHandCursor);
     connect(btnRegles, &QPushButton::clicked, this, &MainWindow::afficherMenuRegles);
     layoutBoutons->addWidget(btnRegles, 0, Qt::AlignCenter);
 
     // Bouton QUITTER
     QPushButton *btnQuitter = new QPushButton("QUITTER", pageMenuPrincipal);
-    // Pour quitter, on peut garder le rouge si on veut, ou mettre le style global
-    // Si tu veux TOUS les boutons pareils, mets juste : btnQuitter->setStyleSheet(styleBoutonMenu);
-    // Si tu veux garder le rouge pour quitter (conseillé pour l'UX), garde cette ligne :
-    btnQuitter->setStyleSheet(styleBoutonMenu + "background-color: #c0392b; border-color: #922B21;");
-
+    // On combine les deux classes : C'est un bouton menu ET il est rouge
+    btnQuitter->setProperty("class", "BoutonMenu BoutonDanger");
     btnQuitter->setCursor(Qt::PointingHandCursor);
     connect(btnQuitter, &QPushButton::clicked, this, &MainWindow::quitterJeu);
     layoutBoutons->addWidget(btnQuitter, 0, Qt::AlignCenter);
@@ -448,7 +460,7 @@ void MainWindow::initialiserPageConfiguration()
 
     // 2. LE CADRE (Le "petit rectangle")
     QFrame *cadreConfig = new QFrame(pageConfig);
-    cadreConfig->setObjectName("cadreConfig");
+    cadreConfig->setProperty("class", "CadreConfig");
     cadreConfig->setFixedWidth(600); // Largeur fixe élégante
 
     // Layout INTERNE du cadre
@@ -533,6 +545,10 @@ void MainWindow::initialiserPageConfiguration()
 
     QPushButton *btnRetour = new QPushButton("ANNULER", cadreConfig);
     QPushButton *btnValider = new QPushButton("JOUER", cadreConfig);
+
+    // On applique le style unifié
+    btnRetour->setProperty("class", "BoutonMenu");
+    btnValider->setProperty("class", "BoutonMenu");
 
     btnValider->setCursor(Qt::PointingHandCursor);
     btnRetour->setCursor(Qt::PointingHandCursor);
@@ -1223,7 +1239,7 @@ void MainWindow::afficherFinDePartie() {
 
     // --- OPTIMISATION : On utilise la classe .CadreNoir définie dans le style global ---
     QFrame* frame = new QFrame();
-    frame->setProperty("class", "CadreNoir"); // Hop, fond blanc + bord noir auto !
+    frame->setProperty("class", "CadreConfig");
 
     QVBoxLayout* frameLayout = new QVBoxLayout(frame);
     frameLayout->setContentsMargins(40, 40, 40, 40);
@@ -1259,15 +1275,12 @@ void MainWindow::afficherFinDePartie() {
     QHBoxLayout* btnLayout = new QHBoxLayout();
 
     QPushButton* btnMenu = new QPushButton("MENU PRINCIPAL", frame);
-    btnMenu->setProperty("class", "BoutonMenu"); // Style unifié
+    btnMenu->setProperty("class", "BoutonMenu");
     btnMenu->setCursor(Qt::PointingHandCursor);
 
     QPushButton* btnQuitter = new QPushButton("QUITTER", frame);
-    btnQuitter->setProperty("class", "BoutonMenu BoutonDanger"); // Style unifié rouge
+    btnQuitter->setProperty("class", "BoutonMenu BoutonDanger");
     btnQuitter->setCursor(Qt::PointingHandCursor);
-
-    // Style rouge pour quitter
-    btnQuitter->setStyleSheet("background-color: #c0392b; border-color: #922B21;");
 
     btnLayout->addWidget(btnMenu);
     btnLayout->addWidget(btnQuitter);
