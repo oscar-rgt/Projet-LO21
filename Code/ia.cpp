@@ -17,7 +17,7 @@ void IA::ajouterTuile(Tuile* t) {
 
 bool IA::tuileContientPlace(Tuile* t) {
     if (!t) return false;
-    for (size_t i = 0; i < t->getNbHexagones(); ++i) {
+    for (int i = 0; i < t->getNbHexagones(); ++i) {
         Hexagone* h = t->getHexagone((int)i);
         if (h->estPlace()) {
             return true;

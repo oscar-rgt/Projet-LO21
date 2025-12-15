@@ -27,7 +27,7 @@ public:
 	bool getInversion() const { return inversion; }
 	void inverser() { inversion = !inversion; }
 	Hexagone* getHexagone(int i) { return hexagones[i]; }
-	size_t getNbHexagones() const { return static_cast<int>(hexagones.size()); }
+    int getNbHexagones() const { return static_cast<int>(hexagones.size()); }
 	unsigned int getPrix() const { return prix; }
 	void tourner();
 	void setPrix(unsigned int p);
