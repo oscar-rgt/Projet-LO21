@@ -15,7 +15,8 @@ HEADERS += \
     save.h \
     score.h \
     tuileitem.h \
-    tuiles.h
+    tuiles.h \
+    coord.h
 
 SOURCES += \
     chantier.cpp \
@@ -31,7 +32,8 @@ SOURCES += \
     save.cpp \
     score.cpp \
     tuileitem.cpp \
-    tuiles.cpp
+    tuiles.cpp \
+    coord.cpp
 
 RESOURCES += \
     ressources.qrc

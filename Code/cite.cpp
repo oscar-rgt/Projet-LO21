@@ -17,8 +17,6 @@ const Hexagone* Cite::getHexagone(Coord c) const {
 // 1. OUTILS DE VOISINAGE
 // =========================================================
 
-// On garde une vérification large (8 voisins) pour être sûr de détecter
-// les contacts quelle que soit la topologie de la grille.
 vector<Coord> Cite::getVecteursVoisins(bool isXOdd) const{
     if (!isXOdd) return {
         {0, -1, 0}, {0, 1, 0},   // Vertical
@@ -32,7 +30,7 @@ vector<Coord> Cite::getVecteursVoisins(bool isXOdd) const{
     };
 }
 
-bool Cite::toucheCite(Coord c) { //marche pas (jsp pk)
+const bool Cite::toucheCite(Coord c) const { 
     for (const auto& vec : getVecteursVoisins((c.x)%2)) {
         if (!estLibre({ c.x + vec.x, c.y + vec.y, c.z })) return true;
     }
@@ -101,9 +99,9 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j) {
     //D.Sauvegarde
     Action act;
     act.tuileId = t->getId();
-    act.x = c.x;
-    act.y = c.y;
-    act.z = c.z;
+    act.pos.x = c.x;
+    act.pos.y = c.y;
+    act.pos.z = c.z;
     act.inversion = t->getInversion();
 
     // On sauvegarde l'état VISUEL actuel des hexagones (après rotation éventuelle)
@@ -180,11 +178,6 @@ void Cite::afficher() const {
 // 5. HELPERS
 // =========================================================
 
-// Mise à jour selon votre nouvelle géométrie "Index 2"
-Coord Coord::cote(bool inversion) {
-    if (inversion) return { x + 1, x % 2 == 0 ? y : y - 1, z };
-    return { x - 1, x % 2 == 0 ? y : y - 1, z };
-}
 
 vector<Hexagone*> Cite::getAdjacents(Coord c) const {
     vector<Hexagone*> ret;

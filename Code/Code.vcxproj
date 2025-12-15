@@ -21,6 +21,8 @@
   <ItemGroup>
     <ClCompile Include="chantier.cpp" />
     <ClCompile Include="cite.cpp" />
+    <ClCompile Include="coord.cpp" />
+    <ClCompile Include="coord.h" />
     <ClCompile Include="hexagone.cpp" />
     <ClCompile Include="jeuConsole.cpp" />
     <ClCompile Include="ia.cpp" />

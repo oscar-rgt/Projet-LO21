@@ -5,6 +5,7 @@
 #include <vector>
 #include <unordered_map>
 #include "except.h"
+#include "coord.h"
 
 class Joueur;
 
@@ -22,33 +23,17 @@ struct InfoHexa {
 
 struct Action {
     int tuileId;
-    int x, y, z;
+    Coord pos;
     bool inversion;
     InfoHexa hexas[3];
-};
-
-struct Coord { //Tuple de coordonnées 
-    int x, y, z;
-    Coord sud() { return { x,y - 1,z }; }
-    Coord cote(bool inversion);
-    bool operator==(const Coord& other) const noexcept { return x == other.x && y == other.y && z == other.z; }
-};
-struct CoordHash {
-    size_t operator()(const Coord& c) const noexcept {
-        size_t hx = hash<int>()(c.x);
-        size_t hy = hash<int>()(c.y);
-        size_t hz = hash<int>()(c.z);
-		// combine les trois hash
-        return hx ^ (hy << 1) ^ (hz << 2);
-    }
 };
 
 
 
 class Cite {
 private:
-	unordered_map<Coord, Hexagone*, CoordHash> carte; // Espace 3D de pointeurs d'hexagones  / carte[{0, 0, 0}] = hexa0;
-    bool toucheCite(Coord c);
+	unordered_map<Coord, Hexagone*> carte; // Espace 3D de pointeurs d'hexagones  / carte[{0, 0, 0}] = hexa0;
+    const bool toucheCite(Coord c) const;
     typedef struct Quadrillage {
         string txt = R"(
   /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
@@ -99,8 +84,8 @@ public:
     // ==========================================
     class ConstIterator {
         friend class Cite;
-        unordered_map<Coord, Hexagone*, CoordHash>::const_iterator current;
-        ConstIterator(unordered_map<Coord, Hexagone*, CoordHash>::const_iterator it) : current(it) {}
+        unordered_map<Coord, Hexagone*>::const_iterator current;
+        ConstIterator(unordered_map<Coord, Hexagone*>::const_iterator it) : current(it) {}
     public:
         ConstIterator() {}
         ConstIterator& operator++() { ++current; return *this; }
