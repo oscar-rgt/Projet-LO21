@@ -308,7 +308,7 @@ void JeuConsole::lancer() {
     cout << "=== FIN DE PARTIE ===" << endl;
 
     cout << "\n--- SCORES ---" << endl;
-	int score = 0;
+	int s = 0;
 
     // Utilisation de debutJoueurs() et finJoueurs() au lieu de l'index
     for (auto it = Partie::getInstance().debutJoueurs(); it != Partie::getInstance().finJoueurs(); ++it) {
@@ -320,11 +320,13 @@ void JeuConsole::lancer() {
             ia->calculerScoreIA(); // Mise à jour score interne
         }
         else {
-            j->getScore()->calculerScore();
-            score = j->getScore()->getTotal();
+            Score* score = j->getScore();
+            if (!score) throw AkropolisException("Score non initialisé");
+            score->calculerScore();
+            s = j->getScore()->getTotal();
         }
 
-        cout << j->getNom() << " : " << score << " points (" << j->getPierres() << " pierres)" << endl;
+        cout << j->getNom() << " : " << s << " points (" << j->getPierres() << " pierres)" << endl;
     }
 
     cout << "\n--- RESULTAT ---" << endl;
