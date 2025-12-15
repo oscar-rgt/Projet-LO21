@@ -37,6 +37,7 @@ public:
 
 class TuileDepart : public Tuile {
 private:
+	friend class IA;
 	friend class Cite;
 	TuileDepart();
 };

@@ -9,9 +9,10 @@ class IA : public Joueur {
 private:
     int difficulte; // 1: Hippodamos, 2: Métagénès, 3: Callicratès
     std::vector<Tuile*> tuilesAcquises;
+	TuileDepart* tuileDepart; // Tuile de départ de l'IA
 
 public:
-    IA(const string& nom, int diff) : Joueur(nom), difficulte(diff) {}
+    IA(const string& nom, int diff);
     virtual ~IA();
 
     // Méthode pour choisir une tuile dans le chantier

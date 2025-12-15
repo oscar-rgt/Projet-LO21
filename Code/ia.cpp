@@ -6,9 +6,14 @@
 using namespace std;
 
 
+IA::IA(const string& nom, int diff) : Joueur(nom), difficulte(diff), tuileDepart(new TuileDepart) {
+	ajouterTuile(tuileDepart);
+}
+
 
 IA::~IA() {
     tuilesAcquises.clear();
+    delete tuileDepart;
 }
 
 void IA::ajouterTuile(Tuile* t) {
@@ -60,14 +65,16 @@ int IA::choisirTuile(const Chantier& chantier) {
 int IA::calculerScoreIA() const {
     int scoreTotal = 0;
 
-    // Maps pour stocker les comptes (Type -> Nombre)
-    map<TypeQuartier, int> nbHexagones;
+    // Maps pour stocker les comptes séparés
+    // nbQuartiers : compte uniquement les tuiles "Quartier" (pas les places)
+    // nbEtoiles : compte uniquement les étoiles des "Places"
+    map<TypeQuartier, int> nbQuartiers;
     map<TypeQuartier, int> nbEtoiles;
     int nbCarrieres = 0;
 
-    // --- 1. INVENTAIRE TUILES ACQUISES ---
+    // --- 1. INVENTAIRE ---
     for (auto it = begin(); it != end(); ++it) {
-        Tuile* t = *it; 
+        Tuile* t = *it;
 
         for (int i = 0; i < t->getNbHexagones(); ++i) {
             Hexagone* h = t->getHexagone(i);
@@ -77,38 +84,39 @@ int IA::calculerScoreIA() const {
                 nbCarrieres++;
             }
             else {
-                if (nbHexagones.find(type) == nbHexagones.end()) {
-                    nbHexagones[type] = 0;
-                    nbEtoiles[type] = 0;
-                }
+                if (nbQuartiers.find(type) == nbQuartiers.end()) nbQuartiers[type] = 0;
+                if (nbEtoiles.find(type) == nbEtoiles.end()) nbEtoiles[type] = 0;
 
-                // On incrémente les compteurs
-                nbHexagones[type]++;
-                nbEtoiles[type] += h->getEtoiles();
+                if (h->estPlace()) {
+                    nbEtoiles[type] += h->getEtoiles();
+                }
+                else {
+                    nbQuartiers[type]++;
+                }
             }
         }
     }
 
     // --- 2. RÈGLES DE DIFFICULTÉ (HAUTEUR) ---
     // Hippodamos (1) & Métagénès (2) : Hauteur = 1
-    // Callicratès (3) : Hauteur = 2 (Tous les quartiers comptent double)
+    // Callicratès (3) : Hauteur = 2
     int hauteur = (difficulte == 3) ? 2 : 1;
 
-    // --- 3. CALCUL FINAL ---
-    for (map<TypeQuartier, int>::iterator it = nbHexagones.begin(); it != nbHexagones.end(); ++it) {
+    // --- 3. CALCUL DU SCORE ---
+    // On parcourt les types de quartiers rencontrés
+    for (map<TypeQuartier, int>::iterator it = nbQuartiers.begin(); it != nbQuartiers.end(); ++it) {
         TypeQuartier type = it->first;
-        int count = it->second;
-        int stars = nbEtoiles[type]; // On récupère le nombre d'étoiles associées
+        int nombreDeQuartiers = it->second; // Nombre d'hexagones "non-place"
+        int nombreEtoiles = nbEtoiles[type]; // Total des étoiles accumulées
 
-        // Formule : (Nombre de Tuiles) * (Nombre d'Étoiles) * (Hauteur)
-        scoreTotal += count * stars * hauteur;
+        // Formule : Quartiers x Etoiles x Hauteur
+        scoreTotal += nombreDeQuartiers * nombreEtoiles * hauteur;
     }
 
     // --- 4. POINTS DES PIERRES ---
     scoreTotal += getPierres();
 
     // --- 5. BONUS MÉTAGÉNÈS (Difficulté 2) ---
-    // Il gagne 2 points par carrière
     if (difficulte == 2) {
         scoreTotal += nbCarrieres * 2;
     }
