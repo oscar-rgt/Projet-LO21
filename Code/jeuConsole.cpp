@@ -313,6 +313,7 @@ void JeuConsole::lancer() {
     // Utilisation de debutJoueurs() et finJoueurs() au lieu de l'index
     for (auto it = Partie::getInstance().debutJoueurs(); it != Partie::getInstance().finJoueurs(); ++it) {
         Joueur* j = *it;
+        if (!j) throw AkropolisException("Joueur non initialisé");
 
         // Calcul du score IA si nécessaire
         IA* ia = dynamic_cast<IA*>(j);
