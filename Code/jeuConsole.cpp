@@ -50,7 +50,7 @@ void JeuConsole::afficherChantier() {
 
 
     // Calcul : Total piles - Index pile actuelle
-    size_t pilesRestantes = Partie::getInstance().getNbPiles() - Partie::getInstance().getIndexPileActuelle();
+    int pilesRestantes = Partie::getInstance().getNbPiles() - Partie::getInstance().getIndexPileActuelle();
     cout << "\n=== CHANTIER === " << pilesRestantes << " pile(s) restante(s)" << endl;
 
     // --- 2. AFFICHAGE DES TUILES VIA ITÉRATEUR ---
@@ -81,6 +81,7 @@ void JeuConsole::afficherChantier() {
 
 void JeuConsole::afficherEtatJeu() {
     Joueur* j = Partie::getInstance().getJoueurActuel();
+    if (!j) throw AkropolisException("Pointeur Joueur null.");
     cout << "\n##########################################" << endl;
     cout << "TOUR DE : " << j->getNom() << endl;
     cout << "Pierres : " << j->getPierres() << endl;
@@ -93,7 +94,9 @@ void JeuConsole::afficherEtatJeu() {
         cout << "(Cite de l'IA - Gestion virtuelle)" << endl;
     }
     else {
-        j->getCite()->afficher();
+        Cite * c = j->getCite();
+        if (!c) throw AkropolisException("Cite non initialisée");
+        c->afficher();
         afficherChantier();
     }
 
@@ -130,7 +133,7 @@ void JeuConsole::jouerTour() {
     // 1. Calculer le nombre de tuiles disponibles avec les itérateurs
     const auto& chantier = Partie::getInstance().getChantier();
 
-    size_t maxChoix = chantier.getNbTuiles() - 1;
+    int maxChoix = chantier.getNbTuiles() - 1;
 
     cout << "\n--- ACTION ---" << endl;
     int index = saisieNombre("Quelle tuile choisir ?", 0, (int)maxChoix);
@@ -192,7 +195,7 @@ void JeuConsole::jouerTour() {
 
     if (saisieOuiNon("Valider ce choix ?")) {
         try {
-            bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, rotationCompteur, inversionEtat);
+            bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, rotationCompteur);
 
             if (!succes) {
                 cout << ">> ECHEC : Pas assez de pierres ou regle non respectee." << endl;

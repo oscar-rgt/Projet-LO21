@@ -62,10 +62,10 @@ public:
     const std::array<bool, 5>& getVariantes() const { return variantes; }
 
     // Sauvegarde (méthodes inchangées)
-    bool sauvegarder(const string& nomFichier = "akropolis_save.txt") const;
+    /*bool sauvegarder(const string& nomFichier = "akropolis_save.txt") const;
     bool charger(const string& nomFichier = "akropolis_save.txt");
     static bool supprimerSauvegarde(const string& nomFichier = "akropolis_save.txt");
-    bool sauvegardeExiste(const string& nomFichier);
+    bool sauvegardeExiste(const string& nomFichier);*/
 
     // ==========================================
     // ITERATORS

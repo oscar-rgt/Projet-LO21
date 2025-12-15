@@ -12,7 +12,7 @@ Partie& Partie::getInstance() {
     return instance;
 }
 
-Partie::Partie() : indexJoueurActuel(0), indexPileActuelle(0) {}
+Partie::Partie() : indexJoueurActuel(0), indexPileActuelle(0), modeTuileCite(TuileCite::STANDARD), niveauIA(0), variantes({0,0,0,0,0}) {}
 
 Partie::~Partie() {
     for (auto j : joueurs) delete j;
@@ -231,14 +231,17 @@ vector<Joueur*> Partie::determinerGagnants() {
     // 1. Calcul des scores
     for (auto it = debutJoueurs(); it != finJoueurs(); ++it) {
         Joueur* j = *it;
+        if (!j) throw AkropolisException("Pointeur joueur null");
         int s = 0;
 
         if (IA* ia = dynamic_cast<IA*>(j)) {
             s = ia->calculerScoreIA();
         }
         else {
-            j->getScore()->calculerScore(); 
-            s = j->getScore()->getTotal();
+            Score * score = j->getScore();
+            if (!score) throw AkropolisException("Score non initialisé");
+            score->calculerScore(); 
+            s = score->getTotal();
         }
 
         memoScores[j] = s; // Sauvegarde du score pour l'étape suivante
