@@ -11,6 +11,7 @@
 #include <QDialog>
 #include <QMouseEvent>
 #include <QGraphicsProxyWidget>
+#include <QGraphicsTextItem>
 
 using namespace std;
 
@@ -799,13 +800,26 @@ void MainWindow::dessinerCite(Joueur* joueur) {
         double h = (sqrt(3.) * taille);
         double pixelX = pos.x * w;
         double pixelY = pos.y * -h + abs((pos.x % 2)) * (h / 2);
-        pixelY -= (pos.z * 10.0);
 
         QColor couleur = getTypeColor(hex->getType());
         int nbEtoiles = hex->estPlace() ? hex->getEtoiles() : 0;
 
+
+
         // Création de l'hexagone avec les étoiles
         HexagoneItem* item = new HexagoneItem(pixelX, pixelY, taille, couleur, pos.x, pos.y, pos.z, nbEtoiles);
+        QString strHauteur = QString::number(pos.z);
+        QGraphicsTextItem* txt = new QGraphicsTextItem(strHauteur, item);
+
+        QFont font = txt->font();
+        font.setPixelSize(10);
+        txt->setFont(font);
+
+        txt->setDefaultTextColor(Qt::black);
+
+        QRectF bound = txt->boundingRect();
+        txt->setPos(-bound.width() / 2.0, bound.height() - 14);
+
         sceneCite->addItem(item);
 
     }
