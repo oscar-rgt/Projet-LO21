@@ -12,7 +12,7 @@ Partie& Partie::getInstance() {
     return instance;
 }
 
-Partie::Partie() : indexJoueurActuel(0), indexPileActuelle(0), modeTuileCite(TuileCite::STANDARD), niveauIA(0), variantes({0,0,0,0,0}) {}
+Partie::Partie() : variantes({0,0,0,0,0}), indexJoueurActuel(0), indexPileActuelle(0), modeTuileCite(TuileCite::STANDARD), niveauIA(0) {}
 
 Partie::~Partie() {
     for (auto j : joueurs) delete j;

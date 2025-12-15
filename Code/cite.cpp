@@ -219,7 +219,7 @@ void Cite::remplirQuadrillage(Coord c, Tuile& t) {
         int c = h.x * quadrillage.hex_width + quadrillage.col_offset;
         j = c + l * quadrillage.line_length;
         if ((h.x % 2)) j += 2*quadrillage.line_length;
-        if (j<0 || j > quadrillage.txt.length()) throw CiteException("Placement impossible : sortie du quadrillage");
+        if (j > quadrillage.txt.length()) throw CiteException("Placement impossible : sortie du quadrillage");
         //replace(quadrillage.txt.begin(), quadrillage.txt.end(), ' ', '.'); //debug ascii
         quadrillage.txt.replace(j, 3, t.getHexagone(i)->affiche());
     }

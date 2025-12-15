@@ -1,4 +1,3 @@
-#include <iostream>
 #include <cstring>
 #include "tuiles.h"
 #include "hexagone.h"
@@ -30,7 +29,7 @@ int randomPlaceValue() {
 }
 
 
-Tuile::Tuile(unsigned int i, unsigned int p) : id(i), prix(p), inversion(0), design()
+Tuile::Tuile(unsigned int i, unsigned int p) : id(i), inversion(0), prix(p), design()
 {
     hexagones.resize(3); // Initialize vector with 3 elements
     auto itHex = hexagones.begin();
@@ -101,7 +100,7 @@ void Tuile::tourner() {
 
 
 Tuile::Tuile(const Tuile& t)
-    : id(t.id), inversion(t.inversion), design(t.design), prix(t.prix)
+    : id(t.id), inversion(t.inversion), prix(t.prix), design(t.design)
 {
     // On ne fait PAS hexagones = t.hexagones (sinon deux tuiles pointent vers les mêmes hexagones -> crash au delete)
     hexagones.reserve(t.hexagones.size());

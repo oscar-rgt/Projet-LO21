@@ -69,7 +69,7 @@ int IA::calculerScoreIA() const {
     for (auto it = begin(); it != end(); ++it) {
         Tuile* t = *it;
 
-        for (int i = 0; i < t->getNbHexagones(); i++) {
+        for (size_t i = 0; i < t->getNbHexagones(); i++) {
             Hexagone* h = t->getHexagone(i);
             TypeQuartier type = h->getType();
 

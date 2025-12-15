@@ -14,9 +14,9 @@ protected: // Changed to protected for inheritance
 	friend class Pile;
 	unsigned int id;
 	bool inversion;
+    unsigned int prix;
 	string design;
 	vector<Hexagone*> hexagones;
-	unsigned int prix;
 	Tuile(const Tuile& t);
 	Tuile& operator=(const Tuile& t);
 	Tuile() = default;
