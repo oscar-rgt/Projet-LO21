@@ -31,6 +31,9 @@ public:
         setPos(x, y);
         setZValue(gz);
 
+
+
+
         // 2. DESSIN DES ÉTOILES (NOUVEAU)
         if (etoiles > 0) {
             // Création d'une chaîne avec N étoiles
@@ -49,7 +52,7 @@ public:
             // Centrage approximatif
             // On centre le texte par rapport à l'origine (0,0) de l'hexagone
             QRectF bound = txt->boundingRect();
-            txt->setPos(-bound.width() / 2, -bound.height() / 2);
+            txt->setPos(-bound.width() / 2, -bound.height()/2);
 
 
         }
