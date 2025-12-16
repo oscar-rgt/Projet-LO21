@@ -7,9 +7,6 @@ Chantier::~Chantier() {
     vider();
 }
 
-void Chantier::vider() {
-    tuiles.clear();
-}
 
 void Chantier::ajouterPile(Pile& p) {
     // Utilisation de l'itérateur de Pile 

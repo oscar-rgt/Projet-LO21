@@ -6,7 +6,6 @@
 
 using namespace std;
 
-
 Partie& Partie::getInstance() {
     static Partie instance;
     return instance;
@@ -17,48 +16,61 @@ Partie::Partie() : variantes({0,0,0,0,0}), indexJoueurActuel(0), indexPileActuel
 Partie::~Partie() {
     for (auto j : joueurs) delete j;
     joueurs.clear();
-    for (auto p : piles) delete p;
+    for (auto p : piles) delete p; 
     piles.clear();
     chantier.vider();
 }
 
-void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, const array<bool, 5>& vars, unsigned int nivIC) {
-    // Reset
+// Nouvelle méthode indispensable pour le chargement
+void Partie::resetPourChargement() {
+    // 1. Nettoyer les joueurs
     for (auto j : joueurs) delete j;
     joueurs.clear();
+    
+    // 2. Vider le chantier (sans détruire les tuiles, elles sont dans les piles)
+    chantier.vider();
+    
+    // 3. IMPORTANT : Détruire ET vider les piles existantes
     for (auto p : piles) delete p;
     piles.clear();
-    chantier.vider();
+    
+    // 4. Réinitialiser les index
+    indexJoueurActuel = 0;
+    indexPileActuelle = 0;
+    niveauIllustreConstructeur = 0;
+    
+    // NE PAS appeler initialiserPiles() ici !
+    // Les piles seront reconstruites manuellement dans charger()
+}
+
+void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, const array<bool, 5>& vars, unsigned int nivIC) {
+    // Nettoyage complet avant nouvelle partie
+    resetPourChargement();
 
     modeTuileCite = mode;
     variantes = vars;
-    niveauIA = nivIC;
+    
+    // CORRECTION 2 : Renommage de niveauIA -> niveauIllustreConstructeur
+    niveauIllustreConstructeur = nivIC;
 
-    if (nb > 1) for (const auto& nom : noms) joueurs.push_back(new Joueur(nom));
+    // Création des joueurs
+    for (const auto& nom : noms) {
+        joueurs.push_back(new Joueur(nom));
+    }
 
-
-    // Si mode solo, on ajoute l'IA
+    // Gestion Mode Solo
     if (nb == 1) {
+        // Le joueur humain commence avec 1 pierre (il en a 2 par défaut, on retire 1)
+        if (!joueurs.empty()) joueurs[0]->utiliserPierres(1);
 
-        joueurs.push_back(new Joueur(noms[0], 1)); // Il commence avec 2 par défaut, on en enlève 1 -> reste 1
-
-        // L'IA est toujours le 2ème "joueur" dans la liste
-        joueurs.push_back(new IA("Illustre Architecte", niveauIA));
-
-        // Configuration initiale spécifique Solo
-        // Joueur : 1 tuile départ, 1 pierre, Pion Architecte
-        // IA : 1 tuile départ, 2 pierres
-
-        // Le joueur humain est à l'index 0
-
-        // L'IA (index 1) a déjà 2 pierres par défaut.
+        // L'IA est le 2ème joueur
+        joueurs.push_back(new IA("Illustre Architecte", niveauIllustreConstructeur));
     }
 
     initialiserPiles();
 
-    if (niveauIA > 0) {
-        // En mode solo, le joueur humain est toujours premier joueur
-        indexJoueurActuel = 0;
+    if (niveauIllustreConstructeur > 0) {
+        indexJoueurActuel = 0; // Humain commence toujours en solo
     }
     else {
         designerArchitecteChef();
@@ -66,43 +78,54 @@ void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, con
 }
 
 void Partie::initialiserPiles() {
-    // Création des piles selon les règles
-    int nbPiles = 11; // Standard
+    int nbPiles = 11; // Standard par défaut
+    
     if (modeTuileCite == TuileCite::AUGMENTE) {
-        if (joueurs.size() == 2) nbPiles = 19;
-        else if (joueurs.size() == 3) nbPiles = 15;
-        else if (joueurs.size() == 4) nbPiles = 11;
+        size_t n = joueurs.size();
+        if (n == 2) nbPiles = 19;
+        else if (n == 3) nbPiles = 15;
+        else if (n == 4) nbPiles = 11;
     }
 
     piles.reserve(nbPiles); 
 
-    // Pile de départ : nbJoueurs + 2 tuiles
-    piles.emplace_back(new Pile(0, static_cast<int>(joueurs.size()) + 2));
+    // ========================================
+    // CORRECTION : Pile de départ = nbJoueurs + 2 tuiles
+    // (Pas +1 comme les autres !)
+    // ========================================
+    int nbJoueursReel = joueurs.size();
+    piles.emplace_back(new Pile(0, nbJoueursReel + 2));
 
     // Autres piles : nbJoueurs + 1 tuiles
-    for (int i = 1; i <= nbPiles; i++) {
-        piles.emplace_back(new Pile(i, static_cast<int>(joueurs.size()) + 1));
+    for (int i = 1; i < nbPiles; i++) {
+        piles.emplace_back(new Pile(i, nbJoueursReel + 1));
     }
-    indexPileActuelle = 1;
+    
+    // ========================================
+    // CORRECTION : On commence à la pile 0 (pas 1 !)
+    // ========================================
+    indexPileActuelle = 0;
 
-    // Remplissage initial du chantier avec la première pile
     remplirChantier();
+
 }
-
 void Partie::remplirChantier() {
-    // Règle : Le chantier est rempli avec une pile entière uniquement lorsqu'il ne reste plus qu'une tuile dedans.
-    // Exception : Au début, le chantier est vide, donc on le remplit.
-
     if (estFinDePartie()) return;
 
+    // Le chantier est rempli uniquement quand il est vide OU qu'il ne reste qu'1 tuile
     if (chantier.estVide() || chantier.getNbTuiles() == 1) {
         if (indexPileActuelle >= getNbPiles()) return;
 
-        Pile* p = piles[indexPileActuelle - 1];
+        // ========================================
+        // CORRECTION : On utilise indexPileActuelle directement
+        // (pas indexPileActuelle - 1)
+        // ========================================
+        Pile* p = piles[indexPileActuelle];
         chantier.ajouterPile(*p);
-        indexPileActuelle++;
+        indexPileActuelle++; // On passe à la pile suivante
     }
 
+    // Mise à jour des prix : 0, 1, 2, 3...
     int prix = 0;
     for (auto it = chantier.begin(); it != chantier.end(); ++it) {
         (*it)->setPrix(prix++);
@@ -129,30 +152,40 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
     Joueur* j = getJoueurActuel();
     if (!j) return false;
 
-    // 1. Coût en pierres
-    // Coût = index (0 pour la 1ère, 1 pour la 2ème, etc.)
-    int coutPierre = index;
-    if (j->getPierres() < coutPierre) throw PartieException("Pas assez de pierres !");
+    // 2. Vérifier le coût (Pierres)
+    int coutPierre = index; // Le coût dépend de la position dans le chantier (0, 1, 2...)
+    if (j->getPierres() < coutPierre) {
+        return false; 
+    }
+
+    // 3. Appliquer les transformations temporaires sur la tuile
+    if (inversion) t->inverser();
+    for(int r = 0; r < rotation; r++) t->tourner();
 
     try {
-        j->getCite()->placer(t, { x, y, z }, j);
+        // 4. Tenter de placer (On passe la rotation !)
+        j->getCite()->placer(t, { x, y, z }, j, rotation); 
+        
+        // Si aucune exception n'est levée, le placement est valide :
+
+        // Mise à jour visuelle (Quadrillage)
+        j->getCite()->agrandirQ('S'); 
 
         // Paiement des pierres
         j->utiliserPierres(coutPierre);
 
-        // --- LOGIQUE SPÉCIFIQUE SOLO ---
-        // Si c'est un humain qui joue en mode solo (contre l'IA), les pierres vont à l'IA.
-        if (niveauIA > 0 && dynamic_cast<IA*>(j) == nullptr) {
-            // On cherche l'IA parmi les joueurs avec notre nouvel ITÉRATEUR
-            for (auto itJ = debutJoueurs(); itJ != finJoueurs(); ++itJ) {
-                if (dynamic_cast<IA*>(*itJ)) {
-                    (*itJ)->ajouterPierres(coutPierre);
+        // Règle : Si on paie, les pierres vont sur les tuiles sautées (sauf si Variante Architecte/Solo)
+        if (getNiveauIllustreConstructeur() > 0 && dynamic_cast<IA*>(j) == nullptr) {
+            // En solo, les pierres payées vont à l'IA (simplification courante ou règle spécifique)
+            for (auto* joueur : joueurs) {
+                if (dynamic_cast<IA*>(joueur)) {
+                    joueur->ajouterPierres(coutPierre);
                     break;
                 }
             }
         }
         else {
-            // Mode normal ou tour de l'IA : on dépose les pierres sur les tuiles sautées
+            // En multi, on pose les pierres sur les tuiles qu'on n'a pas prises
             auto itPaiement = chantier.begin();
             for (int k = 0; k < index; ++k) {
                 (*itPaiement)->setPrix((*itPaiement)->getPrix() + 1);
@@ -160,21 +193,25 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
             }
         }
 
-        // Calcul du score
+        // Calcul du score (mise à jour temps réel)
         j->getScore()->calculerScore();
 
-        // Retrait de la tuile du chantier
-        chantier.retirerTuile(t);
+        // 5. Nettoyage et fin de tour
+        chantier.retirerTuile(t); 
 
-        if (!estFinDePartie()) remplirChantier();
+        if (!estFinDePartie()) {
+            remplirChantier();
+        }
         passerAuJoueurSuivant();
+        
         return true;
-
     }
     catch (const CiteException&) {
-        // Annuler la rotation pour remettre la tuile dans l'état initial visuel
+        // Si le placement échoue, on remet la tuile dans son état d'origine
+        // C'est important pour l'affichage suivant dans le chantier
         for (int r = 0; r < (3 - rotation) % 3; ++r) t->tourner();
-        throw;
+        if (inversion) t->inverser();
+        return false;
     }
 }
 
@@ -199,16 +236,19 @@ int Partie::jouerTourIA() {
     }
 
     ia->ajouterPierres(t->getPrix());
-    ia->ajouterTuile(t);
+    ia->ajouterTuile(t); // L'IA stocke ses tuiles
     chantier.retirerTuile(t);
 
-    if (!estFinDePartie()) remplirChantier();
+    if (!estFinDePartie()) {
+        remplirChantier();
+    }
     passerAuJoueurSuivant();
 
     return indexChoisi;
 }
 
 void Partie::passerAuJoueurSuivant() {
+    if (joueurs.empty()) return;
     indexJoueurActuel = (indexJoueurActuel + 1) % joueurs.size();
 }
 
@@ -217,15 +257,19 @@ bool Partie::estFinDePartie() const {
 }
 
 Joueur* Partie::getJoueurActuel() const {
-    if (joueurs.empty() || !joueurs[indexJoueurActuel]) throw PartieException("Joueur inexistant.");
+    if (joueurs.empty()) throw PartieException("Aucun joueur.");
     return joueurs[indexJoueurActuel];
 }
 
-
+// CORRECTION : getJoueur(i) n'existe plus dans .h, mais on peut utiliser getJoueurs()[i]
+// Cette méthode helper peut être gardée pour simplifier l'accès
+Joueur* Partie::getJoueur(int index) const {
+    if (index < 0 || index >= static_cast<int>(joueurs.size())) return nullptr;
+    return joueurs[index];
+}
 
 vector<Joueur*> Partie::determinerGagnants() {
     int maxScore = -1;
-    // On utilise une map pour stocker les scores calculés
     map<Joueur*, int> memoScores;
 
     // 1. Calcul des scores
@@ -233,7 +277,6 @@ vector<Joueur*> Partie::determinerGagnants() {
         Joueur* j = *it;
         if (!j) throw AkropolisException("Pointeur joueur null");
         int s = 0;
-
         if (IA* ia = dynamic_cast<IA*>(j)) {
             s = ia->calculerScoreIA();
         }
@@ -242,39 +285,25 @@ vector<Joueur*> Partie::determinerGagnants() {
             if (!score) throw AkropolisException("Score non initialisé");
             s = score->calculerScore();
         }
-
-        memoScores[j] = s; // Sauvegarde du score pour l'étape suivante
-
-        if (s > maxScore) {
-            maxScore = s;
-        }
+        memoScores[j] = s;
+        if (s > maxScore) maxScore = s;
     }
 
-    // 2. Chercher égalités (Candidats)
     vector<Joueur*> candidats;
-    for (auto it = debutJoueurs(); it != finJoueurs(); ++it) {
-        Joueur* j = *it;
+    for (Joueur* j : joueurs) {
         if (memoScores[j] == maxScore) {
             candidats.push_back(j);
         }
     }
 
-    // 3. Départage en fonction des pierres cf regles
     if (candidats.size() > 1) {
         int maxPierres = -1;
-        // Trouver le max de pierres parmi les candidats
         for (Joueur* j : candidats) {
-            if (j->getPierres() > maxPierres) {
-                maxPierres = j->getPierres();
-            }
+            if (j->getPierres() > maxPierres) maxPierres = j->getPierres();
         }
-
-        // Garder ceux qui ont ce max de pierres
         vector<Joueur*> gagnantsFinaux;
         for (Joueur* j : candidats) {
-            if (j->getPierres() == maxPierres) {
-                gagnantsFinaux.push_back(j);
-            }
+            if (j->getPierres() == maxPierres) gagnantsFinaux.push_back(j);
         }
         return gagnantsFinaux;
     }

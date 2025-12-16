@@ -50,6 +50,7 @@ public:
 
     // Helper pratique pour savoir combien de tuiles afficher (QT)
     int getNbTuilesAcquises() const { return static_cast<int>(tuilesAcquises.size()); }
+    bool estIA() const override { return true; }
 };
 
 #endif

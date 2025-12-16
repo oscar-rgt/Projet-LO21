@@ -18,10 +18,17 @@ public:
     bool estVide() const;
 
     // Nettoyage
-    void vider();
+    void vider() { 
+        tuiles.clear(); 
+    }
 
     // Accesseurs pour l'affichage (références constantes)
-    // SUPPRIMÉ : const std::vector<Tuile*>& getTuiles() const { return tuiles; }
+    const Tuile* getTuile(size_t index) const{
+    if (index >= tuiles.size()) return nullptr;
+    return tuiles[index];}
+
+
+
     void ajouterTuileSpecifique(Tuile* t);
 
     // ==========================================

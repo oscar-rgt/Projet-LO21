@@ -31,28 +31,30 @@ int randomPlaceValue() {
 
 Tuile::Tuile(unsigned int i, unsigned int p) : id(i), inversion(0), prix(p), design()
 {
+    cout << "[DEBUG] Création de la tuile ID=" << id << ", Prix=" << prix << endl
     hexagones.resize(3); // Initialize vector with 3 elements
     auto itHex = hexagones.begin();
 
     for (int k = 0; k < 3; k++, ++itHex) {
         int t = randomIndexAkropolis();
+        cout << "[DEBUG]   Hexagone " << k << " : Type=" << t << endl;
+
         if (TypeQuartier(t) == Carriere) {
             *itHex = new Hexagone(TypeQuartier(t), 0, this);
-        }
-        else {
+            cout << "[DEBUG]     Hexagone " << k << " est une carrière." << endl;
+        } else {
             bool place = randomPlaceValue();
-            if (place == true) {
+            if (place) {
                 int etoiles = randomStarValue();
                 *itHex = new Hexagone(TypeQuartier(t), 0, this, etoiles, place);
-            }
-            else {
+                cout << "[DEBUG]     Hexagone " << k << " est une place avec " << etoiles << " étoiles." << endl;
+            } else {
                 *itHex = new Hexagone(TypeQuartier(t), 0, this);
+                cout << "[DEBUG]     Hexagone " << k << " est un quartier standard." << endl;
             }
-
         }
     }
 }
-
 TuileDepart::TuileDepart() : Tuile() {
     id = 0; // ID specifique pour la tuile de depart
     inversion = false;
@@ -181,9 +183,19 @@ string& Tuile::getDesign() {
 }
 
 void Tuile::reconstruireHexagone(int index, int typeInt, int etoiles) {
-    if (index < 0 || index >= 3) return;
+    cout << "[DEBUG] Reconstruction de l'hexagone " << index << " : Type=" << typeInt << ", Étoiles=" << etoiles << endl;
+
+    if (index < 0 || index >= (int)hexagones.size()) {
+        cout << "[DEBUG]   Index invalide !" << endl;
+        return;
+    }
+
     Hexagone* h = hexagones[index];
+    
+    // On écrase les valeurs aléatoires par les valeurs sauvegardées
     h->type = (TypeQuartier)typeInt;
     h->etoiles = etoiles;
-    h->place = (h->estPlace());
+    h->place = (etoiles > 0);
+
+    cout << "[DEBUG]   Hexagone " << index << " reconstruit avec succès." << endl;
 }

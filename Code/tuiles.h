@@ -7,10 +7,16 @@ using namespace std;
 
 class Pile;
 
-
+class TuileException {
+	string info;
+public:
+	TuileException(const string& s) :info(s) {}
+	const string& getInfo() const { return info; }
+};
 
 class Tuile {
-protected: // Changed to protected for inheritance
+	friend class Partie;
+protected:
 	friend class Pile;
 	unsigned int id;
 	bool inversion;
@@ -22,6 +28,7 @@ protected: // Changed to protected for inheritance
 	Tuile() = default;
 	Tuile(unsigned int i, unsigned int p = 0);
 	virtual ~Tuile();
+	
 public:
 	unsigned int getId() const { return id; }
 	bool getInversion() const { return inversion; }
@@ -33,6 +40,7 @@ public:
 	void setPrix(unsigned int p);
 	string& getDesign();
 	void reconstruireHexagone(int index, int typeInt, int etoiles);
+	static Tuile* fabriquer(unsigned int id, unsigned int prix) {return new Tuile(id, prix);}
 };
 
 class TuileDepart : public Tuile {
@@ -41,7 +49,6 @@ private:
 	friend class Cite;
 	TuileDepart();
 };
-
 
 int randomIndexAkropolis();
 int randomPlaceValue();

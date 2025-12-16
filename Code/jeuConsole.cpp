@@ -3,6 +3,7 @@
 #include "ia.h"
 #include "tuiles.h"
 #include "cite.h"
+#include "save.h"
 #include <iostream>
 #include <limits>
 #include <algorithm>
@@ -124,7 +125,7 @@ void JeuConsole::jouerTour() {
 
     Joueur* j = Partie::getInstance().getJoueurActuel();
 
-    // Si c'est l'IA, on joue automatiquement
+    // --- TOUR IA (Inchangé) ---
     if (dynamic_cast<IA*>(j)) {
         cout << "\n\n--- TOUR DE L'IA ---" << endl;
         cout << "\nL'Illustre Constructeur reflechit..." << endl;
@@ -137,38 +138,56 @@ void JeuConsole::jouerTour() {
             cin.get();
         }
         catch (const PartieException& e) {
-            cout << "L'IA a rencontre une erreur en choisissant une tuile : " << e.what() << endl;
+            cout << "L'IA a rencontre une erreur : " << e.what() << endl;
         }
         return;
     }
 
-    //Tour humain
+    // --- TOUR HUMAIN ---
 
-    // 1. Calculer le nombre de tuiles disponibles avec les itérateurs
     const auto& chantier = Partie::getInstance().getChantier();
 
     int maxChoix = chantier.getNbTuiles() - 1;
 
     cout << "\n--- ACTION ---" << endl;
-    int index = saisieNombre("Quelle tuile choisir ?", 0, (int)maxChoix);
+    
+    // MODIFICATION 1 : On appelle saisieNombre avec min = -1
+    int index = saisieNombre("Quelle tuile choisir ? (-1 pour Sauvegarder & Quitter)", -1, (int)maxChoix);
 
-    // 2. Récupérer la tuile choisie (On avance l'itérateur jusqu'à l'index)
+    // MODIFICATION 2 : Gestion de la sauvegarde
+    if (index == -1) {
+        if (saisieOuiNon("Voulez-vous sauvegarder et quitter la partie ?")) {
+            cout << "\nSauvegarde en cours..." << endl;
+            if (SaveManager::sauvegarder(Partie::getInstance(), "save.txt")) {
+                cout << ">> Partie sauvegardee avec succes dans 'save.txt' !" << endl;
+            } else {
+                cout << ">> ERREUR CRITIQUE : La sauvegarde a echoue." << endl;
+            }
+            
+            cout << "A bientot !" << endl;
+            exit(0); // On ferme le programme proprement
+        } else {
+            // Si on annule, on relance le tour
+            jouerTour(); 
+            return;
+        }
+    }
+
+    // 2. Récupérer la tuile choisie (Suite logique inchangée)
     auto itTuile = chantier.begin();
     for (int k = 0; k < index; ++k) {
         ++itTuile;
     }
     Tuile* tuileAffichee = *itTuile;
 
-    // --- MODE PREVISUALISATION ---
-
+    // --- MODE PREVISUALISATION (Inchangé) ---
     bool placementValide = false;
     int rotationCompteur = 0;
     bool inversionEtat = false;
 
     while (!placementValide) {
         nettoyerEcran();
-        afficherEtatJeu(); // On réaffiche le contexte
-
+        afficherEtatJeu(); 
 
         cout << "\n\nCommandes : [R]otation | [I]nversion | [V]alider | [A]nnuler choix" << endl;
         cout << "Votre choix : ";
@@ -176,7 +195,6 @@ void JeuConsole::jouerTour() {
         string choix;
         cin >> choix;
 
-        // Gestion des commandes
         if (choix == "R" || choix == "r") {
             tuileAffichee->tourner();
             rotationCompteur = (rotationCompteur + 1) % 3;
@@ -185,25 +203,22 @@ void JeuConsole::jouerTour() {
             tuileAffichee->inverser();
         }
         else if (choix == "A" || choix == "a") {
-            // Annuler le choix de la tuile, on recommence le tour
-            if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser(); // Remettre l'état initial
-            for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) {
-                tuileAffichee->tourner(); // Remettre l'orientation initiale
-            }
-            jouerTour();
+            // Reset visuel avant d'annuler
+            if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser();
+            for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) tuileAffichee->tourner();
+            
+            jouerTour(); // On recommence le tour
             return;
         }
         else if (choix == "V" || choix == "v") {
-            // On sort de la boucle de prévisualisation pour aller placer
             placementValide = true;
         }
     }
 
-    // Placement
+    // Placement (Inchangé)
     int x = saisieNombre("Coord X", -999, 999);
     int y = saisieNombre("Coord Y", -99, 999);
     int z = saisieNombre("Coord Z (Niveau)", 0, 10);
-
 
     cout << "\n\nLa tuile\n\n" << tuileAffichee->getDesign() << "\n\nva etre placee en (" << x << ", " << y << ", " << z << ").\n" << endl;
 
@@ -219,34 +234,18 @@ void JeuConsole::jouerTour() {
                 jouerTour();
             }
         }
-        catch (const CiteException& e) {
+        catch (const std::exception& e) {
             cout << ">> ECHEC : " << e.what() << endl;
             cout << "Appuyez sur Entree pour reessayer...";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cin.get();
             jouerTour();
         }
-        catch (const PartieException& e) {
-            cout << ">> ECHEC : " << e.what() << endl;
-            cout << "Appuyez sur Entree pour reessayer...";
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cin.get();
-            jouerTour();
-        }
-        catch(const exception& e) {
-            cout << ">> ECHEC INATTENDU : " << e.what() << endl;
-            cout << "Appuyez sur Entree pour reessayer...";
-            cin.ignore(numeric_limits<streamsize>::max(), '\n');
-            cin.get();
-            jouerTour();
-		}
     }
     else {
         // Annulation finale
-        if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser(); // Remettre l'état initial
-        for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) {
-            tuileAffichee->tourner(); // Remettre l'orientation initiale
-        }
+        if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser(); 
+        for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) tuileAffichee->tourner(); 
         jouerTour();
     }
 }
@@ -286,39 +285,79 @@ void JeuConsole::lancer() {
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     nettoyerEcran();
 
-
     unsigned int choixMenu;
+    bool partieChargeeSucces = false;
+
+    // --- BOUCLE MENU ---
     do {
         nettoyerEcran();
-        std::cout << "1. JOUER UNE PARTIE                     " << std::endl;
-        std::cout << "2. REGLES DU JEU                        " << std::endl;
-        std::cout << "3. QUITTER                              " << std::endl;
-        std::cout << "\n\n";
-        choixMenu = saisieNombre("Choisissez une option", 1, 3);
+        cout << "1. JOUER UNE PARTIE" << endl;
+        cout << "2. CHARGER UNE PARTIE" << endl;
+        cout << "3. REGLES DU JEU" << endl;
+        cout << "4. QUITTER" << endl;
+        cout << "\n";
+        
+        choixMenu = saisieNombre("Choisissez une option", 1, 4);
 
         switch (choixMenu)
         {
         case 1:
+            // Nouvelle partie : on sort juste de la boucle
+            // partieChargeeSucces reste à false
             break;
-        case 2:
+
+        case 2: {
+            cout << "\nChargement..." << endl;
+            if (SaveManager::charger(Partie::getInstance(), "save.txt")) {
+                cout << ">> Succes !" << endl;
+                partieChargeeSucces = true; // On retient qu'on a chargé
+                choixMenu = 1; // On force la sortie du menu
+                
+                cout << "Appuyez sur Entree pour reprendre...";
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cin.get();
+            } else {
+                cerr << ">> Echec du chargement." << endl;
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                cin.get();
+            }
+            break;
+        }
+
+        case 3:
             afficherRegles();
             break;
-        case 3:
+
+        case 4:
             exit(0);
+
         default:
             break;
         }
     } while (choixMenu != 1);
 
+    // --- GESTION DE LA CONFIGURATION ---
     nettoyerEcran();
-    demanderConfiguration();
 
+    // C'EST ICI LA CORRECTION PRINCIPALE :
+    if (partieChargeeSucces) {
+        // Si on a chargé une partie, ON NE FAIT RIEN DE PLUS.
+        cout << ">> Reprise de la partie sauvegardee..." << endl;
+        // On laisse une pause
+        cout << "Appuyez sur Entree...";
+    } 
+    else {
+        // Si c'est une nouvelle partie (pas chargée) : ON CONFIGURE
+        demanderConfiguration();
+    }
+
+    // --- BOUCLE DE JEU ---
     while (!Partie::getInstance().estFinDePartie()) {
         jouerTour();
     }
-
-	nettoyerEcran();
-
+    SaveManager::supprimerSauvegarde("save.txt");;
+    // --- FIN DE PARTIE ---
+    nettoyerEcran();
     cout << "=== FIN DE PARTIE ===" << endl;
 
     cout << "\n--- SCORES ---" << endl;
@@ -344,28 +383,10 @@ void JeuConsole::lancer() {
         cout << j->getNom() << " : " << s << " points (" << j->getPierres() << " pierres)" << endl;
     }
 
-    cout << "\n--- RESULTAT ---" << endl;
-
-    // determinerGagnants renvoie maintenant un vector<Joueur*> directement
-    vector<Joueur*> gagnants = Partie::getInstance().determinerGagnants();
-
-    if (gagnants.size() == 1) {
-        cout << ">>> LE VAINQUEUR EST : " << gagnants[0]->getNom() << " !!! <<<" << endl;
-    }
-    else if (gagnants.size() > 1) {
-        cout << ">>> EGALITE PARFAITE ENTRE : ";
-        for (size_t k = 0; k < gagnants.size(); ++k) {
-            cout << gagnants[k]->getNom();
-            if (k < gagnants.size() - 1) cout << " ET ";
-        }
-        cout << " ! <<<" << endl;
-    }
-
-
-    cout << "\n\n\n";
+    cout << "\n\nAppuyez sur Entree pour quitter.";
     cin.ignore(numeric_limits<streamsize>::max(), '\n');
     cin.get();
-	exit(0);
+    exit(0);
 }
 
 void JeuConsole::demanderConfiguration() {
