@@ -8,6 +8,7 @@
 #include <QTextEdit>
 #include<QApplication>
 #include <QInputDialog>
+#include <QFileDialog>
 #include <QDialog>
 #include <QMouseEvent>
 #include <QGraphicsProxyWidget>
@@ -182,6 +183,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Affichage du menu principal par défaut
     stackedWidget->setCurrentWidget(pageMenuPrincipal);
+
+    pagePrecedente = nullptr;
 }
 
 MainWindow::~MainWindow() {}
@@ -368,9 +371,18 @@ void MainWindow::initialiserPageRegles() {
 
     // Connexion du bouton
     connect(btnRetour, &QPushButton::clicked, [this]() {
-        stackedWidget->setCurrentWidget(pageMenuPrincipal);
-    });
 
+        // Cas 1 : On vient du JEU (Pause)
+        if (pagePrecedente == pageJeu) {
+            stackedWidget->setCurrentWidget(pageJeu); // 1. On affiche le jeu
+            onReglagesClicked();                      // 2. On ROUVRE le pop-up Réglages par-dessus
+        }
+
+        // Cas 2 : On vient du MENU PRINCIPAL
+        else {
+            stackedWidget->setCurrentWidget(pageMenuPrincipal);
+        }
+    });
     stackedWidget->addWidget(pageRegles);
 }
 
@@ -674,6 +686,21 @@ void MainWindow::initialiserPageJeu()
     connect(btnValidation, &QPushButton::clicked, this, &MainWindow::onValidationClicked);
     sideLayout->addWidget(btnValidation);
 
+    // --- AJOUT BOUTON RÉGLAGES (FLOTTANT) ---
+    btnReglages = new QPushButton("Paramètres", pageJeu);
+    // On le place en haut à gauche (absolu) pour qu'il soit par-dessus la vue 3D
+    btnReglages->move(20, 20);
+
+    btnReglages->setCursor(Qt::PointingHandCursor);
+
+    // Connexion
+    connect(btnReglages, &QPushButton::clicked, this, &MainWindow::onReglagesClicked);
+
+    // Important : On s'assure qu'il reste au premier plan
+    btnReglages->raise();
+
+    stackedWidget->addWidget(pageJeu);
+
 
     QLabel *labelChantier = new QLabel("--- CHANTIER ---", pageJeu);
     labelChantier->setAlignment(Qt::AlignCenter);
@@ -698,6 +725,65 @@ void MainWindow::initialiserPageJeu()
     labelPilesRestantes->setProperty("class", "InfoLabel");
     labelPilesRestantes->setAlignment(Qt::AlignCenter);
     sideLayout->addWidget(labelPilesRestantes);
+}
+
+void MainWindow::onReglagesClicked() {
+    // Fenêtre modale transparente
+    QDialog dialog(this);
+    dialog.setWindowTitle("Pause");
+    dialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    dialog.setAttribute(Qt::WA_TranslucentBackground);
+    dialog.setFixedSize(300, 350);
+
+    // Style
+    dialog.setStyleSheet(
+        "QFrame { background-color: #FAF8EF; border: 3px solid #dc8d55; border-radius: 15px; }"
+        "QPushButton { background-color: #dc8d55; color: white; border: none; border-radius: 8px; padding: 10px; font-weight: bold; margin-bottom: 5px; }"
+        "QPushButton:hover { background-color: #e89e6b; }"
+        "QLabel { color: #dc8d55; font-size: 20px; font-weight: bold; margin-bottom: 15px; }"
+        );
+
+    QVBoxLayout* layout = new QVBoxLayout(&dialog);
+    QFrame* frame = new QFrame();
+    QVBoxLayout* l = new QVBoxLayout(frame);
+    l->setAlignment(Qt::AlignCenter);
+
+    l->addWidget(new QLabel("PAUSE"));
+
+    // BOUTON REPRENDRE
+    QPushButton* btnReprendre = new QPushButton("REPRENDRE");
+    connect(btnReprendre, &QPushButton::clicked, &dialog, &QDialog::accept);
+    l->addWidget(btnReprendre);
+
+    // BOUTON RÈGLES (Navigation Intelligente)
+    QPushButton* btnRegles = new QPushButton("RÈGLES");
+    connect(btnRegles, &QPushButton::clicked, [this, &dialog]() {
+        pagePrecedente = pageJeu;     // <--- On mémorise "Jeu"
+        stackedWidget->setCurrentWidget(pageRegles);
+        dialog.accept(); // On ferme le pop-up
+    });
+    l->addWidget(btnRegles);
+
+    // BOUTON SAUVEGARDER
+    QPushButton* btnSave = new QPushButton("SAUVEGARDER & QUITTER");
+    connect(btnSave, &QPushButton::clicked, this, &MainWindow::onSauvegarderClicked);
+    l->addWidget(btnSave);
+
+    // BOUTON SAUVEGARDER
+    QPushButton* btnQuitter = new QPushButton("QUITTER SANS SAUVEGARDER");
+    btnQuitter->setCursor(Qt::PointingHandCursor);
+    connect(btnQuitter, &QPushButton::clicked, this, &MainWindow::quitterJeu);
+    l->addWidget(btnQuitter);
+
+    layout->addWidget(frame);
+    dialog.exec();
+}
+
+
+
+void MainWindow::onSauvegarderClicked() {
+    // (Code de sauvegarde à venir...)
+    QMessageBox::information(this, "Sauvegarde", "Fonctionnalité de sauvegarde bientôt disponible !");
 }
 
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
@@ -785,6 +871,7 @@ void MainWindow::afficherMenuJeu()
 
 void MainWindow::afficherMenuRegles()
 {
+    pagePrecedente = pageMenuPrincipal;
     stackedWidget->setCurrentWidget(pageRegles);
 }
 
@@ -814,6 +901,7 @@ void MainWindow::mettreAJourInterface()
         btnRotation->hide();
         btnInversion->hide();
         btnValidation->hide();
+        btnReglages->raise();
 
         // On récupère l'IA (Attention : comme jouerTourIA() a déjà passé le tour,
         // l'IA n'est plus le "joueur actuel" dans le backend.

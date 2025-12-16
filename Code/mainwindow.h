@@ -45,6 +45,8 @@ private slots:
     void selectionnerTuileChantier(int index);
     void afficherFinDePartie();   // Nouveau : pour afficher les résultats
     void onContinuerIAClicked();
+    void onReglagesClicked(); //
+    void onSauvegarderClicked(); //
 
 private:
     // Widgets pour le menu principal
@@ -52,6 +54,7 @@ private:
     QWidget *pageMenuPrincipal;
     QWidget *pageRegles;
     QWidget *pageJeu;
+    QWidget* pagePrecedente;
 
     // Widgets pour la page de configuration
     QWidget *pageConfig;
@@ -61,6 +64,7 @@ private:
     std::vector<QLineEdit*> champsNomsJoueurs;
     std::vector<QCheckBox*> checkBoxesVariantes;
     QCheckBox *checkModeAugmente;
+    QPushButton* btnReglages;
     void initialiserPageConfiguration();
 
 
