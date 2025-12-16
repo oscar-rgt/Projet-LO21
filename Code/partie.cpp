@@ -11,7 +11,7 @@ Partie& Partie::getInstance() {
     return instance;
 }
 
-Partie::Partie() : variantes({0,0,0,0,0}), indexJoueurActuel(0), indexPileActuelle(0), modeTuileCite(TuileCite::STANDARD), niveauIA(0) {}
+Partie::Partie() : variantes({0,0,0,0,0}), indexJoueurActuel(0), indexPileActuelle(0), modeTuileCite(TuileCite::STANDARD) {}
 
 Partie::~Partie() {
     for (auto j : joueurs) delete j;
@@ -159,7 +159,7 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
     }
 
     // 3. Appliquer les transformations temporaires sur la tuile
-    if (inversion) t->inverser();
+    if (t->inversion) t->inverser();
     for(int r = 0; r < rotation; r++) t->tourner();
 
     try {
@@ -168,8 +168,6 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
         
         // Si aucune exception n'est levée, le placement est valide :
 
-        // Mise à jour visuelle (Quadrillage)
-        j->getCite()->agrandirQ('S'); 
 
         // Paiement des pierres
         j->utiliserPierres(coutPierre);
@@ -210,7 +208,7 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
         // Si le placement échoue, on remet la tuile dans son état d'origine
         // C'est important pour l'affichage suivant dans le chantier
         for (int r = 0; r < (3 - rotation) % 3; ++r) t->tourner();
-        if (inversion) t->inverser();
+        if (t->inversion) t->inverser();
         return false;
     }
 }

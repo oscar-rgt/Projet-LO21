@@ -89,13 +89,7 @@ public:
 
     vector<Joueur*> determinerGagnants(); // Retourne maintenant des Joueur*
 
-    // Accès au chantier
-    const Chantier& getChantier() const { return chantier; }
-
     int getNbPiles() const { return static_cast<int>(piles.size()); }
-    int getIndexPileActuelle() const { return indexPileActuelle; }
-
-    const std::array<bool, 5>& getVariantes() const { return variantes; }
 
     // Sauvegarde (méthodes inchangées)
     /*bool sauvegarder(const string& nomFichier = "akropolis_save.txt") const;
