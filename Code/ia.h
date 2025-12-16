@@ -22,8 +22,6 @@ public:
     // Ajoute la tuile aux tuiles acquises (sans la placer dans une cité)
     void ajouterTuile(Tuile* t);
 
-    // Calcule le score selon la difficulté
-    int calculerScoreIA() const;
 
     // ==========================================
     // ITERATEUR POUR LES TUILES ACQUISES
@@ -44,6 +42,7 @@ public:
     Iterator begin() const { return Iterator(tuilesAcquises.begin()); }
     Iterator end() const { return Iterator(tuilesAcquises.end()); }
 
+	int getDifficulte() const { return difficulte; }
 
     // Helper pour vérifier si une tuile contient une Place
     static bool tuileContientPlace(Tuile* t);

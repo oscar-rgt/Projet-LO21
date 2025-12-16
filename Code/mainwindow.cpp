@@ -16,13 +16,10 @@ using namespace std;
 
 // --- PALETTE UNIFIÉE (Pour garder le même style partout) ---
 namespace Theme {
-const QColor ORANGE("#dc8d55");
-const QColor ORANGE_CLAIR("#e89e6b");
-const QColor MARRON_FONCE("#4E2E1E");
-const QColor CUIVRE("#734526");
-const QColor BEIGE_CARTE("#D9B48F");
-const QColor BEIGE_FOND("#FAF8EF");
-const QColor NOIR(Qt::black);
+const QColor ORANGE(220, 141, 85);       // #dc8d55
+const QColor MARRON_FONCE(78, 46, 30);    // #4E2E1E
+const QColor CUIVRE(115, 69, 38);         // #734526
+const QColor BEIGE_CARTE(217, 180, 143);  // #D9B48F
 }
 
 const double TUILE_TAILLE = 30.0;
@@ -1166,7 +1163,7 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
 
     // Score
     ia->getScore()->calculerScore();
-    QGraphicsTextItem* score = sceneCite->addText(QString("Score Actuel : %1").arg(ia->calculerScoreIA()));
+    QGraphicsTextItem* score = sceneCite->addText(QString("Score Actuel : %1").arg(ia->getScore()->calculerScore()));
     score->setDefaultTextColor(Theme::MARRON_FONCE);
     score->setFont(fontStats);
     score->setPos(-statsW/2 + (statsW - score->boundingRect().width())/2, -160 + 45);
@@ -1243,16 +1240,9 @@ void MainWindow::afficherFinDePartie() {
     // On récupère les scores
     for (auto it = Partie::getInstance().debutJoueurs(); it != Partie::getInstance().finJoueurs(); ++it) {
         Joueur* j = *it;
-        if(dynamic_cast<IA*>(*it)){ //si c'est une IA, on va chercher son score "spécial"
-            texteScores += QString("%1 : <b>%2 points</b><br>")
-            .arg(QString::fromStdString(j->getNom()))
-                .arg(dynamic_cast<IA*>(*it)->calculerScoreIA());
-        }
-        else{
-            texteScores += QString("%1 : <b>%2 points</b><br>")
+        texteScores += QString("%1 : <b>%2 points</b><br>")
                 .arg(QString::fromStdString(j->getNom()))
                 .arg(j->getScore()->calculerScore());
-        }
 
     }
 

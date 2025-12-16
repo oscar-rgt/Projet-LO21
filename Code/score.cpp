@@ -1,6 +1,7 @@
 #include "score.h"
 #include "partie.h"
 #include "joueur.h"
+#include "IA.h" 
 #include "cite.h" 
 #include <vector>
 #include <iostream>
@@ -260,20 +261,80 @@ Score::~Score() {
 }
 
 int Score::calculerScore() const {
-    Cite* maCite = joueur->getCite();
-    if (!maCite) return 0;
-
     int totalCalcule = 0;
+    if(IA* ia = dynamic_cast<IA*>(joueur)) {
+		
+        // Maps pour stocker les comptes séparés
+        // nbQuartiers : compte uniquement les tuiles "Quartier" (pas les places)
+        // nbEtoiles : compte uniquement les étoiles des "Places"
+        map<TypeQuartier, int> nbQuartiers;
+        map<TypeQuartier, int> nbEtoiles;
+        int nbCarrieres = 0;
 
-    // 1. On re-parcourt les règles (C'est très rapide pour un ordi)
-    for (auto const& pair : strategies) {
-        if (pair.second) {
-            totalCalcule += pair.second->calculer(maCite);
+        // --- 1. INVENTAIRE ---
+        for (auto it = ia->begin(); it != ia->end(); ++it) {
+            Tuile* t = *it;
+
+            for (int i = 0; i < t->getNbHexagones(); ++i) {
+                Hexagone* h = t->getHexagone(i);
+                TypeQuartier type = h->getType();
+
+                if (type == Carriere) {
+                    nbCarrieres++;
+                }
+                else {
+                    if (nbQuartiers.find(type) == nbQuartiers.end()) nbQuartiers[type] = 0;
+                    if (nbEtoiles.find(type) == nbEtoiles.end()) nbEtoiles[type] = 0;
+
+                    if (h->estPlace()) {
+                        nbEtoiles[type] += h->getEtoiles();
+                    }
+                    else {
+                        nbQuartiers[type]++;
+                    }
+                }
+            }
         }
-    }
 
-    // 2. On ajoute les pierres (Toujours aller chercher la vraie valeur chez le joueur)
-    totalCalcule += joueur->getPierres();
+        // --- 2. RÈGLES DE DIFFICULTÉ (HAUTEUR) ---
+        // Hippodamos (1) & Métagénès (2) : Hauteur = 1
+        // Callicratès (3) : Hauteur = 2
+        int hauteur = (ia->getDifficulte() == 3) ? 2 : 1;
+
+        // --- 3. CALCUL DU SCORE ---
+        // On parcourt les types de quartiers rencontrés
+        for (map<TypeQuartier, int>::iterator it = nbQuartiers.begin(); it != nbQuartiers.end(); ++it) {
+            TypeQuartier type = it->first;
+            int nombreDeQuartiers = it->second; // Nombre d'hexagones "non-place"
+            int nombreEtoiles = nbEtoiles[type]; // Total des étoiles accumulées
+
+            // Formule : Quartiers x Etoiles x Hauteur
+            totalCalcule += nombreDeQuartiers * nombreEtoiles * hauteur;
+        }
+
+        // --- 4. POINTS DES PIERRES ---
+        totalCalcule += joueur->getPierres();
+
+        // --- 5. BONUS MÉTAGÉNÈS (Difficulté 2) ---
+        if (ia->getDifficulte() == 2) {
+            totalCalcule += nbCarrieres * 2;
+        }
+	}
+    else {
+        Cite* maCite = joueur->getCite();
+        if (!maCite) return 0;
+
+        // 1. On re-parcourt les règles (C'est très rapide pour un ordi)
+        for (auto const& pair : strategies) {
+            if (pair.second) {
+                totalCalcule += pair.second->calculer(maCite);
+            }
+        }
+
+        // 2. On ajoute les pierres (Toujours aller chercher la vraie valeur chez le joueur)
+        totalCalcule += joueur->getPierres();
+    }
+    
 
     return totalCalcule;
 }

@@ -329,17 +329,9 @@ void JeuConsole::lancer() {
         Joueur* j = *it;
         if (!j) throw AkropolisException("Joueur non initialisé");
 
-        // Calcul du score IA si nécessaire
-        IA* ia = dynamic_cast<IA*>(j);
-        if (ia) {
-            ia->calculerScoreIA(); // Mise à jour score interne
-        }
-        else {
-            Score* score = j->getScore();
-            if (!score) throw AkropolisException("Score non initialisé");
-            score->calculerScore();
-            s = j->getScore()->calculerScore();
-        }
+        Score* score = j->getScore();
+        if (!score) throw AkropolisException("Score non initialisé");
+        s = j->getScore()->calculerScore();
 
         cout << j->getNom() << " : " << s << " points (" << j->getPierres() << " pierres)" << endl;
     }
