@@ -157,6 +157,16 @@ MainWindow::MainWindow(QWidget *parent)
             background-color: #FAF8EF; /* Fond semi-opaque pour lisibilité si besoin, ou transparent */
             /* Si vous voulez 100% transparent comme avant, mettez : background-color: transparent; */
         }
+
+        /* 7. ETIQUETTES D'INFORMATION (Score, Tour, Piles) */
+        .InfoLabel {
+            background-color: rgba(255, 255, 255, 0.6); /* Fond blanc semi-transparent */
+            border: 2px solid #dc8d55;                  /* Bordure Orange */
+            border-radius: 10px;                        /* Coins ronds */
+            padding: 10px;                              /* Espace intérieur */
+            font-size: 16px;
+            color: #4E2E1E;                             /* Texte Marron foncé */
+        }
     )";
 
     // Application du style à toute l'application
@@ -454,29 +464,47 @@ void MainWindow::initialiserPageConfiguration()
 {
     pageConfig = new QWidget();
 
-    // 1. Layout GLOBAL de la page (pour centrer le cadre)
+    // 1. Layout PRINCIPAL de la page (qui contient le ScrollArea)
     QVBoxLayout *layoutPage = new QVBoxLayout(pageConfig);
-    layoutPage->setAlignment(Qt::AlignCenter); // C'est ça qui centre le rectangle !
+    layoutPage->setContentsMargins(0, 0, 0, 0); // On occupe tout l'espace
 
-    // 2. LE CADRE (Le "petit rectangle")
-    QFrame *cadreConfig = new QFrame(pageConfig);
+    // --- CRÉATION DE LA ZONE DE SCROLL ---
+    QScrollArea *scrollArea = new QScrollArea(pageConfig);
+    scrollArea->setWidgetResizable(true);       // Le contenu s'adapte à la largeur
+    scrollArea->setFrameShape(QFrame::NoFrame); // Pas de bordure autour du scroll
+    scrollArea->setStyleSheet("background: transparent;"); // Fond transparent pour voir le background global
+
+    // Conteneur interne (ce qui va scroller)
+    QWidget *scrollContent = new QWidget();
+    scrollContent->setStyleSheet("background: transparent;");
+
+    // Layout du contenu (pour centrer le cadre au milieu)
+    QVBoxLayout *layoutScroll = new QVBoxLayout(scrollContent);
+    layoutScroll->setAlignment(Qt::AlignCenter);
+    layoutScroll->setContentsMargins(20, 20, 20, 20); // Marges de sécurité
+
+    // --------------------------------------
+
+    // 2. LE CADRE DE CONFIGURATION (Maintenant dans le scrollContent)
+    QFrame *cadreConfig = new QFrame(scrollContent);
+    // On utilise la classe unifiée définie dans le constructeur
     cadreConfig->setProperty("class", "CadreConfig");
-    cadreConfig->setFixedWidth(600); // Largeur fixe élégante
+    cadreConfig->setFixedWidth(600);
 
     // Layout INTERNE du cadre
     QVBoxLayout *layoutCadre = new QVBoxLayout(cadreConfig);
-    layoutCadre->setSpacing(15); // Espace entre les éléments
-    layoutCadre->setContentsMargins(30, 30, 30, 30); // Marges intérieures (padding)
+    layoutCadre->setSpacing(15);
+    layoutCadre->setContentsMargins(30, 30, 30, 30);
 
-    // --- CONTENU DU CADRE ---
+    // --- CONTENU DU FORMULAIRE ---
 
-    // 1. TITRE
+    // A. TITRE
     QLabel *titre = new QLabel("CONFIGURATION DE LA PARTIE", cadreConfig);
     titre->setStyleSheet("font-size: 22px; font-weight: bold; color: #dc8d55; margin-bottom: 10px;");
     titre->setAlignment(Qt::AlignCenter);
     layoutCadre->addWidget(titre);
 
-    // 2. NOMBRE DE JOUEURS
+    // B. NOMBRE DE JOUEURS
     QGroupBox *boxJoueurs = new QGroupBox("Nombre de joueurs", cadreConfig);
     QHBoxLayout *layoutJoueurs = new QHBoxLayout(boxJoueurs);
     groupeNbJoueurs = new QButtonGroup(this);
@@ -489,7 +517,7 @@ void MainWindow::initialiserPageConfiguration()
     }
     layoutCadre->addWidget(boxJoueurs);
 
-    // 3. NOMS DES JOUEURS
+    // C. NOMS DES JOUEURS
     QGroupBox *boxNoms = new QGroupBox("Noms des architectes", cadreConfig);
     QVBoxLayout *layoutNoms = new QVBoxLayout(boxNoms);
 
@@ -503,7 +531,7 @@ void MainWindow::initialiserPageConfiguration()
     }
     layoutCadre->addWidget(boxNoms);
 
-    // 4. CONFIGURATION IA
+    // D. CONFIGURATION IA
     groupeIA = new QGroupBox("L'Illustre Constructeur (IA)", cadreConfig);
     QHBoxLayout *layoutIA = new QHBoxLayout(groupeIA);
     groupeNiveauIA = new QButtonGroup(this);
@@ -517,14 +545,14 @@ void MainWindow::initialiserPageConfiguration()
     }
     layoutCadre->addWidget(groupeIA);
 
-    // 5. MODE DE JEU
+    // E. MODE DE JEU
     QGroupBox *boxMode = new QGroupBox("Mode de jeu", cadreConfig);
     QVBoxLayout *layoutMode = new QVBoxLayout(boxMode);
     checkModeAugmente = new QCheckBox("Tuiles Cité Augmentée", boxMode);
     layoutMode->addWidget(checkModeAugmente);
     layoutCadre->addWidget(boxMode);
 
-    // 6. VARIANTES
+    // F. VARIANTES
     QGroupBox *boxVariantes = new QGroupBox("Variantes", cadreConfig);
     QVBoxLayout *layoutVariantes = new QVBoxLayout(boxVariantes);
     QStringList nomsVariantes = {
@@ -539,16 +567,23 @@ void MainWindow::initialiserPageConfiguration()
     }
     layoutCadre->addWidget(boxVariantes);
 
-    // 7. BOUTONS ACTION
+    // G. BOUTONS ACTION
     QHBoxLayout *layoutAction = new QHBoxLayout();
-    layoutAction->setContentsMargins(0, 20, 0, 0); // Un peu d'espace au dessus
+    layoutAction->setContentsMargins(0, 20, 0, 0);
 
     QPushButton *btnRetour = new QPushButton("ANNULER", cadreConfig);
     QPushButton *btnValider = new QPushButton("JOUER", cadreConfig);
 
-    // On applique le style unifié
-    btnRetour->setProperty("class", "BoutonMenu");
-    btnValider->setProperty("class", "BoutonMenu");
+    // a cause du scrollbar, on doit forcer le style des boutons
+    QString styleBtn =
+        "QPushButton { "
+        "  background-color: #dc8d55; color: white; border: 2px solid #b56d38; "
+        "  border-radius: 8px; padding: 10px 20px; font-weight: bold; min-width: 120px; font-size: 14px;"
+        "} "
+        "QPushButton:hover { background-color: #e89e6b; }";
+
+    btnRetour->setStyleSheet(styleBtn);
+    btnValider->setStyleSheet(styleBtn);
 
     btnValider->setCursor(Qt::PointingHandCursor);
     btnRetour->setCursor(Qt::PointingHandCursor);
@@ -559,10 +594,16 @@ void MainWindow::initialiserPageConfiguration()
 
     layoutCadre->addLayout(layoutAction);
 
-    // --- FIN CONTENU CADRE ---
+    // --- ASSEMBLAGE FINAL ---
 
-    // On ajoute le cadre centré à la page
-    layoutPage->addWidget(cadreConfig);
+    // 1. On ajoute le cadre au conteneur scrollable
+    layoutScroll->addWidget(cadreConfig);
+
+    // 2. On définit le widget du ScrollArea
+    scrollArea->setWidget(scrollContent);
+
+    // 3. On ajoute le ScrollArea à la page principale
+    layoutPage->addWidget(scrollArea);
 
     // Connexions
     connect(groupeNbJoueurs, &QButtonGroup::idClicked, this, &MainWindow::mettreAJourVisibiliteConfig);
@@ -621,6 +662,7 @@ void MainWindow::initialiserPageJeu()
     // 3. Zone droite : Contrôles et Chantier
     QVBoxLayout *sideLayout = new QVBoxLayout();
     labelInfoJoueur = new QLabel("En attente...", pageJeu);
+    labelInfoJoueur->setProperty("class", "InfoLabel");
     sideLayout->addWidget(labelInfoJoueur);
 
     btnRotation = new QPushButton("Pivoter Tuile", pageJeu);
@@ -635,9 +677,6 @@ void MainWindow::initialiserPageJeu()
     connect(btnValidation, &QPushButton::clicked, this, &MainWindow::onValidationClicked);
     sideLayout->addWidget(btnValidation);
 
-    btnPasserTour = new QPushButton("Passer son tour", pageJeu);
-    connect(btnPasserTour, &QPushButton::clicked, this, &MainWindow::onPasserTourClicked);
-    sideLayout->addWidget(btnPasserTour);
 
     QLabel *labelChantier = new QLabel("--- CHANTIER ---", pageJeu);
     labelChantier->setAlignment(Qt::AlignCenter);
@@ -659,6 +698,7 @@ void MainWindow::initialiserPageJeu()
     stackedWidget->addWidget(pageJeu);
 
     labelPilesRestantes = new QLabel("Piles : -", pageJeu);
+    labelPilesRestantes->setProperty("class", "InfoLabel");
     labelPilesRestantes->setAlignment(Qt::AlignCenter);
     sideLayout->addWidget(labelPilesRestantes);
 }
@@ -767,14 +807,16 @@ void MainWindow::mettreAJourInterface()
 {
     int pilesRestantes = Partie::getInstance().getNbPiles() - Partie::getInstance().getIndexPileActuelle();
     if (pilesRestantes < 0) pilesRestantes = 0;
-    labelPilesRestantes->setText(QString("%1 pile(s) restante(s)").arg(pilesRestantes));
+    labelPilesRestantes->setText(QString(
+                                     "<span style='color: #4E2E1E;'>Piles restantes :</span> "
+                                     "<b style='color: #dc8d55; font-size: 16px;'>%1</b>"
+                                     ).arg(pilesRestantes));
 
     if (affichageResultatIA) {
         // Mode IA : on cache les contrôles de jeu, on montre "Continuer"
         btnRotation->hide();
         btnInversion->hide();
         btnValidation->hide();
-        btnPasserTour->hide();
 
         // On récupère l'IA (Attention : comme jouerTourIA() a déjà passé le tour,
         // l'IA n'est plus le "joueur actuel" dans le backend.
@@ -796,11 +838,19 @@ void MainWindow::mettreAJourInterface()
     }
     else{
         Joueur* j = Partie::getInstance().getJoueurActuel();
-        labelInfoJoueur->setText(
-            "Tour de : " + QString::fromStdString(j->getNom()) +
-            "\nPierres : " + QString::number(j->getPierres()) +
-            "\nScore : " + QString::number(j->getScore()->getTotal())
-            );
+        QString htmlTexte = QString(
+                                "<div style='line-height: 140%;'>" // Espacement des lignes
+                                "   <span style='font-size: 14px; color: #734526;'>TOUR DE :</span><br>"
+                                "   <span style='font-size: 22px; font-weight: bold; color: #dc8d55;'>%1</span><br>"
+                                "   -----------------------------<br>"
+                                "   Pierres : <b>%2</b> ■<br>"
+                                "   Score : <b>%3</b> pts"
+                                "</div>"
+                                ).arg(QString::fromStdString(j->getNom()))
+                                .arg(j->getPierres())
+                                .arg(j->getScore()->calculerScore());
+
+        labelInfoJoueur->setText(htmlTexte);
 
         btnRotation->setEnabled(indexTuileSelectionnee!=-1);
         btnRotation->show();
@@ -1064,46 +1114,6 @@ void MainWindow::onValidationClicked()
 
 
 
-void MainWindow::onPasserTourClicked()
-{
-    // Demande de confirmation
-    if (QMessageBox::question(this, "Passer son tour", "Êtes-vous sûr de vouloir passer votre tour ?") != QMessageBox::Yes) {
-        return;
-    }
-    try{
-        // Réinitialisation des états
-        rotationCompteur = 0;
-        inversionEtat = false;
-        indexTuileSelectionnee = -1;
-
-        // Passer au joueur suivant
-        Partie::getInstance().passerAuJoueurSuivant();
-
-        // Mise à jour de l'interface
-        mettreAJourInterface();
-
-        // Vérification de la fin de partie
-        if (Partie::getInstance().estFinDePartie()) {
-            afficherFinDePartie();
-            return;
-        }
-
-        // Si le joueur suivant est une IA, on joue son tour automatiquement
-        Joueur* j = Partie::getInstance().getJoueurActuel();
-        if (dynamic_cast<IA*>(j)) {
-            Partie::getInstance().jouerTourIA();
-            mettreAJourInterface();
-            if (Partie::getInstance().estFinDePartie()) {
-                afficherFinDePartie();
-            }
-        }
-    }
-    catch(const std::exception& e) {
-        // En cas de problème, on affiche l'erreur
-        QMessageBox::critical(this, "Erreur de Jeu", QString("Une erreur est survenue pendant le tour : %1").arg(e.what()));
-    }
-}
-
 void MainWindow::onContinuerIAClicked()
 {
     //désactive le mode IA
@@ -1232,9 +1242,17 @@ void MainWindow::afficherFinDePartie() {
     // On récupère les scores
     for (auto it = Partie::getInstance().debutJoueurs(); it != Partie::getInstance().finJoueurs(); ++it) {
         Joueur* j = *it;
-        texteScores += QString("%1 : <b>%2 points</b><br>")
-                           .arg(QString::fromStdString(j->getNom()))
-                           .arg(j->getScore()->getTotal());
+        if(dynamic_cast<IA*>(*it)){ //si c'est une IA, on va chercher son score "spécial"
+            texteScores += QString("%1 : <b>%2 points</b><br>")
+            .arg(QString::fromStdString(j->getNom()))
+                .arg(dynamic_cast<IA*>(*it)->calculerScoreIA());
+        }
+        else{
+            texteScores += QString("%1 : <b>%2 points</b><br>")
+                .arg(QString::fromStdString(j->getNom()))
+                .arg(j->getScore()->calculerScore());
+        }
+
     }
 
     // On détermine le gagnant

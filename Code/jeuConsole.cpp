@@ -85,7 +85,7 @@ void JeuConsole::afficherEtatJeu() {
     cout << "\n##########################################" << endl;
     cout << "TOUR DE : " << j->getNom() << endl;
     cout << "Pierres : " << j->getPierres() << endl;
-    cout << "Score : " << j->getScore()->getTotal() << endl;
+    cout << "Score : " << j->getScore()->calculerScore() << endl;
     cout << "##########################################" << endl;
 
     cout << "\n--- CITE ---" << endl;
@@ -338,7 +338,7 @@ void JeuConsole::lancer() {
             Score* score = j->getScore();
             if (!score) throw AkropolisException("Score non initialisé");
             score->calculerScore();
-            s = j->getScore()->getTotal();
+            s = j->getScore()->calculerScore();
         }
 
         cout << j->getNom() << " : " << s << " points (" << j->getPierres() << " pierres)" << endl;

@@ -96,16 +96,12 @@ public:
 class Score {
 private:
     Joueur* joueur;
-    int total;
     map<TypeQuartier, RegleScore*> strategies;
-    map<TypeQuartier, int> pointsParType;
 
 public:
     Score(Joueur* j);
     ~Score();
-    void calculerScore();
-    int getTotal() const { return total; }
-    int getScoreType(TypeQuartier type) const;
+    int calculerScore() const;
 };
 
 #endif

@@ -32,7 +32,11 @@ vector<Coord> Cite::getVecteursVoisins(bool isXOdd) const{
 
 const bool Cite::toucheCite(Coord c) const { 
     for (const auto& vec : getVecteursVoisins((c.x)%2)) {
-        if (!estLibre({ c.x + vec.x, c.y + vec.y, c.z })) return true;
+        for (int z = 0; z <= getHauteurMax(); ++z) {
+            if (!estLibre({ c.x + vec.x, c.y + vec.y, z })) {
+                return true; // On a trouvé un morceau de cité adjacent (peu importe la hauteur)
+            }
+        }
     }
     return false;
 }

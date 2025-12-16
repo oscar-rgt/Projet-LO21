@@ -240,8 +240,7 @@ vector<Joueur*> Partie::determinerGagnants() {
         else {
             Score * score = j->getScore();
             if (!score) throw AkropolisException("Score non initialisé");
-            score->calculerScore(); 
-            s = score->getTotal();
+            s = score->calculerScore();
         }
 
         memoScores[j] = s; // Sauvegarde du score pour l'étape suivante
