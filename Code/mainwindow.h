@@ -74,7 +74,6 @@ private:
     QPushButton *btnRotation;
     QPushButton *btnInversion;
     QPushButton *btnValidation;
-    QPushButton* btnPasserTour;
     QLabel *labelPilesRestantes;
 
     // État de la partie
@@ -101,7 +100,6 @@ private:
     void dessinerCite(Joueur* joueur);
     void dessinerChantier();
     QColor getTypeColor(TypeQuartier t);
-    void onPasserTourClicked();
     void traiterClicPlateau(QPointF positionScene);
 };
 
