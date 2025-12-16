@@ -158,8 +158,6 @@ bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
         return false; 
     }
 
-    // 3. Appliquer les transformations temporaires sur la tuile
-    for(int r = 0; r < rotation; r++) t->tourner();
 
     try {
         // 4. Tenter de placer (On passe la rotation !)
