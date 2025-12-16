@@ -235,11 +235,6 @@ int RegleJardinVariante::calculer(Cite* cite) const {
 // =========================================================
 
 Score::Score(Joueur* j) : joueur(j) {
-    pointsParType[Habitation] = 0;
-    pointsParType[Marche] = 0;
-    pointsParType[Caserne] = 0;
-    pointsParType[Temple] = 0;
-    pointsParType[Jardin] = 0;
 
     const auto& vars = Partie::getInstance().getVariantes();
 
@@ -257,7 +252,6 @@ Score::Score(Joueur* j) : joueur(j) {
 
     if (vars[4]) strategies[Jardin] = new RegleJardinVariante();
     else         strategies[Jardin] = new RegleJardin();
-    total = j->getPierres();
 }
 
 Score::~Score() {
@@ -265,27 +259,21 @@ Score::~Score() {
     strategies.clear();
 }
 
-int Score::getScoreType(TypeQuartier type) const {
-    auto it = pointsParType.find(type);
-    return (it != pointsParType.end()) ? it->second : 0;
-}
-
-void Score::calculerScore() {
+int Score::calculerScore() const {
     Cite* maCite = joueur->getCite();
-    if (!maCite) {
-        total = 0;
-        return;
-    }
+    if (!maCite) return 0;
 
-    total = 0;
+    int totalCalcule = 0;
+
+    // 1. On re-parcourt les règles (C'est très rapide pour un ordi)
     for (auto const& pair : strategies) {
-        TypeQuartier type = pair.first;
-        RegleScore* strategie = pair.second;
-        if (strategie) {
-            int pts = strategie->calculer(maCite);
-            pointsParType[type] = pts;
-            total += pts;
+        if (pair.second) {
+            totalCalcule += pair.second->calculer(maCite);
         }
     }
-    total += joueur->getPierres();
+
+    // 2. On ajoute les pierres (Toujours aller chercher la vraie valeur chez le joueur)
+    totalCalcule += joueur->getPierres();
+
+    return totalCalcule;
 }

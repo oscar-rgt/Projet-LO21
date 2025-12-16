@@ -848,7 +848,7 @@ void MainWindow::mettreAJourInterface()
                                 "</div>"
                                 ).arg(QString::fromStdString(j->getNom()))
                                 .arg(j->getPierres())
-                                .arg(j->getScore()->getTotal());
+                                .arg(j->getScore()->calculerScore());
 
         labelInfoJoueur->setText(htmlTexte);
 
@@ -1234,7 +1234,7 @@ void MainWindow::afficherFinDePartie() {
         else{
             texteScores += QString("%1 : <b>%2 points</b><br>")
                 .arg(QString::fromStdString(j->getNom()))
-                .arg(j->getScore()->getTotal());
+                .arg(j->getScore()->calculerScore());
         }
 
     }
