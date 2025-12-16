@@ -272,14 +272,9 @@ vector<Joueur*> Partie::determinerGagnants() {
         Joueur* j = *it;
         if (!j) throw AkropolisException("Pointeur joueur null");
         int s = 0;
-        if (IA* ia = dynamic_cast<IA*>(j)) {
-            s = ia->calculerScoreIA();
-        }
-        else {
-            Score * score = j->getScore();
-            if (!score) throw AkropolisException("Score non initialisé");
-            s = score->calculerScore();
-        }
+        Score * score = j->getScore();
+        if (!score) throw AkropolisException("Score non initialisé");
+        s = score->calculerScore();
         memoScores[j] = s;
         if (s > maxScore) maxScore = s;
     }
