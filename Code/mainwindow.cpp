@@ -1203,9 +1203,17 @@ void MainWindow::afficherFinDePartie() {
     // On récupère les scores
     for (auto it = Partie::getInstance().debutJoueurs(); it != Partie::getInstance().finJoueurs(); ++it) {
         Joueur* j = *it;
-        texteScores += QString("%1 : <b>%2 points</b><br>")
-                           .arg(QString::fromStdString(j->getNom()))
-                           .arg(j->getScore()->getTotal());
+        if(dynamic_cast<IA*>(*it)){ //si c'est une IA, on va chercher son score "spécial"
+            texteScores += QString("%1 : <b>%2 points</b><br>")
+            .arg(QString::fromStdString(j->getNom()))
+                .arg(dynamic_cast<IA*>(*it)->calculerScoreIA());
+        }
+        else{
+            texteScores += QString("%1 : <b>%2 points</b><br>")
+                .arg(QString::fromStdString(j->getNom()))
+                .arg(j->getScore()->getTotal());
+        }
+
     }
 
     // On détermine le gagnant
