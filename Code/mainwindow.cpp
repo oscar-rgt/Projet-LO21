@@ -830,7 +830,7 @@ void MainWindow::dessinerCite(Joueur* joueur) {
         double h = (sqrt(3.) * taille);
         double pixelX = pos.x * w;
         double pixelY = pos.y * -h + abs((pos.x % 2)) * (h / 2);
-        pixelY -= (pos.z * 10.0);
+
 
         QColor couleur = getTypeColor(hex->getType());
         int nbEtoiles = hex->estPlace() ? hex->getEtoiles() : 0;
