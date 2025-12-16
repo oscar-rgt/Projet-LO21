@@ -33,7 +33,7 @@ public:
 	unsigned int getId() const { return id; }
 	bool getInversion() const { return inversion; }
 	void inverser() { inversion = !inversion; }
-	Hexagone* getHexagone(int i) { return hexagones[i]; }
+	Hexagone* getHexagone(int i) const { return hexagones[i]; }
     int getNbHexagones() const { return static_cast<int>(hexagones.size()); }
 	unsigned int getPrix() const { return prix; }
 	void tourner();

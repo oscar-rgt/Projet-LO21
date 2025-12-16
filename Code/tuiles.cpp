@@ -31,7 +31,7 @@ int randomPlaceValue() {
 
 Tuile::Tuile(unsigned int i, unsigned int p) : id(i), inversion(0), prix(p), design()
 {
-    cout << "[DEBUG] Création de la tuile ID=" << id << ", Prix=" << prix << endl
+    cout << "[DEBUG] Création de la tuile ID=" << id << ", Prix=" << prix << endl;
     hexagones.resize(3); // Initialize vector with 3 elements
     auto itHex = hexagones.begin();
 

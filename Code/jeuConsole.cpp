@@ -100,7 +100,7 @@ void JeuConsole::afficherEtatJeu() {
         // --- NOUVEAU CODE D'AFFICHAGE ---
 
         // 1. On vide la vue des tours précédents
-        vue.reset(); // Assurez-vous d'avoir ajouté une méthode reset() dans Quadrillage qui remet txt à zéro
+        vue.reset(); 
 
         // 2. On remplit la vue avec les hexagones de la cité du joueur
         for (auto it = c->begin(); it != c->end(); ++it) {

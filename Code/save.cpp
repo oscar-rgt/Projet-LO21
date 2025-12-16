@@ -83,7 +83,7 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
         
         // Hexagones
         for (size_t h = 0; h < t->getNbHexagones(); h++) {
-            const Hexagone* hexa = t->getHexagone(h);
+            Hexagone* hexa = t->getHexagone(h);
             f << static_cast<int>(hexa->getType()) << " ";
             f << hexa->getEtoiles() << " ";
         }
@@ -103,7 +103,7 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
         f << historique.size() << endl;
         
         for (const Action& a : historique) {
-            f << a.tuileId << " " << a.x << " " << a.y << " " << a.z 
+            f << a.tuileId << " " << a.pos.x << " " << a.pos.y << " " << a.pos.z 
               << " " << a.inversion << " " << a.rotation << endl;
 
             for(int k=0; k<3; ++k) {
