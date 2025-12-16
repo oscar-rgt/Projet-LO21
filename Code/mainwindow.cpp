@@ -955,7 +955,8 @@ void MainWindow::dessinerPreview(Joueur* j) {
     double shiftX = -(sideOffset / 3.0); // Le même calcul que dans TuileItem.cpp
 
     // 6. Placement final
-    ghost->setPos(anchorPixelX - shiftX, positionY);
+    if(hmax == 0) ghost->setPos(anchorPixelX - shiftX, anchorPixelY);
+    else ghost->setPos(anchorPixelX - shiftX, positionY);
 
     // 7. Ajout à la scène
     sceneCite->addItem(ghost);
