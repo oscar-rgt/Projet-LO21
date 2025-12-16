@@ -87,7 +87,7 @@ private:
     int previewX;
     int previewY;
     int previewZ;
-    void dessinerPreview();
+    void dessinerPreview(Joueur* j);
 
     //IA
     bool affichageResultatIA;

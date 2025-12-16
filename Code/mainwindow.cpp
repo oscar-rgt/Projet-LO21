@@ -811,7 +811,7 @@ void MainWindow::mettreAJourInterface()
         btnValidation->show();
 
         dessinerCite(j);
-        dessinerPreview();
+        dessinerPreview(j);
 
     }
     dessinerChantier();
@@ -832,7 +832,7 @@ void MainWindow::dessinerCite(Joueur* joueur) {
         double pixelY = pos.y * -h + abs((pos.x % 2)) * (h / 2);
 
 
-        QColor couleur = getTypeColor(hex->getType());
+        QColor couleur = TuileItem::getTypeColor(hex->getType());
         int nbEtoiles = hex->estPlace() ? hex->getEtoiles() : 0;
 
         // Création de l'hexagone avec les étoiles
@@ -848,18 +848,19 @@ void MainWindow::dessinerCite(Joueur* joueur) {
 
         QRectF bound = txt->boundingRect();
         txt->setPos(-bound.width() / 2.0, bound.height() - 14);
+        txt->setZValue(1000);
         sceneCite->addItem(item);
 
     }
 }
 
 
-void MainWindow::dessinerPreview() {
+void MainWindow::dessinerPreview(Joueur* j) {
     if (!previewActive || indexTuileSelectionnee == -1) return;
 
     // Récupération de la tuile sélectionnée
     const Chantier& chantier = Partie::getInstance().getChantier();
-    auto it = chantier.begin();
+    auto it = chantier.begin(); //CACA BOUDIN JE SUIS VALENTIN
     for(int i =0; i < indexTuileSelectionnee; i++) ++it;
     Tuile* t = *it;
 
@@ -878,7 +879,22 @@ void MainWindow::dessinerPreview() {
 
     double anchorPixelX = previewX * w;
     double anchorPixelY = previewY * -h + abs((previewX % 2)) * (h / 2);
-    anchorPixelY -= (previewZ * 10.0);
+    //on trouve le plus haut hexagone en dessous de la preview pour l'afficher au dessus
+    int hmax = 0; // Par défaut au sol
+    Cite* cite = j->getCite();
+    // On scanne les étages pour trouver la tuile "survivante" (celle du dessus)
+    for (int z = 0; z < 20; z++) {
+        // Si on trouve une tuile occupée (!estLibre), c'est le sommet actuel de la tour
+        if (!cite->estLibre({previewX, previewY, z})) {
+            hmax = z + 1; // On se place donc à l'étage juste au-dessus
+            break;        // On a trouvé, pas besoin de chercher plus haut
+        }
+    }
+
+    // On met à jour la variable membre pour la validation future
+    previewZ = hmax;
+
+    double positionY = anchorPixelY - 11.0;
 
     // b. Compensation du centrage de TuileItem
     // TuileItem décale ses hexagones pour être centré.
@@ -889,7 +905,7 @@ void MainWindow::dessinerPreview() {
     double shiftX = -(sideOffset / 3.0); // Le même calcul que dans TuileItem.cpp
 
     // 6. Placement final
-    ghost->setPos(anchorPixelX - shiftX, anchorPixelY);
+    ghost->setPos(anchorPixelX - shiftX, positionY);
 
     // 7. Ajout à la scène
     sceneCite->addItem(ghost);
@@ -1308,15 +1324,3 @@ void MainWindow::afficherFinDePartie() {
 
 
 
-QColor MainWindow::getTypeColor(TypeQuartier t)
-{
-    switch(t) {
-    case Habitation: return Qt::blue;
-    case Marche:     return Qt::yellow;
-    case Caserne:    return Qt::red;
-    case Temple:     return Qt::darkMagenta;
-    case Jardin:     return Qt::green;
-    case Carriere:   return Qt::gray;
-    default:         return Qt::white;
-    }
-}

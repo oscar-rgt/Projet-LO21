@@ -1,4 +1,5 @@
 #include "tuileitem.h"
+#include <Qcolor>
 #include <cmath>
 
 // Constructeur de TuileItem
@@ -100,13 +101,13 @@ void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 QColor TuileItem::getTypeColor(TypeQuartier t)
 {
     switch(t) {
-    case Habitation: return Qt::blue;
-    case Marche:     return Qt::yellow;
-    case Caserne:    return Qt::red;
-    case Temple:     return Qt::darkMagenta;
-    case Jardin:     return Qt::green;
-    case Carriere:   return Qt::gray;
-    default:         return Qt::white;
+    case Habitation: return QColor(37, 150, 190);
+    case Marche:     return QColor(255, 214, 61);
+    case Caserne:    return QColor(233, 73, 53);
+    case Temple:     return QColor(106, 77, 152);
+    case Jardin:     return QColor(65, 179, 88);
+    case Carriere:   return QColor(225, 225, 217);
+    default:         return QColor(225, 225, 217);
     }
 }
 
