@@ -157,6 +157,16 @@ MainWindow::MainWindow(QWidget *parent)
             background-color: #FAF8EF; /* Fond semi-opaque pour lisibilité si besoin, ou transparent */
             /* Si vous voulez 100% transparent comme avant, mettez : background-color: transparent; */
         }
+
+        /* 7. ETIQUETTES D'INFORMATION (Score, Tour, Piles) */
+        .InfoLabel {
+            background-color: rgba(255, 255, 255, 0.6); /* Fond blanc semi-transparent */
+            border: 2px solid #dc8d55;                  /* Bordure Orange */
+            border-radius: 10px;                        /* Coins ronds */
+            padding: 10px;                              /* Espace intérieur */
+            font-size: 16px;
+            color: #4E2E1E;                             /* Texte Marron foncé */
+        }
     )";
 
     // Application du style à toute l'application
@@ -652,6 +662,7 @@ void MainWindow::initialiserPageJeu()
     // 3. Zone droite : Contrôles et Chantier
     QVBoxLayout *sideLayout = new QVBoxLayout();
     labelInfoJoueur = new QLabel("En attente...", pageJeu);
+    labelInfoJoueur->setProperty("class", "InfoLabel");
     sideLayout->addWidget(labelInfoJoueur);
 
     btnRotation = new QPushButton("Pivoter Tuile", pageJeu);
@@ -687,6 +698,7 @@ void MainWindow::initialiserPageJeu()
     stackedWidget->addWidget(pageJeu);
 
     labelPilesRestantes = new QLabel("Piles : -", pageJeu);
+    labelPilesRestantes->setProperty("class", "InfoLabel");
     labelPilesRestantes->setAlignment(Qt::AlignCenter);
     sideLayout->addWidget(labelPilesRestantes);
 }
@@ -795,7 +807,10 @@ void MainWindow::mettreAJourInterface()
 {
     int pilesRestantes = Partie::getInstance().getNbPiles() - Partie::getInstance().getIndexPileActuelle();
     if (pilesRestantes < 0) pilesRestantes = 0;
-    labelPilesRestantes->setText(QString("%1 pile(s) restante(s)").arg(pilesRestantes));
+    labelPilesRestantes->setText(QString(
+                                     "<span style='color: #4E2E1E;'>Piles restantes :</span> "
+                                     "<b style='color: #dc8d55; font-size: 16px;'>%1</b>"
+                                     ).arg(pilesRestantes));
 
     if (affichageResultatIA) {
         // Mode IA : on cache les contrôles de jeu, on montre "Continuer"
@@ -823,11 +838,19 @@ void MainWindow::mettreAJourInterface()
     }
     else{
         Joueur* j = Partie::getInstance().getJoueurActuel();
-        labelInfoJoueur->setText(
-            "Tour de : " + QString::fromStdString(j->getNom()) +
-            "\nPierres : " + QString::number(j->getPierres()) +
-            "\nScore : " + QString::number(j->getScore()->getTotal())
-            );
+        QString htmlTexte = QString(
+                                "<div style='line-height: 140%;'>" // Espacement des lignes
+                                "   <span style='font-size: 14px; color: #734526;'>TOUR DE :</span><br>"
+                                "   <span style='font-size: 22px; font-weight: bold; color: #dc8d55;'>%1</span><br>"
+                                "   -----------------------------<br>"
+                                "   Pierres : <b>%2</b> ■<br>"
+                                "   Score : <b>%3</b> pts"
+                                "</div>"
+                                ).arg(QString::fromStdString(j->getNom()))
+                                .arg(j->getPierres())
+                                .arg(j->getScore()->getTotal());
+
+        labelInfoJoueur->setText(htmlTexte);
 
         btnRotation->setEnabled(indexTuileSelectionnee!=-1);
         btnRotation->show();
