@@ -367,3 +367,5 @@ FodyWeavers.xsd
 Code/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/Makefile
 Code/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/Makefile.Debug
 Code/build/Desktop_Qt_6_10_0_MinGW_64_bit-Debug/Makefile.Release
+Code/save.txt
+*.txt

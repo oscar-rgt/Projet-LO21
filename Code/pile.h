@@ -4,17 +4,25 @@
 #include <vector>
 
 
-; class Partie;
+class Partie;
+class SaveManager;
 
 
 class Pile {
 public:
+    static void detruire(Pile* p) { delete p; }
+    static Pile* creer(unsigned int id) { 
+        return new Pile(id); 
+    }
     unsigned int getId() const { return id; }
     int getNbTuiles() const { return static_cast<int>(tuiles.size()); }
     bool estVide() const { return tuiles.empty(); }
+    const std::vector<Tuile*>& getTuiles() const { return tuiles; }
+    void vider() { tuiles.clear(); }
+    void ajouterTuile(Tuile* t) { tuiles.push_back(t); }
 
     // =========================================================
-    // ITÉRATEUR POUR LA PILE
+    // ITï¿½RATEUR POUR LA PILE
     // =========================================================
     class Iterator {
         friend class Pile;
@@ -34,10 +42,11 @@ public:
 
 private:
     friend class Partie;
+    friend class SaveManager;
     ~Pile();
     Pile(unsigned int id_, unsigned int nb = 3);
     unsigned int id;
-    vector<Tuile*> tuiles;
+    std::vector<Tuile*> tuiles;
 };
 
 #endif

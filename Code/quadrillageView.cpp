@@ -10,7 +10,7 @@ void Quadrillage::afficher() const {
 }
 
 
-void Quadrillage::remplir(Coord c, const Hexagone* h) { //changer pour remplir à partir d'un hexa
+void Quadrillage::remplir(Coord c, const Hexagone* h) {
     for (int i = 0; i < 3; i++) {
         if (c.y >= (maxY)) agrandir('N');
         if (c.y <= (minY)) agrandir('S');
