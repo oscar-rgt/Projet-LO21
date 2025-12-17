@@ -738,8 +738,6 @@ void MainWindow::onReglagesClicked() {
     // Style
     dialog.setStyleSheet(
         "QFrame { background-color: #FAF8EF; border: 3px solid #dc8d55; border-radius: 15px; }"
-        "QPushButton { background-color: #dc8d55; color: white; border: none; border-radius: 8px; padding: 10px; font-weight: bold; margin-bottom: 5px; }"
-        "QPushButton:hover { background-color: #e89e6b; }"
         "QLabel { color: #dc8d55; font-size: 20px; font-weight: bold; margin-bottom: 15px; }"
         );
 
@@ -748,15 +746,24 @@ void MainWindow::onReglagesClicked() {
     QVBoxLayout* l = new QVBoxLayout(frame);
     l->setAlignment(Qt::AlignCenter);
 
-    l->addWidget(new QLabel("PAUSE"));
+    QLabel* titre = new QLabel("PAUSE");
+    titre->setAlignment(Qt::AlignCenter);
+    l->addWidget(titre);
 
     // BOUTON REPRENDRE
+
+    QString styleTaille = "font-size: 14px;"; // changement pour une taille de texte plus petite
+
     QPushButton* btnReprendre = new QPushButton("REPRENDRE");
+    btnReprendre->setProperty("class", "BoutonMenu");
+    btnReprendre->setStyleSheet(styleTaille);
     connect(btnReprendre, &QPushButton::clicked, &dialog, &QDialog::accept);
     l->addWidget(btnReprendre);
 
     // BOUTON RÈGLES (Navigation Intelligente)
     QPushButton* btnRegles = new QPushButton("RÈGLES");
+    btnRegles->setProperty("class", "BoutonMenu");
+    btnRegles->setStyleSheet(styleTaille);
     connect(btnRegles, &QPushButton::clicked, [this, &dialog]() {
         pagePrecedente = pageJeu;     // <--- On mémorise "Jeu"
         stackedWidget->setCurrentWidget(pageRegles);
@@ -766,11 +773,15 @@ void MainWindow::onReglagesClicked() {
 
     // BOUTON SAUVEGARDER
     QPushButton* btnSave = new QPushButton("SAUVEGARDER & QUITTER");
+    btnSave->setProperty("class", "BoutonMenu");
+    btnSave->setStyleSheet(styleTaille);
     connect(btnSave, &QPushButton::clicked, this, &MainWindow::onSauvegarderClicked);
     l->addWidget(btnSave);
 
     // BOUTON SAUVEGARDER
     QPushButton* btnQuitter = new QPushButton("QUITTER SANS SAUVEGARDER");
+    btnQuitter->setProperty("class", "BoutonMenu BoutonDanger");
+    btnQuitter->setStyleSheet(styleTaille);
     btnQuitter->setCursor(Qt::PointingHandCursor);
     connect(btnQuitter, &QPushButton::clicked, this, &MainWindow::quitterJeu);
     l->addWidget(btnQuitter);
