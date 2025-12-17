@@ -67,7 +67,7 @@ TuileItem::TuileItem(Tuile* t, int index, double rayon)
         Hexagone* hexModel = t->getHexagone(i);
 
         // Sécurité : si on a défini moins d'offsets que d'hexagones (ne devrait pas arriver)
-        if (i >= offsets.size()) break;
+        if (i >= static_cast<int>(offsets.size())) break;
 
         double relX = offsets[i].x;
         double relY = offsets[i].y;

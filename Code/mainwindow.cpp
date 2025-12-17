@@ -27,6 +27,12 @@ const double TUILE_TAILLE = 30.0;
 const double COEFF_X = 1.53;
 const double OFFSET_Y = sqrt(3.0) * TUILE_TAILLE;
 
+
+
+// =============================================================
+// 1. CONSTRUCTEUR & DESTRUCTEUR
+// =============================================================
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), indexTuileSelectionnee(-1), rotationCompteur(0), inversionEtat(false), previewActive(false), previewX(0), previewY(0), previewZ(0), affichageResultatIA(false)
 {
@@ -161,8 +167,8 @@ MainWindow::MainWindow(QWidget *parent)
             background-color: rgba(255, 255, 255, 0.6); /* Fond blanc semi-transparent */
             border: 2px solid #dc8d55;                  /* Bordure Orange */
             border-radius: 10px;                        /* Coins ronds */
-            padding: 10px;                              /* Espace intérieur */
-            font-size: 16px;
+            padding: 8px;                              /* Espace intérieur */
+            font-size: 13px;
             color: #4E2E1E;                             /* Texte Marron foncé */
         }
     )";
@@ -188,6 +194,11 @@ MainWindow::MainWindow(QWidget *parent)
 }
 
 MainWindow::~MainWindow() {}
+
+
+// =============================================================
+// 2. INITIALISATION DES PAGES (INTERFACE)
+// =============================================================
 
 void MainWindow::initialiserPageMenuPrincipal()
 {
@@ -386,89 +397,6 @@ void MainWindow::initialiserPageRegles() {
     stackedWidget->addWidget(pageRegles);
 }
 
-void MainWindow::mettreAJourVisibiliteConfig()
-{
-    int nbJoueurs = groupeNbJoueurs->checkedId(); // Récupère l'ID (1, 2, 3 ou 4)
-
-    // 1. Gestion de l'IA
-    if (nbJoueurs == 1) {
-        groupeIA->setVisible(true);
-        // En mode solo, on force le nom du joueur 2 à être l'IA pour la logique interne (optionnel mais propre)
-        champsNomsJoueurs[1]->setText("Illustre Architecte");
-        champsNomsJoueurs[1]->setEnabled(false); // On ne peut pas renommer l'IA
-    } else {
-        groupeIA->setVisible(false);
-        champsNomsJoueurs[1]->setEnabled(true);
-        if (champsNomsJoueurs[1]->text() == "Illustre Architecte") champsNomsJoueurs[1]->clear();
-    }
-
-    // 2. Gestion des champs de noms
-    // On affiche autant de champs que de joueurs
-    // Si mode solo (1 joueur), on affiche quand même le champ 1
-    // Pour simplifier, on affiche les champs 1 à nbJoueurs
-
-    for (int i = 0; i < 4; ++i) {
-        // Le champ est visible si son index < nbJoueurs
-        // Exception: en mode solo, on veut juste le nom du joueur 1, l'IA est gérée à part
-        bool visible = (i < nbJoueurs);
-        champsNomsJoueurs[i]->setVisible(visible);
-    }
-}
-
-void MainWindow::validerConfiguration()
-{
-    int nbJoueurs = groupeNbJoueurs->checkedId();
-
-    // Récupération des noms + verif erreurs (non saisie)
-    std::vector<std::string> noms;
-
-    for (int i = 0; i < nbJoueurs; ++i) {
-        // .trimmed() enlève les espaces au début et à la fin
-        // Cela empêche un joueur de s'appeler juste "   "
-        QString nomSaisi = champsNomsJoueurs[i]->text().trimmed();
-
-        if (nomSaisi.isEmpty()) {
-            // Affichage de l'erreur
-            QMessageBox::warning(this, "Configuration incomplète",
-                                 QString("Le nom du Joueur %1 est obligatoire !").arg(i + 1));
-
-            // UX : On met le focus (le curseur) directement dans la case fautive
-            champsNomsJoueurs[i]->setFocus();
-
-            return; // <--- STOP ! On n'exécute pas la suite, le jeu ne se lance pas.
-        }
-
-        noms.push_back(nomSaisi.toStdString());
-    }
-
-    // Mode IA
-    int niveauIA = 0;
-    if (nbJoueurs == 1) {
-        niveauIA = groupeNiveauIA->checkedId();
-    }
-
-    // Variantes
-    std::array<bool, 5> variantes;
-    for (int i = 0; i < 5; ++i) {
-        variantes[i] = checkBoxesVariantes[i]->isChecked();
-    }
-
-    // Mode Tuiles
-    Partie::TuileCite mode = checkModeAugmente->isChecked() ? Partie::TuileCite::AUGMENTE : Partie::TuileCite::STANDARD;
-
-    // --- LANCEMENT DU MOTEUR ---
-    try {
-        Partie::getInstance().initialiser(nbJoueurs, noms, mode, variantes, niveauIA);
-
-        // Changement de page
-        stackedWidget->setCurrentWidget(pageJeu);
-        mettreAJourInterface(); // Premier dessin
-
-    } catch (const std::exception &e) {
-        QMessageBox::critical(this, "Erreur", e.what());
-    }
-}
-
 void MainWindow::initialiserPageConfiguration()
 {
     pageConfig = new QWidget();
@@ -623,36 +551,6 @@ void MainWindow::initialiserPageConfiguration()
     stackedWidget->addWidget(pageConfig);
 }
 
-void MainWindow::resetConfiguration()
-{
-    // 1. Remettre 2 joueurs par défaut
-    // Note : QButtonGroup::button(id) permet d'accéder au bouton via son ID
-    if (QAbstractButton *btn = groupeNbJoueurs->button(2)) {
-        btn->setChecked(true);
-    }
-
-    // 2. Vider les noms
-    for (QLineEdit *champ : champsNomsJoueurs) {
-        champ->clear();
-    }
-
-    // 3. Remettre l'IA au niveau 1 (Hippodamos)
-    if (QAbstractButton *btn = groupeNiveauIA->button(1)) {
-        btn->setChecked(true);
-    }
-
-    // 4. Décocher le mode augmenté
-    checkModeAugmente->setChecked(false);
-
-    // 5. Décocher toutes les variantes
-    for (QCheckBox *cb : checkBoxesVariantes) {
-        cb->setChecked(false);
-    }
-
-    // 6. Forcer la mise à jour visuelle (cacher l'IA car on est repassé à 2 joueurs)
-    mettreAJourVisibiliteConfig();
-}
-
 void MainWindow::initialiserPageJeu()
 {
     pageJeu = new QWidget();
@@ -664,9 +562,6 @@ void MainWindow::initialiserPageJeu()
     viewCite->setRenderHint(QPainter::Antialiasing);
     viewCite->viewport()->installEventFilter(this);
     mainLayout->addWidget(viewCite, 2);
-
-
-
 
     // 3. Zone droite : Contrôles et Chantier
     QVBoxLayout *sideLayout = new QVBoxLayout();
@@ -725,6 +620,33 @@ void MainWindow::initialiserPageJeu()
     labelPilesRestantes->setProperty("class", "InfoLabel");
     labelPilesRestantes->setAlignment(Qt::AlignCenter);
     sideLayout->addWidget(labelPilesRestantes);
+}
+
+// =============================================================
+// 3. NAVIGATION & MENUS
+// =============================================================
+
+
+void MainWindow::afficherMenuJeu()
+{
+    stackedWidget->setCurrentWidget(pageJeu);
+}
+
+void MainWindow::afficherMenuRegles()
+{
+    pagePrecedente = pageMenuPrincipal;
+    stackedWidget->setCurrentWidget(pageRegles);
+}
+
+void MainWindow::afficherMenuConfig()
+{
+    resetConfiguration(); // <--- On nettoie d'abord
+    stackedWidget->setCurrentWidget(pageConfig); // Ensuite on affiche
+}
+
+void MainWindow::quitterJeu()
+{
+    QApplication::quit();
 }
 
 void MainWindow::onReglagesClicked() {
@@ -797,6 +719,131 @@ void MainWindow::onSauvegarderClicked() {
     QMessageBox::information(this, "Sauvegarde", "Fonctionnalité de sauvegarde bientôt disponible !");
 }
 
+
+
+// =============================================================
+// 4. LOGIQUE DE CONFIGURATION (AVANT-PARTIE)
+// =============================================================
+
+void MainWindow::mettreAJourVisibiliteConfig()
+{
+    int nbJoueurs = groupeNbJoueurs->checkedId(); // Récupère l'ID (1, 2, 3 ou 4)
+
+    // 1. Gestion de l'IA
+    if (nbJoueurs == 1) {
+        groupeIA->setVisible(true);
+        // En mode solo, on force le nom du joueur 2 à être l'IA pour la logique interne (optionnel mais propre)
+        champsNomsJoueurs[1]->setText("Illustre Architecte");
+        champsNomsJoueurs[1]->setEnabled(false); // On ne peut pas renommer l'IA
+    } else {
+        groupeIA->setVisible(false);
+        champsNomsJoueurs[1]->setEnabled(true);
+        if (champsNomsJoueurs[1]->text() == "Illustre Architecte") champsNomsJoueurs[1]->clear();
+    }
+
+    // 2. Gestion des champs de noms
+    // On affiche autant de champs que de joueurs
+    // Si mode solo (1 joueur), on affiche quand même le champ 1
+    // Pour simplifier, on affiche les champs 1 à nbJoueurs
+
+    for (int i = 0; i < 4; ++i) {
+        // Le champ est visible si son index < nbJoueurs
+        // Exception: en mode solo, on veut juste le nom du joueur 1, l'IA est gérée à part
+        bool visible = (i < nbJoueurs);
+        champsNomsJoueurs[i]->setVisible(visible);
+    }
+}
+
+void MainWindow::validerConfiguration()
+{
+    int nbJoueurs = groupeNbJoueurs->checkedId();
+
+    // Récupération des noms + verif erreurs (non saisie)
+    std::vector<std::string> noms;
+
+    for (int i = 0; i < nbJoueurs; ++i) {
+        // .trimmed() enlève les espaces au début et à la fin
+        // Cela empêche un joueur de s'appeler juste "   "
+        QString nomSaisi = champsNomsJoueurs[i]->text().trimmed();
+
+        if (nomSaisi.isEmpty()) {
+            // Affichage de l'erreur
+            QMessageBox::warning(this, "Configuration incomplète",
+                                 QString("Le nom du Joueur %1 est obligatoire !").arg(i + 1));
+
+            // UX : On met le focus (le curseur) directement dans la case fautive
+            champsNomsJoueurs[i]->setFocus();
+
+            return; // <--- STOP ! On n'exécute pas la suite, le jeu ne se lance pas.
+        }
+
+        noms.push_back(nomSaisi.toStdString());
+    }
+
+    // Mode IA
+    int niveauIA = 0;
+    if (nbJoueurs == 1) {
+        niveauIA = groupeNiveauIA->checkedId();
+    }
+
+    // Variantes
+    std::array<bool, 5> variantes;
+    for (int i = 0; i < 5; ++i) {
+        variantes[i] = checkBoxesVariantes[i]->isChecked();
+    }
+
+    // Mode Tuiles
+    Partie::TuileCite mode = checkModeAugmente->isChecked() ? Partie::TuileCite::AUGMENTE : Partie::TuileCite::STANDARD;
+
+    // --- LANCEMENT DU MOTEUR ---
+    try {
+        Partie::getInstance().initialiser(nbJoueurs, noms, mode, variantes, niveauIA);
+
+        // Changement de page
+        stackedWidget->setCurrentWidget(pageJeu);
+        mettreAJourInterface(); // Premier dessin
+
+    } catch (const std::exception &e) {
+        QMessageBox::critical(this, "Erreur", e.what());
+    }
+}
+
+
+
+void MainWindow::resetConfiguration()
+{
+    // 1. Remettre 2 joueurs par défaut
+    // Note : QButtonGroup::button(id) permet d'accéder au bouton via son ID
+    if (QAbstractButton *btn = groupeNbJoueurs->button(2)) {
+        btn->setChecked(true);
+    }
+
+    // 2. Vider les noms
+    for (QLineEdit *champ : champsNomsJoueurs) {
+        champ->clear();
+    }
+
+    // 3. Remettre l'IA au niveau 1 (Hippodamos)
+    if (QAbstractButton *btn = groupeNiveauIA->button(1)) {
+        btn->setChecked(true);
+    }
+
+    // 4. Décocher le mode augmenté
+    checkModeAugmente->setChecked(false);
+
+    // 5. Décocher toutes les variantes
+    for (QCheckBox *cb : checkBoxesVariantes) {
+        cb->setChecked(false);
+    }
+
+    // 6. Forcer la mise à jour visuelle (cacher l'IA car on est repassé à 2 joueurs)
+    mettreAJourVisibiliteConfig();
+}
+
+// =============================================================
+// 5. GESTION DES ÉVÉNEMENTS (SOURIS & CLICS)
+// =============================================================
+
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
     if (watched == viewCite->viewport() && event->type() == QEvent::MouseButtonPress) {
@@ -812,6 +859,8 @@ bool MainWindow::eventFilter(QObject *watched, QEvent *event)
     }
     return QMainWindow::eventFilter(watched, event);
 }
+
+
 
 void MainWindow::traiterClicPlateau(QPointF positionScene)
 {
@@ -874,28 +923,123 @@ void MainWindow::traiterClicPlateau(QPointF positionScene)
 }
 
 
-
-void MainWindow::afficherMenuJeu()
+void MainWindow::selectionnerTuileChantier(int index)
 {
-    stackedWidget->setCurrentWidget(pageJeu);
+    indexTuileSelectionnee = index;
+    qDebug() << "Tuile selectionnee index :" << index;
+
+    previewActive = false;
+
+    // On redessine pour mettre à jour l'affichage de la sélection (l'opacité changée ci-dessus)
+    dessinerChantier();
+    mettreAJourInterface();
 }
 
-void MainWindow::afficherMenuRegles()
-{
-    pagePrecedente = pageMenuPrincipal;
-    stackedWidget->setCurrentWidget(pageRegles);
+// =============================================================
+// 6. ACTIONS DU JOUEUR (SLOTS BOUTONS)
+// =============================================================
+
+
+void MainWindow::onRotationClicked() {
+    if (indexTuileSelectionnee == -1) return;
+    const Chantier& chantier = Partie::getInstance().getChantier();
+    if (indexTuileSelectionnee >= chantier.getNbTuiles()) {
+        indexTuileSelectionnee = -1;
+        return;
+    }
+    auto it = chantier.begin();
+    for(int i = 0; i < indexTuileSelectionnee; ++i) ++it;
+    Tuile* t = *it;
+    t->tourner();
+    rotationCompteur = (rotationCompteur + 1) % 3; // Incrémente le compteur
+    mettreAJourInterface();
 }
 
-void MainWindow::quitterJeu()
-{
-    QApplication::quit();
+void MainWindow::onInversionClicked() {
+    if (indexTuileSelectionnee == -1) return;
+    const Chantier& chantier = Partie::getInstance().getChantier();
+    if (indexTuileSelectionnee >= chantier.getNbTuiles()) {
+        indexTuileSelectionnee = -1;
+        return;
+    }
+    auto it = chantier.begin();
+    for(int i = 0; i < indexTuileSelectionnee; ++i) ++it;
+    Tuile* t = *it;
+    t->inverser();
+    inversionEtat = !inversionEtat; // Bascule l'état d'inversion
+    mettreAJourInterface();
 }
 
-void MainWindow::afficherMenuConfig()
+
+void MainWindow::onValidationClicked()
 {
-    resetConfiguration(); // <--- On nettoie d'abord
-    stackedWidget->setCurrentWidget(pageConfig); // Ensuite on affiche
+    if (!previewActive) {
+        QMessageBox::information(this, "Info", "Veuillez d'abord placer une tuile sur le plateau (cliquez sur la grille).");
+        return;
+    }
+
+    try {
+        bool succes = Partie::getInstance().actionPlacerTuile(
+            indexTuileSelectionnee, previewX, previewY, previewZ, rotationCompteur
+            );
+
+        if (succes) {
+            // Reset état
+            previewActive = false;
+            rotationCompteur = 0;
+            inversionEtat = false;
+            indexTuileSelectionnee = -1;
+            mettreAJourInterface();
+
+            if (Partie::getInstance().estFinDePartie()) {
+                mettreAJourInterface();
+                afficherFinDePartie();
+                return;
+            }
+
+            //Tour IA
+            Joueur* joueurSuivant = Partie::getInstance().getJoueurActuel(); //joueur suivant a été fait par placer tuile
+            IA* ia = dynamic_cast<IA*>(joueurSuivant); //renvoie null si joueur pas IA
+
+            if (ia) {
+                dernierIndexIA = Partie::getInstance().jouerTourIA();
+
+                //active le mode "Écran de l'IA"
+                affichageResultatIA = true;
+            }
+
+            // Mise à jour de l'interface (affichera soit le tour de l'humain suivant, soit l'écran IA)
+            mettreAJourInterface();
+
+        } else {
+            // Le backend a renvoyé false
+            QMessageBox::warning(this, "Erreur", "Placement refusé par le jeu (vérifiez vos pierres ou les règles).");
+        }
+    } catch (const std::exception& e) {
+        // Le backend a levé une exception
+        QMessageBox::warning(this, "Placement invalide", QString("Erreur : %1\n\nEssayez de déplacer la tuile.").arg(e.what()));
+    }
 }
+
+
+
+void MainWindow::onContinuerIAClicked()
+{
+    //désactive le mode IA
+    affichageResultatIA = false;
+
+    if (Partie::getInstance().estFinDePartie()) {
+        afficherFinDePartie();
+    } else {
+        // La partie continue, on rafraîchit pour afficher le plateau du joueur humain
+        mettreAJourInterface();
+    }
+}
+
+
+// =============================================================
+// 7. MOTEUR DE RENDU & MISE À JOUR VISUELLE
+// =============================================================
 
 
 void MainWindow::mettreAJourInterface()
@@ -937,7 +1081,7 @@ void MainWindow::mettreAJourInterface()
         QString htmlTexte = QString(
                                 "<div style='line-height: 140%;'>" // Espacement des lignes
                                 "   <span style='font-size: 14px; color: #734526;'>TOUR DE :</span><br>"
-                                "   <span style='font-size: 22px; font-weight: bold; color: #dc8d55;'>%1</span><br>"
+                                "   <span style='font-size: 18px; font-weight: bold; color: #dc8d55;'>%1</span><br>"
                                 "   -----------------------------<br>"
                                 "   Pierres : <b>%2</b> ■<br>"
                                 "   Score : <b>%3</b> pts"
@@ -1059,32 +1203,9 @@ void MainWindow::dessinerPreview(Joueur* j) {
 }
 
 
-void MainWindow::selectionnerTuileChantier(int index)
-{
-    indexTuileSelectionnee = index;
-    qDebug() << "Tuile selectionnee index :" << index;
 
-    previewActive = false;
 
-    // On redessine pour mettre à jour l'affichage de la sélection (l'opacité changée ci-dessus)
-    dessinerChantier();
-    mettreAJourInterface();
-}
 
-void MainWindow::onInversionClicked() {
-    if (indexTuileSelectionnee == -1) return;
-    const Chantier& chantier = Partie::getInstance().getChantier();
-    if (indexTuileSelectionnee >= chantier.getNbTuiles()) {
-        indexTuileSelectionnee = -1;
-        return;
-    }
-    auto it = chantier.begin();
-    for(int i = 0; i < indexTuileSelectionnee; ++i) ++it;
-    Tuile* t = *it;
-    t->inverser();
-    inversionEtat = !inversionEtat; // Bascule l'état d'inversion
-    mettreAJourInterface();
-}
 
 void MainWindow::dessinerChantier()
 {
@@ -1143,86 +1264,7 @@ void MainWindow::dessinerChantier()
 
 
 
-void MainWindow::onRotationClicked() {
-    if (indexTuileSelectionnee == -1) return;
-    const Chantier& chantier = Partie::getInstance().getChantier();
-    if (indexTuileSelectionnee >= chantier.getNbTuiles()) {
-        indexTuileSelectionnee = -1;
-        return;
-    }
-    auto it = chantier.begin();
-    for(int i = 0; i < indexTuileSelectionnee; ++i) ++it;
-    Tuile* t = *it;
-    t->tourner();
-    rotationCompteur = (rotationCompteur + 1) % 3; // Incrémente le compteur
-    mettreAJourInterface();
-}
 
-
-void MainWindow::onValidationClicked()
-{
-    if (!previewActive) {
-        QMessageBox::information(this, "Info", "Veuillez d'abord placer une tuile sur le plateau (cliquez sur la grille).");
-        return;
-    }
-
-    try {
-        bool succes = Partie::getInstance().actionPlacerTuile(
-            indexTuileSelectionnee, previewX, previewY, previewZ, rotationCompteur
-            );
-
-        if (succes) {
-            // Reset état
-            previewActive = false;
-            rotationCompteur = 0;
-            inversionEtat = false;
-            indexTuileSelectionnee = -1;
-            mettreAJourInterface();
-
-            if (Partie::getInstance().estFinDePartie()) {
-                mettreAJourInterface();
-                afficherFinDePartie();
-                return;
-            }
-
-            //Tour IA
-            Joueur* joueurSuivant = Partie::getInstance().getJoueurActuel(); //joueur suivant a été fait par placer tuile
-            IA* ia = dynamic_cast<IA*>(joueurSuivant); //renvoie null si joueur pas IA
-
-            if (ia) {
-                dernierIndexIA = Partie::getInstance().jouerTourIA();
-
-                //active le mode "Écran de l'IA"
-                affichageResultatIA = true;
-            }
-
-            // Mise à jour de l'interface (affichera soit le tour de l'humain suivant, soit l'écran IA)
-            mettreAJourInterface();
-
-        } else {
-            // Le backend a renvoyé false
-            QMessageBox::warning(this, "Erreur", "Placement refusé par le jeu (vérifiez vos pierres ou les règles).");
-        }
-    } catch (const std::exception& e) {
-        // Le backend a levé une exception
-        QMessageBox::warning(this, "Placement invalide", QString("Erreur : %1\n\nEssayez de déplacer la tuile.").arg(e.what()));
-    }
-}
-
-
-
-void MainWindow::onContinuerIAClicked()
-{
-    //désactive le mode IA
-    affichageResultatIA = false;
-
-    if (Partie::getInstance().estFinDePartie()) {
-        afficherFinDePartie();
-    } else {
-        // La partie continue, on rafraîchit pour afficher le plateau du joueur humain
-        mettreAJourInterface();
-    }
-}
 
 void MainWindow::dessinerInterfaceIA(IA* ia) {
     sceneCite->clear();
@@ -1330,6 +1372,9 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
     proxy->setPos(-110, currentY + cardH + 40);
 }
 
+// =============================================================
+// 8. FIN DE PARTIE
+// =============================================================
 
 
 void MainWindow::afficherFinDePartie() {

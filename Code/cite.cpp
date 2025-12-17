@@ -5,6 +5,7 @@
 #include "joueur.h"
 #include "coord.h"
 #include <cmath>
+
 using namespace std;
 
 const Hexagone* Cite::getHexagone(Coord c) const {
@@ -57,7 +58,13 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j, int rotation) {
     pos[1] = c.sud();
 
     // Index 2 : (Standard: x-1, x % 2 == 0 ? y : y - 1) | (Inversé: x+1, x % 2 == 0 ? y : y - 1)
-    pos[2] = c.cote(t->getInversion());
+   if (t->getInversion()) {
+        // Vers la Droite
+        pos[2] = { c.x + 1, (c.x % 2 == 0) ? c.y : c.y - 1, c.z };
+    } else {
+        // Vers la Gauche (Standard)
+        pos[2] = { c.x - 1, (c.x % 2 == 0) ? c.y : c.y - 1, c.z };
+    }
 
     // B. VÉRIFICATION : DISPONIBILITÉ
     for (int i = 0; i < 3; i++) {

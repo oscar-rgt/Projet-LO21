@@ -29,7 +29,7 @@ void Quadrillage::remplir(Coord c, const Hexagone* h) {
 
         int l = c.y * -hex_height + line_offset;
         int col = c.x * hex_width + col_offset;
-        j = col + l * line_length;
+        j = col + l * line_length + 1;
         if ((c.x % 2)) j += 2 * line_length;
         if (j > txt.length()) throw AkropolisException("Placement impossible : sortie du quadrillage");
         //replace(txt.begin(), txt.end(), ' ', '.'); //debug ascii

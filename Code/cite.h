@@ -1,5 +1,4 @@
 #pragma once
-#include "partie.h"
 #include "tuiles.h"
 #include "hexagone.h"
 #include <vector>

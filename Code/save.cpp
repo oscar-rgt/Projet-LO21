@@ -62,7 +62,7 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
             // NOUVEAU : Sauvegarde des 3 hexagones
             // ========================================
             for (size_t h = 0; h < t->getNbHexagones(); h++) {
-                const Hexagone* hexa = t->getHexagone(h);
+                const Hexagone* hexa = t->getHexagone(static_cast<int>(h));
                 f << static_cast<int>(hexa->getType()) << " ";
                 f << hexa->getEtoiles() << " ";
             }
@@ -83,7 +83,7 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
         
         // Hexagones
         for (size_t h = 0; h < t->getNbHexagones(); h++) {
-            Hexagone* hexa = t->getHexagone(h);
+            Hexagone* hexa = t->getHexagone(static_cast<int>(h));
             f << static_cast<int>(hexa->getType()) << " ";
             f << hexa->getEtoiles() << " ";
         }
@@ -127,7 +127,7 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
                     
                     // Hexagones
                     for (size_t h = 0; h < t->getNbHexagones(); h++) {
-                        const Hexagone* hexa = t->getHexagone(h);
+                        const Hexagone* hexa = t->getHexagone(static_cast<int>(h));
                         f << static_cast<int>(hexa->getType()) << " ";
                         f << hexa->getEtoiles() << " ";
                     }
@@ -190,7 +190,7 @@ bool SaveManager::charger(Partie& partie, const string& nomFichier) {
         f >> nbTuilesDansPile;
 
         // Créer une pile vide
-        Pile* nouvellePile = new Pile(i, 1);
+        Pile* nouvellePile = new Pile(static_cast<int>(i), 1);
         nouvellePile->vider();
         
         for (size_t k = 0; k < nbTuilesDansPile; k++) {

@@ -21,8 +21,6 @@ struct Coord {
     // Méthodes utilitaires (déplacées ici pour alléger Cite)
     Coord sud() const { return { x, y - 1, z }; }
 
-    // Suggestion : Implémenter "cote" ici si la logique ne dépend pas de l'état de la Cité
-    Coord cote(bool inversion) const;
 };
 
 // ==========================================

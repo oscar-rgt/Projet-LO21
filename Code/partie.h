@@ -104,8 +104,8 @@ public:
     class JoueurIterator {
         friend class Partie;
         vector<Joueur*>::iterator current;
-        JoueurIterator(vector<Joueur*>::iterator it) : current(it) {}
     public:
+        JoueurIterator(vector<Joueur*>::iterator it) : current(it) {}
         JoueurIterator() {}
         JoueurIterator& operator++() { ++current; return *this; }
         bool operator!=(const JoueurIterator& other) const { return current != other.current; }

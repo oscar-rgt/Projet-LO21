@@ -93,7 +93,7 @@ void Partie::initialiserPiles() {
     // CORRECTION : Pile de départ = nbJoueurs + 2 tuiles
     // (Pas +1 comme les autres !)
     // ========================================
-    int nbJoueursReel = joueurs.size();
+    int nbJoueursReel = static_cast<int>(joueurs.size());
     piles.emplace_back(new Pile(0, nbJoueursReel + 2));
 
     // Autres piles : nbJoueurs + 1 tuiles
