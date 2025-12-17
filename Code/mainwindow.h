@@ -75,6 +75,7 @@ private:
     std::vector<QLineEdit*> champsNomsJoueurs;
     std::vector<QCheckBox*> checkBoxesVariantes;
     QCheckBox *checkModeAugmente;
+    QString htmlTexteJoueur;
 
     // Page Jeu (Interface)
     QGraphicsScene *sceneCite;
