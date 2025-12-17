@@ -227,9 +227,42 @@ int RegleJardin::calculer(Cite* cite) const {
 }
 
 int RegleJardinVariante::calculer(Cite* cite) const {
-    return RegleJardin::calculer(cite);
-}
+    int total = 0;
+    int etoiles = compterEtoiles(cite, Jardin);
 
+    for (auto it = cite->begin(); it != cite->end(); ++it) {
+        Hexagone* h = it->second;
+        if (h->getType() == Jardin && !h->estPlace()) {
+            int pts = (it->first.z + 1) * etoiles;
+
+            // Vérifier si adjacent à un lac (espace vide complètement entouré)
+            bool adjacentLac = false;
+            auto voisinsVecteurs = cite->getVecteursVoisins(it->first.x % 2);
+
+            for (const auto& vec : voisinsVecteurs) {
+                for (int dz = -1; dz <= 1; ++dz) {
+                    if (it->first.z + dz < 0) continue;
+
+                    Coord voisinCoord = { it->first.x + vec.x, it->first.y + vec.y, it->first.z + dz };
+
+                    // Vérifier si c'est un lac : position vide + 6 voisins
+                    if (cite->getHexagone(voisinCoord) == nullptr) {
+                        auto voisinsLac = cite->getAdjacents(voisinCoord);
+                        if (voisinsLac.size() == 6) {
+                            adjacentLac = true;
+                            break;
+                        }
+                    }
+                }
+                if (adjacentLac) break;
+            }
+
+            if (adjacentLac) pts *= 2;
+            total += pts;
+        }
+    }
+    return total;
+}
 
 // =========================================================
 // CLASSE SCORE
