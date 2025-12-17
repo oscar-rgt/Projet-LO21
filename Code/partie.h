@@ -78,7 +78,7 @@ public:
         unsigned int niveauIA = 0);
 
     // ACTION PRINCIPALE
-    bool actionPlacerTuile(int indexTuileChantier, int x, int y, int z, int rotation);
+    void actionPlacerTuile(int indexTuileChantier, int x, int y, int z, int rotation);
 
     int jouerTourIA();
     void passerAuJoueurSuivant();

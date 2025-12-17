@@ -92,7 +92,7 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j, int rotation) {
             Coord dessous = { pos[i].x, pos[i].y, pos[i].z - 1 };
 
             if (estLibre(dessous))
-                throw CiteException("Placement impossible : Vide sous un hexagone.");
+                throw CiteException("Placement impossible : Il y a du vide sous un hexagone.");
 
             supportTiles[i] = carte[dessous]->getTuile();
         }

@@ -979,45 +979,47 @@ void MainWindow::onValidationClicked()
     }
 
     try {
-        bool succes = Partie::getInstance().actionPlacerTuile(
-            indexTuileSelectionnee, previewX, previewY, previewZ, rotationCompteur
-            );
+        Partie::getInstance().actionPlacerTuile(indexTuileSelectionnee, previewX, previewY, previewZ, rotationCompteur);
+        // Reset état
+        previewActive = false;
+        rotationCompteur = 0;
+        inversionEtat = false;
+        indexTuileSelectionnee = -1;
+        mettreAJourInterface();
 
-        if (succes) {
-            // Reset état
-            previewActive = false;
-            rotationCompteur = 0;
-            inversionEtat = false;
-            indexTuileSelectionnee = -1;
+        if (Partie::getInstance().estFinDePartie()) {
             mettreAJourInterface();
-
-            if (Partie::getInstance().estFinDePartie()) {
-                mettreAJourInterface();
-                afficherFinDePartie();
-                return;
-            }
-
-            //Tour IA
-            Joueur* joueurSuivant = Partie::getInstance().getJoueurActuel(); //joueur suivant a été fait par placer tuile
-            IA* ia = dynamic_cast<IA*>(joueurSuivant); //renvoie null si joueur pas IA
-
-            if (ia) {
-                dernierIndexIA = Partie::getInstance().jouerTourIA();
-
-                //active le mode "Écran de l'IA"
-                affichageResultatIA = true;
-            }
-
-            // Mise à jour de l'interface (affichera soit le tour de l'humain suivant, soit l'écran IA)
-            mettreAJourInterface();
-
-        } else {
-            // Le backend a renvoyé false
-            QMessageBox::warning(this, "Erreur", "Placement refusé par le jeu (vérifiez vos pierres ou les règles).");
+            afficherFinDePartie();
+            return;
         }
-    } catch (const std::exception& e) {
-        // Le backend a levé une exception
-        QMessageBox::warning(this, "Placement invalide", QString("Erreur : %1\n\nEssayez de déplacer la tuile.").arg(e.what()));
+
+        //Tour IA
+        Joueur* joueurSuivant = Partie::getInstance().getJoueurActuel(); //joueur suivant a été fait par placer tuile
+        IA* ia = dynamic_cast<IA*>(joueurSuivant); //renvoie null si joueur pas IA
+
+        if (ia) {
+            dernierIndexIA = Partie::getInstance().jouerTourIA();
+
+            //active le mode "Écran de l'IA"
+            affichageResultatIA = true;
+        }
+
+        // Mise à jour de l'interface (affichera soit le tour de l'humain suivant, soit l'écran IA)
+        mettreAJourInterface();
+
+
+    } // --- GESTION DES ERREURS ---
+    catch (const CiteException& e) {
+        // Erreur géométrique (Cité)
+        QMessageBox::warning(this, "Construction Impossible", e.what());
+    }
+    catch (const PartieException& e) {
+        // Erreur de règles (Pierres)
+        QMessageBox::warning(this, "Action Interdite", e.what());
+    }
+    catch (const std::exception& e) {
+        // Autre (Bug ?)
+        QMessageBox::critical(this, "Erreur", e.what());
     }
 }
 

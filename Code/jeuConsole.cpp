@@ -224,18 +224,24 @@ void JeuConsole::jouerTour() {
 
     if (saisieOuiNon("Valider ce choix ?")) {
         try {
-            bool succes = Partie::getInstance().actionPlacerTuile(index, x, y, z, rotationCompteur);
-
-            if (!succes) {
-                cout << ">> ECHEC : Pas assez de pierres ou regle non respectee." << endl;
-                cout << "Appuyez sur Entree pour reessayer...";
-                cin.ignore(numeric_limits<streamsize>::max(), '\n');
-                cin.get();
-                jouerTour();
-            }
+            Partie::getInstance().actionPlacerTuile(index, x, y, z, rotationCompteur);
         }
-        catch (const std::exception& e) {
+        catch (const CiteException& e) {
             cout << ">> ECHEC : " << e.what() << endl;
+            cout << "Appuyez sur Entree pour reessayer...";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.get();
+            jouerTour();
+        }
+        catch (const PartieException& e) {
+            cout << ">> ECHEC : " << e.what() << endl;
+            cout << "Appuyez sur Entree pour reessayer...";
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.get();
+            jouerTour();
+        }
+        catch (const exception& e) {
+            cout << ">> ECHEC INATTENDU : " << e.what() << endl;
             cout << "Appuyez sur Entree pour reessayer...";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cin.get();

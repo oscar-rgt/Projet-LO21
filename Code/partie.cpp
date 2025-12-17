@@ -140,74 +140,70 @@ void Partie::designerArchitecteChef() {
     indexJoueurActuel = 0;
 }
 
-bool Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
+void Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
     // Récupération via itérateur
     auto itTuile = chantier.begin();
     for (int i = 0; i < index; ++i) {
         ++itTuile;
-        if (itTuile == chantier.end()) return false;
+        if (itTuile == chantier.end()) throw PartieException("Tuile introuvable dans le chantier.");
     }
     Tuile* t = *itTuile;
 
     Joueur* j = getJoueurActuel();
-    if (!j) return false;
+    if (!j) throw PartieException("Aucun joueur actif.");
 
     // 2. Vérifier le coût (Pierres)
     int coutPierre = index; // Le coût dépend de la position dans le chantier (0, 1, 2...)
-    if (j->getPierres() < coutPierre) {
-        return false; 
-    }
+    if (j->getPierres() < coutPierre) throw PartieException("Vous n'avez pas assez de pierres pour acheter cette tuile !");
 
-
+    // 4. Tenter de placer (On passe la rotation !)
     try {
-        // 4. Tenter de placer (On passe la rotation !)
-        j->getCite()->placer(t, { x, y, z }, j, rotation); 
-        
-        // Si aucune exception n'est levée, le placement est valide :
-
-
-        // Paiement des pierres
-        j->utiliserPierres(coutPierre);
-
-        // Règle : Si on paie, les pierres vont sur les tuiles sautées (sauf si Variante Architecte/Solo)
-        if (getNiveauIllustreConstructeur() > 0 && dynamic_cast<IA*>(j) == nullptr) {
-            // En solo, les pierres payées vont à l'IA (simplification courante ou règle spécifique)
-            for (auto* joueur : joueurs) {
-                if (dynamic_cast<IA*>(joueur)) {
-                    joueur->ajouterPierres(coutPierre);
-                    break;
-                }
-            }
-        }
-        else {
-            // En multi, on pose les pierres sur les tuiles qu'on n'a pas prises
-            auto itPaiement = chantier.begin();
-            for (int k = 0; k < index; ++k) {
-                (*itPaiement)->setPrix((*itPaiement)->getPrix() + 1);
-                ++itPaiement;
-            }
-        }
-
-        // Calcul du score (mise à jour temps réel)
-        j->getScore()->calculerScore();
-
-        // 5. Nettoyage et fin de tour
-        chantier.retirerTuile(t); 
-
-        if (!estFinDePartie()) {
-            remplirChantier();
-        }
-        passerAuJoueurSuivant();
-        
-        return true;
+        // On tente de placer
+        j->getCite()->placer(t, { x, y, z }, j, rotation);
     }
-    catch (const CiteException&) {
-        // Si le placement échoue, on remet la tuile dans son état d'origine
-        // C'est important pour l'affichage suivant dans le chantier
+    catch (const CiteException& e) {
+        // 1. On remet la tuile droite 
         for (int r = 0; r < (3 - rotation) % 3; ++r) t->tourner();
         if (t->inversion) t->inverser();
-        return false;
+        throw; // renvoie l'erreur du dessus
     }
+
+    // Si aucune exception n'est levée, le placement est valide :
+
+
+    // Paiement des pierres
+    j->utiliserPierres(coutPierre);
+
+    // Règle : Si on paie, les pierres vont sur les tuiles sautées (sauf si Variante Architecte/Solo)
+    if (getNiveauIllustreConstructeur() > 0 && dynamic_cast<IA*>(j) == nullptr) {
+        // En solo, les pierres payées vont à l'IA (simplification courante ou règle spécifique)
+        for (auto* joueur : joueurs) {
+            if (dynamic_cast<IA*>(joueur)) {
+                joueur->ajouterPierres(coutPierre);
+                break;
+            }
+        }
+    }
+    else {
+        // En multi, on pose les pierres sur les tuiles qu'on n'a pas prises
+        auto itPaiement = chantier.begin();
+        for (int k = 0; k < index; ++k) {
+            (*itPaiement)->setPrix((*itPaiement)->getPrix() + 1);
+            ++itPaiement;
+        }
+    }
+
+    // Calcul du score (mise à jour temps réel)
+    j->getScore()->calculerScore();
+
+    // 5. Nettoyage et fin de tour
+    chantier.retirerTuile(t); 
+
+    if (!estFinDePartie()) {
+        remplirChantier();
+    }
+    passerAuJoueurSuivant();
+        
 }
 
 int Partie::jouerTourIA() {
