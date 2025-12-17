@@ -1048,10 +1048,18 @@ void MainWindow::mettreAJourInterface()
 {
     int pilesRestantes = Partie::getInstance().getNbPiles() - Partie::getInstance().getIndexPileActuelle();
     if (pilesRestantes < 0) pilesRestantes = 0;
+
+    // Version améliorée avec indicateur visuel
+    QString couleurPile = (pilesRestantes <= 2) ? "#c0392b" : "#dc8d55"; // Rouge si critique
+    QString iconePile = (pilesRestantes <= 2) ? "⚠️" : "📚";
+
     labelPilesRestantes->setText(QString(
-                                     "<span style='color: #4E2E1E;'>Piles restantes :</span> "
-                                     "<b style='color: #dc8d55; font-size: 16px;'>%1</b>"
-                                     ).arg(pilesRestantes));
+                                     "<div style='text-align: center; padding: 8px;'>"
+                                     "   <span style='font-size: 12px; color: #734526;'>PILES RESTANTES</span><br>"
+                                     "   <span style='font-size: 24px;'>%1</span> "
+                                     "   <span style='font-size: 28px; font-weight: bold; color: %2;'>%3</span>"
+                                     "</div>"
+                                     ).arg(iconePile).arg(couleurPile).arg(pilesRestantes));
 
     if (affichageResultatIA) {
         // Mode IA : on cache les contrôles de jeu, on montre "Continuer"
@@ -1080,19 +1088,29 @@ void MainWindow::mettreAJourInterface()
     }
     else{
         Joueur* j = Partie::getInstance().getJoueurActuel();
-        QString htmlTexte = QString(
-                                "<div style='line-height: 140%;'>" // Espacement des lignes
-                                "   <span style='font-size: 14px; color: #734526;'>TOUR DE :</span><br>"
-                                "   <span style='font-size: 18px; font-weight: bold; color: #dc8d55;'>%1</span><br>"
-                                "   -----------------------------<br>"
-                                "   Pierres : <b>%2</b> ■<br>"
-                                "   Score : <b>%3</b> pts"
-                                "</div>"
-                                ).arg(QString::fromStdString(j->getNom()))
-                                .arg(j->getPierres())
-                                .arg(j->getScore()->calculerScore());
+        htmlTexteJoueur = QString(
+                              "<div style='line-height: 150%; padding: 10px;'>"
+                              "   <div style='text-align: center; margin-bottom: 15px;'>"
+                              "      <span style='font-size: 13px; color: #734526; letter-spacing: 1px;'>TOUR DE</span><br>"
+                              "      <span style='font-size: 22px; font-weight: bold; color: #dc8d55; text-shadow: 1px 1px 2px rgba(0,0,0,0.1);'>%1</span>"
+                              "   </div>"
+                              "   <div style='background: linear-gradient(135deg, rgba(220,141,85,0.15), rgba(220,141,85,0.05)); "
+                              "               border-radius: 8px; padding: 12px; margin-top: 10px;'>"
+                              "      <div style='display: flex; justify-content: space-between; margin-bottom: 8px;'>"
+                              "         <span style='font-size: 14px; color: #734526;'>💎 Pierres</span>"
+                              "         <span style='font-size: 18px; font-weight: bold; color: #dc8d55;'>%2</span>"
+                              "      </div>"
+                              "      <div style='display: flex; justify-content: space-between;'>"
+                              "         <span style='font-size: 14px; color: #734526;'>⭐ Score</span>"
+                              "         <span style='font-size: 18px; font-weight: bold; color: #e67e22;'>%3</span>"
+                              "      </div>"
+                              "   </div>"
+                              "</div>"
+                              ).arg(QString::fromStdString(j->getNom()))
+                              .arg(j->getPierres())
+                              .arg(j->getScore()->calculerScore());
 
-        labelInfoJoueur->setText(htmlTexte);
+        labelInfoJoueur->setText(htmlTexteJoueur);
 
         btnRotation->setEnabled(indexTuileSelectionnee!=-1);
         btnRotation->show();
@@ -1246,16 +1264,16 @@ void MainWindow::dessinerChantier()
 
         // Affichage du prix à droite de la tuile
         // 1. Texte avec le carré (■) au lieu de "pierres"
-        QString textePrix = QString("%1 ■").arg(tuile->getPrix());
-        QGraphicsTextItem* txt = sceneChantier->addText(textePrix);
+        QString textePrix = QString(
+                                "<div style='text-align: center;'>"
+                                "   <div style='font-size: 11px; color: #734526;'>COÛT</div>"
+                                "   <div style='font-size: 22px; font-weight: bold; color: #dc8d55;'>%1 ◆</div>"
+                                "</div>"
+                                ).arg(tuile->getPrix());
 
-        // 2. Style : Orange (#dc8d55), Gras, Plus gros
-        txt->setDefaultTextColor(Theme::ORANGE);
-        QFont fontPrix = txt->font();
-        fontPrix.setPixelSize(20); // Taille bien visible
-        fontPrix.setBold(true);
-        txt->setFont(fontPrix);
-        txt->setPos(125, item->y()); // À droite de la tuile
+        QGraphicsTextItem* txt = sceneChantier->addText("");
+        txt->setHtml(textePrix);
+        txt->setPos(125, item->y() - 5);
 
         index++;
     }
@@ -1380,67 +1398,106 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
 
 
 void MainWindow::afficherFinDePartie() {
-    // --- 1. CALCUL DES SCORES (Logique existante) ---
-    QString texteScores = "";
+    // --- 1. CALCUL DES SCORES AVEC CLASSEMENT ---
 
-    // On récupère les scores
+    // Tri des joueurs par score (décroissant)
+    vector<Joueur*> joueursClasses;
     for (auto it = Partie::getInstance().debutJoueurs(); it != Partie::getInstance().finJoueurs(); ++it) {
-        Joueur* j = *it;
-        texteScores += QString("%1 : <b>%2 points</b><br>")
-                .arg(QString::fromStdString(j->getNom()))
-                .arg(j->getScore()->calculerScore());
-
+        joueursClasses.push_back(*it);
     }
+    std::sort(joueursClasses.begin(), joueursClasses.end(), [](Joueur* a, Joueur* b) {
+        return a->getScore()->calculerScore() > b->getScore()->calculerScore();
+    });
 
-    // On détermine le gagnant
+    // Affichage avec médailles
+    QString texteScores = "<div style='text-align: center; line-height: 180%;'>";
+    QStringList medailles = {"🥇", "🥈", "🥉", "🎖️"};
+
+    for (size_t i = 0; i < joueursClasses.size(); ++i) {
+        Joueur* j = joueursClasses[i];
+        QString couleur = (i == 0) ? "#E67E22" : "#734526"; // Orange pour le 1er
+        QString bgColor = (i == 0) ? "rgba(230, 126, 34, 0.15)" : "rgba(115, 69, 38, 0.08)";
+
+        texteScores += QString(
+                           "<div style='background: %1; border-radius: 8px; padding: 12px; margin: 8px 0;'>"
+                           "   <span style='font-size: 20px;'>%2</span> "
+                           "   <span style='font-size: 18px; color: %3; font-weight: bold;'>%4</span> : "
+                           "   <span style='font-size: 22px; font-weight: bold; color: %3;'>%5 pts</span>"
+                           "</div>"
+                           ).arg(bgColor)
+                           .arg(medailles[std::min((int)i, 3)])
+                           .arg(couleur)
+                           .arg(QString::fromStdString(j->getNom()))
+                           .arg(j->getScore()->calculerScore());
+    }
+    texteScores += "</div>";
+
+    // --- 2. TEXTE DU VAINQUEUR AMÉLIORÉ ---
     vector<Joueur*> gagnants = Partie::getInstance().determinerGagnants();
     QString texteVainqueur;
+
     if (gagnants.size() == 1) {
-        texteVainqueur = QString("GLOIRE À <span style='color:#E67E22'>%1</span> !").arg(QString::fromStdString(gagnants[0]->getNom()).toUpper());
+        texteVainqueur = QString(
+                             "<div style='text-align: center; margin: 30px 0;'>"
+                             "   <div style='font-size: 48px; margin-bottom: 10px;'>👑</div>"
+                             "   <div style='font-size: 18px; color: #734526; letter-spacing: 2px; margin-bottom: 8px;'>VICTOIRE DE</div>"
+                             "   <div style='font-size: 32px; font-weight: bold; color: #dc8d55; "
+                             "               text-shadow: 2px 2px 4px rgba(0,0,0,0.2);'>%1</div>"
+                             "   <div style='font-size: 14px; color: #734526; margin-top: 10px; font-style: italic;'>"
+                             "      L'architecte le plus prestigieux d'Akropolis !"
+                             "   </div>"
+                             "</div>"
+                             ).arg(QString::fromStdString(gagnants[0]->getNom()).toUpper());
     } else {
-        texteVainqueur = "ÉGALITÉ OLYMPIQUE !";
+        texteVainqueur = QString(
+            "<div style='text-align: center; margin: 30px 0;'>"
+            "   <div style='font-size: 48px; margin-bottom: 10px;'>🤝</div>"
+            "   <div style='font-size: 28px; font-weight: bold; color: #dc8d55;'>ÉGALITÉ OLYMPIQUE !</div>"
+            "   <div style='font-size: 14px; color: #734526; margin-top: 10px;'>Les architectes partagent la gloire</div>"
+            "</div>"
+            );
     }
 
-    // --- 2. CRÉATION DE LA FENÊTRE PERSONNALISÉE (OVERLAY) ---
+    // --- 3. CRÉATION DE LA FENÊTRE PERSONNALISÉE (OVERLAY) ---
     QDialog overlay(this);
     overlay.setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
     overlay.setAttribute(Qt::WA_TranslucentBackground);
 
     QVBoxLayout* layout = new QVBoxLayout(&overlay);
 
-    // --- OPTIMISATION : On utilise la classe .CadreNoir définie dans le style global ---
     QFrame* frame = new QFrame();
     frame->setProperty("class", "CadreConfig");
+    frame->setMinimumWidth(500);
+    frame->setMaximumWidth(600);
 
     QVBoxLayout* frameLayout = new QVBoxLayout(frame);
     frameLayout->setContentsMargins(40, 40, 40, 40);
     frameLayout->setSpacing(20);
 
-    // Titre (Utilise la classe .TitrePage ou on le style manuellement avec Theme)
+    // Titre
     QLabel* lblTitre = new QLabel("FIN DE PARTIE", frame);
-    // On peut créer une classe .TitreFin dans le CSS global ou le faire ici proprement
-    QFont fontTitre; fontTitre.setPixelSize(30); fontTitre.setBold(true);
+    QFont fontTitre;
+    fontTitre.setPixelSize(30);
+    fontTitre.setBold(true);
     lblTitre->setFont(fontTitre);
-    // Pour la couleur, on utilise la palette
     QPalette pal = lblTitre->palette();
     pal.setColor(QPalette::WindowText, Theme::ORANGE);
     lblTitre->setPalette(pal);
-
     lblTitre->setAlignment(Qt::AlignCenter);
     frameLayout->addWidget(lblTitre);
 
-    // Liste des scores
-    QLabel* lblScores = new QLabel(texteScores, frame);
-    lblScores->setAlignment(Qt::AlignCenter);
-    lblScores->setTextFormat(Qt::RichText); // Pour le gras <b>
-    frameLayout->addWidget(lblScores);
-
-    // Vainqueur
+    // Vainqueur (AVANT les scores pour plus d'impact)
     QLabel* lblVainqueur = new QLabel(texteVainqueur, frame);
     lblVainqueur->setObjectName("vainqueur");
     lblVainqueur->setAlignment(Qt::AlignCenter);
-    lblVainqueur->setTextFormat(Qt::RichText); // Pour la couleur
+    lblVainqueur->setTextFormat(Qt::RichText);
     frameLayout->addWidget(lblVainqueur);
+
+    // Liste des scores (classement avec médailles)
+    QLabel* lblScores = new QLabel(texteScores, frame);
+    lblScores->setAlignment(Qt::AlignCenter);
+    lblScores->setTextFormat(Qt::RichText);
+    frameLayout->addWidget(lblScores);
 
     // Boutons
     QHBoxLayout* btnLayout = new QHBoxLayout();
@@ -1459,19 +1516,13 @@ void MainWindow::afficherFinDePartie() {
 
     layout->addWidget(frame);
 
-    // --- 5. CONNEXIONS ---
-    // "Menu" ferme la dialog avec le code Accepted
+    // --- 4. CONNEXIONS ---
     connect(btnMenu, &QPushButton::clicked, &overlay, &QDialog::accept);
-    // "Quitter" ferme tout le jeu
     connect(btnQuitter, &QPushButton::clicked, this, &MainWindow::quitterJeu);
 
-    // --- 6. AFFICHAGE MODAL ---
-    // exec() bloque le jeu jusqu'à ce qu'on clique
+    // --- 5. AFFICHAGE MODAL ---
     if (overlay.exec() == QDialog::Accepted) {
-        // Si on a cliqué sur Menu Principal :
         stackedWidget->setCurrentWidget(pageMenuPrincipal);
-
-        // Optionnel : Réinitialiser la vue du jeu (caméra, zoom...)
         sceneCite->clear();
         sceneChantier->clear();
     }
