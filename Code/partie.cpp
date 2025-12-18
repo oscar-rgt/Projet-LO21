@@ -175,10 +175,10 @@ void Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
     j->utiliserPierres(coutPierre);
 
     // Règle : Si on paie, les pierres vont sur les tuiles sautées (sauf si Variante Architecte/Solo)
-    if (getNiveauIllustreConstructeur() > 0 && dynamic_cast<IA*>(j) == nullptr) {
+    if (getNiveauIllustreConstructeur() > 0 && !j->estIA()) {
         // En solo, les pierres payées vont à l'IA (simplification courante ou règle spécifique)
         for (auto* joueur : joueurs) {
-            if (dynamic_cast<IA*>(joueur)) {
+            if (joueur->estIA()) {
                 joueur->ajouterPierres(coutPierre);
                 break;
             }

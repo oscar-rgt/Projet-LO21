@@ -91,7 +91,7 @@ void JeuConsole::afficherEtatJeu() {
 
     cout << "\n--- CITE ---" << endl;
 
-    if (dynamic_cast<IA*>(j)) {
+    if (j->estIA()) {
         cout << "(Cite de l'IA - Gestion virtuelle)" << endl;
     }
     else {
@@ -126,7 +126,7 @@ void JeuConsole::jouerTour() {
     Joueur* j = Partie::getInstance().getJoueurActuel();
 
     // --- TOUR IA (Inchangé) ---
-    if (dynamic_cast<IA*>(j)) {
+    if (j->estIA()) {
         cout << "\n\n--- TOUR DE L'IA ---" << endl;
         cout << "\nL'Illustre Constructeur reflechit..." << endl;
         afficherChantier();

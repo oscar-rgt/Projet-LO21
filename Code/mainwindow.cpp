@@ -703,7 +703,7 @@ void MainWindow::onReglagesClicked() {
     l->addWidget(btnRegles);
 
     // BOUTON SAUVEGARDER
-    QPushButton* btnSave = new QPushButton("SAUVEGARDER & QUITTER");
+    QPushButton* btnSave = new QPushButton("SAUVEGARDER ET QUITTER");
     btnSave->setProperty("class", "BoutonMenu");
     btnSave->setStyleSheet(styleTaille);
     connect(btnSave, &QPushButton::clicked, this, &MainWindow::onSauvegarderClicked);
@@ -1030,9 +1030,8 @@ void MainWindow::onValidationClicked()
 
         //Tour IA
         Joueur* joueurSuivant = Partie::getInstance().getJoueurActuel(); //joueur suivant a été fait par placer tuile
-        IA* ia = dynamic_cast<IA*>(joueurSuivant); //renvoie null si joueur pas IA
 
-        if (ia) {
+        if (joueurSuivant->estIA()) {
             dernierIndexIA = Partie::getInstance().jouerTourIA();
 
             //active le mode "Écran de l'IA"
@@ -1140,7 +1139,7 @@ void MainWindow::mettreAJourInterface()
         IA* iaTrouvee = nullptr;
         auto it = Partie::getInstance().debutJoueurs();
         while(it != Partie::getInstance().finJoueurs()) {
-            if (dynamic_cast<IA*>(*it)) {
+            if ((*it)->estIA()) {
                 iaTrouvee = dynamic_cast<IA*>(*it);
                 break;
             }
