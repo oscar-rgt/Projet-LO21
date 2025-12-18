@@ -54,6 +54,7 @@ private slots:
     // --- 4. Système (Pause & Sauvegarde) ---
     void onReglagesClicked();               // Pop-up Pause
     void onSauvegarderClicked();            // Sauvegarde
+    void onChargerPartieClicked();
 
 private:
     // =============================================================

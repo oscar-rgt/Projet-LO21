@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "tuileitem.h"
+#include "save.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QMessageBox>
@@ -21,6 +22,7 @@ const QColor ORANGE(220, 141, 85);       // #dc8d55
 const QColor MARRON_FONCE(78, 46, 30);    // #4E2E1E
 const QColor CUIVRE(115, 69, 38);         // #734526
 const QColor BEIGE_CARTE(217, 180, 143);  // #D9B48F
+const QColor ROUGE_ERREUR(192, 57, 43); //#c0392b
 }
 
 const double TUILE_TAILLE = 30.0;
@@ -250,6 +252,13 @@ void MainWindow::initialiserPageMenuPrincipal()
     btnRegles->setCursor(Qt::PointingHandCursor);
     connect(btnRegles, &QPushButton::clicked, this, &MainWindow::afficherMenuRegles);
     layoutBoutons->addWidget(btnRegles, 0, Qt::AlignCenter);
+
+    // Bouton CHARGER
+    QPushButton *btnCharger = new QPushButton("CHARGER UNE PARTIE", pageMenuPrincipal);
+    btnCharger->setProperty("class", "BoutonMenu"); // <--- Utilise la classe globale
+    btnCharger->setCursor(Qt::PointingHandCursor);
+    connect(btnCharger, &QPushButton::clicked, this, &MainWindow::onChargerPartieClicked);
+    layoutBoutons->addWidget(btnCharger, 0, Qt::AlignCenter);
 
     // Bouton QUITTER
     QPushButton *btnQuitter = new QPushButton("QUITTER", pageMenuPrincipal);
@@ -715,8 +724,34 @@ void MainWindow::onReglagesClicked() {
 
 
 void MainWindow::onSauvegarderClicked() {
-    // (Code de sauvegarde à venir...)
-    QMessageBox::information(this, "Sauvegarde", "Fonctionnalité de sauvegarde bientôt disponible !");
+    // 1. Pop-up de confirmation (Oui / Non)
+    QMessageBox::StandardButton reponse = QMessageBox::question(
+        this,
+        "Sauvegarder & Quitter",
+        "Voulez-vous sauvegarder et quitter la partie ?",
+        QMessageBox::Yes | QMessageBox::No
+        );
+
+    // 2. Si l'utilisateur clique sur OUI
+    if (reponse == QMessageBox::Yes) {
+
+        // On tente de sauvegarder via le SaveManager
+        bool succes = SaveManager::sauvegarder(Partie::getInstance(), "save.txt");
+
+        if (succes) {
+            // ">> Partie sauvegardee avec succes..."
+            QMessageBox::information(this, "Succès", "Partie sauvegardée avec succès dans 'save.txt' !");
+
+            // On quitte l'application proprement
+            QApplication::quit();
+        }
+        else {
+            // ">> ERREUR CRITIQUE..."
+            QMessageBox::critical(this, "Erreur Critique", "La sauvegarde a échoué.\nImpossible d'écrire le fichier.");
+            // On ne quitte PAS, pour laisser au joueur une chance de réessayer ou de continuer
+        }
+    }
+    // Si Non, on ne fait rien, le pop-up se ferme juste.
 }
 
 
@@ -1023,6 +1058,35 @@ void MainWindow::onValidationClicked()
     }
 }
 
+void MainWindow::onChargerPartieClicked() {
+    // Petit message d'attente (optionnel, mais sympa)
+    // On utilise un try/catch au cas où SaveManager lance une exception
+    try {
+        bool succes = SaveManager::charger(Partie::getInstance(), "save.txt");
+
+        if (succes) {
+            // 1. Message de succès
+            QMessageBox::information(this, "Chargement terminé", "Votre partie a été restaurée avec succès !");
+
+            // 2. On change de page (On va vers le JEU)
+            stackedWidget->setCurrentWidget(pageJeu);
+
+            // 3. IMPORTANT : On force le redessin de l'interface avec les données chargées
+            mettreAJourInterface();
+        }
+        else {
+            // Echec (Fichier introuvable ou corrompu)
+            QMessageBox::warning(this, "Echec du chargement",
+                                 "Impossible de charger la sauvegarde.\n"
+                                 "Le fichier 'save.txt' est introuvable ou illisible.");
+        }
+    }
+    catch (const std::exception& e) {
+        // En cas de gros crash pendant la lecture
+        QMessageBox::critical(this, "Erreur Critique",
+                              QString("Une erreur est survenue pendant le chargement :\n%1").arg(e.what()));
+    }
+}
 
 
 void MainWindow::onContinuerIAClicked()
@@ -1050,8 +1114,10 @@ void MainWindow::mettreAJourInterface()
     if (pilesRestantes < 0) pilesRestantes = 0;
 
     // Version améliorée avec indicateur visuel
-    QString couleurPile = (pilesRestantes <= 2) ? "#c0392b" : "#dc8d55"; // Rouge si critique
+    QString couleurPile = (pilesRestantes <= 2) ? Theme::ROUGE_ERREUR.name() : Theme::ORANGE.name(); // Rouge si critique
     QString iconePile = (pilesRestantes <= 2) ? "⚠️" : "📚";
+
+    QString couleurTitre = Theme::CUIVRE.name();
 
     labelPilesRestantes->setText(QString(
                                      "<div style='text-align: center; padding: 8px;'>"
