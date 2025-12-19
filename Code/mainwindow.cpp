@@ -15,6 +15,8 @@
 #include <QDialog>
 #include <QMouseEvent>
 #include <QGraphicsProxyWidget>
+#include <QOperatingSystemVersion>
+#include <QFontDatabase>
 
 using namespace std;
 
@@ -1114,30 +1116,42 @@ void MainWindow::mettreAJourInterface()
     int pilesRestantes = Partie::getInstance().getNbPiles() - Partie::getInstance().getIndexPileActuelle();
     if (pilesRestantes < 0) pilesRestantes = 0;
 
-    // Version améliorée avec indicateur visuel
-    QString couleurPile = (pilesRestantes <= 2) ? Theme::ROUGE_ERREUR.name() : Theme::ORANGE.name(); // Rouge si critique
-    QString iconePile = (pilesRestantes <= 2) ? "⚠️" : "📚";
+    // Détection du support des emojis
+    bool supportEmojis = false;
+    QFontDatabase fontDb;
+    QStringList families = fontDb.families();
+    QStringList emojiFonts = {
+        "Noto Color Emoji", "Twitter Color Emoji", "Segoe UI Emoji",
+        "JoyPixels", "OpenMoji", "Apple Color Emoji", "Symbola"
+    };
+    for (const QString &font : emojiFonts) {
+        if (families.contains(font)) {
+            supportEmojis = true;
+            break;
+        }
+    }
+
+    // Choix des icônes et couleurs
+    QString couleurPile = (pilesRestantes <= 2) ? Theme::ROUGE_ERREUR.name() : Theme::ORANGE.name();
+    QString iconePile = supportEmojis ? ((pilesRestantes <= 2) ? "⚠️" : "📚") : ((pilesRestantes <= 2) ? "!" : "P");
 
     QString couleurTitre = Theme::CUIVRE.name();
 
     labelPilesRestantes->setText(QString(
                                      "<div style='text-align: center; padding: 8px;'>"
                                      "   <span style='font-size: 12px; color: #734526;'>PILES RESTANTES</span><br>"
-                                     "   <span style='font-size: 24px;'>%1</span> "
+                                     "   <span style='font-family: \"Noto Color Emoji\", \"Segoe UI Emoji\", \"Apple Color Emoji\", \"Twitter Color Emoji\", sans-serif; font-size: 24px;'>%1</span> "
                                      "   <span style='font-size: 28px; font-weight: bold; color: %2;'>%3</span>"
                                      "</div>"
                                      ).arg(iconePile).arg(couleurPile).arg(pilesRestantes));
 
     if (affichageResultatIA) {
-        // Mode IA : on cache les contrôles de jeu, on montre "Continuer"
+        // Mode IA
         btnRotation->hide();
         btnInversion->hide();
         btnValidation->hide();
         btnReglages->raise();
 
-        // On récupère l'IA (Attention : comme jouerTourIA() a déjà passé le tour,
-        // l'IA n'est plus le "joueur actuel" dans le backend.
-        // Il faut la retrouver dans la liste des joueurs).
         IA* iaTrouvee = nullptr;
         auto it = Partie::getInstance().debutJoueurs();
         while(it != Partie::getInstance().finJoueurs()) {
@@ -1153,8 +1167,11 @@ void MainWindow::mettreAJourInterface()
             dessinerInterfaceIA(iaTrouvee);
         }
     }
-    else{
+    else {
         Joueur* j = Partie::getInstance().getJoueurActuel();
+        QString symbolePierres = supportEmojis ? "💎" : "P";
+        QString symboleScore = supportEmojis ? "⭐" : "S";
+
         htmlTexteJoueur = QString(
                               "<div style='line-height: 150%; padding: 10px;'>"
                               "   <div style='text-align: center; margin-bottom: 15px;'>"
@@ -1164,17 +1181,19 @@ void MainWindow::mettreAJourInterface()
                               "   <div style='background: linear-gradient(135deg, rgba(220,141,85,0.15), rgba(220,141,85,0.05)); "
                               "               border-radius: 8px; padding: 12px; margin-top: 10px;'>"
                               "      <div style='display: flex; justify-content: space-between; margin-bottom: 8px;'>"
-                              "         <span style='font-size: 14px; color: #734526;'>💎 Pierres</span>"
-                              "         <span style='font-size: 18px; font-weight: bold; color: #dc8d55;'>%2</span>"
+                              "         <span style='font-size: 14px; color: #734526;'>%2 Pierres</span>"
+                              "         <span style='font-size: 18px; font-weight: bold; color: #dc8d55;'>%3</span>"
                               "      </div>"
                               "      <div style='display: flex; justify-content: space-between;'>"
-                              "         <span style='font-size: 14px; color: #734526;'>⭐ Score</span>"
-                              "         <span style='font-size: 18px; font-weight: bold; color: #e67e22;'>%3</span>"
+                              "         <span style='font-size: 14px; color: #734526;'>%4 Score</span>"
+                              "         <span style='font-size: 18px; font-weight: bold; color: #e67e22;'>%5</span>"
                               "      </div>"
                               "   </div>"
                               "</div>"
                               ).arg(QString::fromStdString(j->getNom()))
+                              .arg(symbolePierres)
                               .arg(j->getPierres())
+                              .arg(symboleScore)
                               .arg(j->getScore()->calculerScore());
 
         labelInfoJoueur->setText(htmlTexteJoueur);
@@ -1189,10 +1208,10 @@ void MainWindow::mettreAJourInterface()
 
         dessinerCite(j);
         dessinerPreview(j);
-
     }
     dessinerChantier();
 }
+
 
 void MainWindow::dessinerCite(Joueur* joueur) {
     sceneCite->clear();
@@ -1465,9 +1484,30 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
 
 
 void MainWindow::afficherFinDePartie() {
-    // --- 1. CALCUL DES SCORES AVEC CLASSEMENT ---
+    // --- DÉTECTION AUTOMATIQUE DES EMOJIS ---
+    bool supportEmojis = false;
 
-    // Tri des joueurs par score (décroissant)
+#ifdef Q_OS_WIN
+    // Windows 10+ supporte les emojis colorés
+    QOperatingSystemVersion current = QOperatingSystemVersion::current();
+    if (current >= QOperatingSystemVersion::Windows10) {
+        supportEmojis = true;
+    }
+#elif defined(Q_OS_MACOS)
+    /* macOS supporte bien les emojis
+    supportEmojis = true;
+#elif defined(Q_OS_LINUX)
+    // Sur Linux, on teste si une police emoji est installée
+    QFontDatabase fontDb;
+    QStringList families = fontDb.families();
+    // Recherche de polices emoji courantes
+    if (families.contains("Noto Color Emoji") ||
+        families.contains("Twitter Color Emoji") ||
+        families.contains("Segoe UI Emoji")) {
+        supportEmojis = true;*/
+#endif
+
+    // --- 1. CALCUL DES SCORES AVEC CLASSEMENT ---
     vector<Joueur*> joueursClasses;
     for (auto it = Partie::getInstance().debutJoueurs(); it != Partie::getInstance().finJoueurs(); ++it) {
         joueursClasses.push_back(*it);
@@ -1476,22 +1516,39 @@ void MainWindow::afficherFinDePartie() {
         return a->getScore()->calculerScore() > b->getScore()->calculerScore();
     });
 
-    // Affichage avec médailles
+    // Choix des symboles selon le support
+    QStringList medailles;
+    QStringList couleursMedailles;
+
+    if (supportEmojis) {
+        // Version emoji (colorée nativement)
+        medailles = {"🥇", "🥈", "🥉", "🎖️"};
+        couleursMedailles = {"inherit", "inherit", "inherit", "inherit"}; // Pas besoin de couleur
+    } else {
+        // Version fallback (Unicode + couleurs)
+        medailles = {"★", "◆", "●", "○"};
+        couleursMedailles = {"#FFD700", "#C0C0C0", "#CD7F32", "#B8860B"};
+    }
+
     QString texteScores = "<div style='text-align: center; line-height: 180%;'>";
-    QStringList medailles = {"🥇", "🥈", "🥉", "🎖️"};
 
     for (size_t i = 0; i < joueursClasses.size(); ++i) {
         Joueur* j = joueursClasses[i];
-        QString couleur = (i == 0) ? "#E67E22" : "#734526"; // Orange pour le 1er
+        QString couleur = (i == 0) ? "#E67E22" : "#734526";
         QString bgColor = (i == 0) ? "rgba(230, 126, 34, 0.15)" : "rgba(115, 69, 38, 0.08)";
+        QString couleurMedaille = couleursMedailles[std::min((int)i, 3)];
+
+        int tailleMedaille = supportEmojis ? 20 : 24; // Emojis un peu plus petits
 
         texteScores += QString(
                            "<div style='background: %1; border-radius: 8px; padding: 12px; margin: 8px 0;'>"
-                           "   <span style='font-size: 20px;'>%2</span> "
-                           "   <span style='font-size: 18px; color: %3; font-weight: bold;'>%4</span> : "
-                           "   <span style='font-size: 22px; font-weight: bold; color: %3;'>%5 pts</span>"
+                           "   <span style='font-size: %2px; color: %3;'>%4</span> "
+                           "   <span style='font-size: 18px; color: %5; font-weight: bold;'>%6</span> : "
+                           "   <span style='font-size: 22px; font-weight: bold; color: %5;'>%7 pts</span>"
                            "</div>"
                            ).arg(bgColor)
+                           .arg(tailleMedaille)
+                           .arg(couleurMedaille)
                            .arg(medailles[std::min((int)i, 3)])
                            .arg(couleur)
                            .arg(QString::fromStdString(j->getNom()))
@@ -1499,33 +1556,42 @@ void MainWindow::afficherFinDePartie() {
     }
     texteScores += "</div>";
 
-    // --- 2. TEXTE DU VAINQUEUR AMÉLIORÉ ---
+    // --- 2. TEXTE DU VAINQUEUR ---
     vector<Joueur*> gagnants = Partie::getInstance().determinerGagnants();
     QString texteVainqueur;
 
     if (gagnants.size() == 1) {
+        QString symboleVictoire = supportEmojis ? "👑" : "♔";
+        QString couleurSymbole = supportEmojis ? "inherit" : "#FFD700";
+
         texteVainqueur = QString(
                              "<div style='text-align: center; margin: 30px 0;'>"
-                             "   <div style='font-size: 48px; margin-bottom: 10px;'>👑</div>"
+                             "   <div style='font-size: 60px; margin-bottom: 10px; color: %1;'>%2</div>"
                              "   <div style='font-size: 18px; color: #734526; letter-spacing: 2px; margin-bottom: 8px;'>VICTOIRE DE</div>"
                              "   <div style='font-size: 32px; font-weight: bold; color: #dc8d55; "
-                             "               text-shadow: 2px 2px 4px rgba(0,0,0,0.2);'>%1</div>"
+                             "               text-shadow: 2px 2px 4px rgba(0,0,0,0.2);'>%3</div>"
                              "   <div style='font-size: 14px; color: #734526; margin-top: 10px; font-style: italic;'>"
                              "      L'architecte le plus prestigieux d'Akropolis !"
                              "   </div>"
                              "</div>"
-                             ).arg(QString::fromStdString(gagnants[0]->getNom()).toUpper());
+                             ).arg(couleurSymbole)
+                             .arg(symboleVictoire)
+                             .arg(QString::fromStdString(gagnants[0]->getNom()).toUpper());
     } else {
+        QString symboleEgalite = supportEmojis ? "🤝" : "⚖";
+        QString couleurSymbole = supportEmojis ? "inherit" : "#dc8d55";
+
         texteVainqueur = QString(
-            "<div style='text-align: center; margin: 30px 0;'>"
-            "   <div style='font-size: 48px; margin-bottom: 10px;'>🤝</div>"
-            "   <div style='font-size: 28px; font-weight: bold; color: #dc8d55;'>ÉGALITÉ OLYMPIQUE !</div>"
-            "   <div style='font-size: 14px; color: #734526; margin-top: 10px;'>Les architectes partagent la gloire</div>"
-            "</div>"
-            );
+                             "<div style='text-align: center; margin: 30px 0;'>"
+                             "   <div style='font-size: 60px; margin-bottom: 10px; color: %1;'>%2</div>"
+                             "   <div style='font-size: 28px; font-weight: bold; color: #dc8d55;'>ÉGALITÉ OLYMPIQUE !</div>"
+                             "   <div style='font-size: 14px; color: #734526; margin-top: 10px;'>Les architectes partagent la gloire</div>"
+                             "</div>"
+                             ).arg(couleurSymbole)
+                             .arg(symboleEgalite);
     }
 
-    // --- 3. CRÉATION DE LA FENÊTRE PERSONNALISÉE (OVERLAY) ---
+    // --- 3. CRÉATION DE LA FENÊTRE (reste identique) ---
     QDialog overlay(this);
     overlay.setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
     overlay.setAttribute(Qt::WA_TranslucentBackground);
@@ -1541,7 +1607,6 @@ void MainWindow::afficherFinDePartie() {
     frameLayout->setContentsMargins(40, 40, 40, 40);
     frameLayout->setSpacing(20);
 
-    // Titre
     QLabel* lblTitre = new QLabel("FIN DE PARTIE", frame);
     QFont fontTitre;
     fontTitre.setPixelSize(30);
@@ -1553,20 +1618,17 @@ void MainWindow::afficherFinDePartie() {
     lblTitre->setAlignment(Qt::AlignCenter);
     frameLayout->addWidget(lblTitre);
 
-    // Vainqueur (AVANT les scores pour plus d'impact)
     QLabel* lblVainqueur = new QLabel(texteVainqueur, frame);
     lblVainqueur->setObjectName("vainqueur");
     lblVainqueur->setAlignment(Qt::AlignCenter);
     lblVainqueur->setTextFormat(Qt::RichText);
     frameLayout->addWidget(lblVainqueur);
 
-    // Liste des scores (classement avec médailles)
     QLabel* lblScores = new QLabel(texteScores, frame);
     lblScores->setAlignment(Qt::AlignCenter);
     lblScores->setTextFormat(Qt::RichText);
     frameLayout->addWidget(lblScores);
 
-    // Boutons
     QHBoxLayout* btnLayout = new QHBoxLayout();
 
     QPushButton* btnMenu = new QPushButton("MENU PRINCIPAL", frame);
@@ -1583,11 +1645,9 @@ void MainWindow::afficherFinDePartie() {
 
     layout->addWidget(frame);
 
-    // --- 4. CONNEXIONS ---
     connect(btnMenu, &QPushButton::clicked, &overlay, &QDialog::accept);
     connect(btnQuitter, &QPushButton::clicked, this, &MainWindow::quitterJeu);
 
-    // --- 5. AFFICHAGE MODAL ---
     if (overlay.exec() == QDialog::Accepted) {
         stackedWidget->setCurrentWidget(pageMenuPrincipal);
         sceneCite->clear();
