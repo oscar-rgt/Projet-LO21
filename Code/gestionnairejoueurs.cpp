@@ -40,10 +40,7 @@ Joueur* GestionnaireJoueurs::getJoueurActuel() const {
     return joueurs[indexJoueurActuel];
 }
 
-Joueur* GestionnaireJoueurs::getJoueur(int index) const {
-    if (index < 0 || index >= joueurs.size()) return nullptr;
-    return joueurs[index];
-}
+
 
 void GestionnaireJoueurs::designerArchitecteChefAleatoire() {
     if (joueurs.empty()) return;

@@ -55,7 +55,6 @@ public:
 
     // Vers GestionnaireJoueurs
     Joueur* getJoueurActuel() const { return gestionnaireJoueurs.getJoueurActuel(); }
-    Joueur* getJoueur(int index) const { return gestionnaireJoueurs.getJoueur(index); }
     int getIndexJoueurActuel() const { return gestionnaireJoueurs.getIndexJoueurActuel(); }
     int getNbJoueurs() const { return (int)gestionnaireJoueurs.getNbJoueurs(); }
     const vector<Joueur*>& getJoueurs() const { return gestionnaireJoueurs.getJoueurs(); }
@@ -66,7 +65,6 @@ public:
     const std::array<bool, 5>& getVariantes() const { return config.variantes; }
 
     // Vers Piles et Chantier
-    const vector<Pile*>& getPiles() const { return piles; }
     const Chantier& getChantier() const { return chantier; }
     Chantier& getChantier() { return chantier; }
     int getNbPiles() const { return static_cast<int>(piles.size()); }

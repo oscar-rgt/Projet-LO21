@@ -131,7 +131,8 @@ void Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
 
     if (config.estModeSolo() && !j->estIA()) {
         // En solo, les pierres vont à l'IA
-        for (auto* joueur : gestionnaireJoueurs.getJoueurs()) {
+        for (auto it = debutJoueurs(); it != finJoueurs(); ++it) {
+            Joueur* joueur = *it;
             if (joueur->estIA()) {
                 joueur->ajouterPierres(coutPierre);
                 break;

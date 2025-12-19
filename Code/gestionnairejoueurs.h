@@ -23,7 +23,6 @@ public:
     // Navigation
     void passerAuSuivant();
     Joueur* getJoueurActuel() const;
-    Joueur* getJoueur(int index) const;
 
     // Accesseurs
     size_t getNbJoueurs() const { return joueurs.size(); }

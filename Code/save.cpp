@@ -51,7 +51,6 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
     // ========================================
     // 5. PILES - SAUVEGARDE DÉTERMINISTE
     // ========================================
-    const vector<Pile*>& piles = partie.getPiles();
     f << partie.getNbPiles() << endl;
     
     for (auto it = partie.debutPiles(); it != partie.finPiles(); ++it) {
