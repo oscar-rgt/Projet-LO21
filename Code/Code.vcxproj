@@ -21,7 +21,9 @@
   <ItemGroup>
     <ClCompile Include="chantier.cpp" />
     <ClCompile Include="cite.cpp" />
+    <ClCompile Include="configjeu.cpp" />
     <ClCompile Include="coord.cpp" />
+    <ClCompile Include="gestionnairejoueurs.cpp" />
     <ClCompile Include="hexagone.cpp" />
     <ClCompile Include="jeuConsole.cpp" />
     <ClCompile Include="ia.cpp" />
@@ -37,7 +39,9 @@
   <ItemGroup>
     <ClInclude Include="chantier.h" />
     <ClInclude Include="cite.h" />
+    <ClInclude Include="configjeu.h" />
     <ClInclude Include="coord.h" />
+    <ClInclude Include="gestionnairejoueurs.h" />
     <ClInclude Include="hexagone.h" />
     <ClInclude Include="jeuConsole.h" />
     <ClInclude Include="ia.h" />

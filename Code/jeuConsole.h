@@ -5,7 +5,7 @@
 #include <string>
 #include <array>
 #include "quadrillageView.h"
-#include "partie.h" // Lien vers le moteur
+#include "partie.h" 
 
 class JeuConsole {
 public:
@@ -27,7 +27,7 @@ private:
     bool saisieOuiNon(const std::string& prompt);
 
     // Stockage temporaire des configurations avant l'envoi au moteur
-    Partie::TuileCite modeTuileCite;
+    TuileCite modeTuileCite;
     std::vector<std::string> nomsJoueurs;
     std::array<bool, 5> variantesActives = { false };
     Quadrillage vue;

@@ -1,9 +1,9 @@
 #include "jeuConsole.h"
 #include "joueur.h"
 #include "ia.h"
-#include "tuiles.h"
 #include "cite.h"
 #include "save.h"
+#include "score.h"
 #include <iostream>
 #include <limits>
 #include <algorithm>
@@ -404,7 +404,7 @@ void JeuConsole::demanderConfiguration() {
     }
 
     bool modeTuileCite = saisieOuiNon("Mode tuile cite augmente ?");
-    Partie::TuileCite mode = modeTuileCite ? Partie::TuileCite::AUGMENTE : Partie::TuileCite::STANDARD;
+    TuileCite mode = modeTuileCite ? TuileCite::AUGMENTE : TuileCite::STANDARD;
 
     if (saisieOuiNon("Activer les variantes ?")) {
         cout << "Selection des variantes :\n" << endl;
