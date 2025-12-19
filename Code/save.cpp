@@ -23,10 +23,13 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
 
     // 1. MODE DE JEU
     bool modeSolo = false;
-    if (partie.getJoueurs().size() >= 2) {
-        if (partie.getJoueurs()[1]->estIA()) {
+    int indexJ = 0;
+    for (auto it = partie.debutJoueurs(); it != partie.finJoueurs(); ++it) {
+        if (indexJ == 1 && (*it)->estIA()) {
             modeSolo = true;
+            break;
         }
+        indexJ++;
     }
     f << (modeSolo ? 1 : partie.getNbJoueurs()) << endl;
 
@@ -49,23 +52,18 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
     // 5. PILES - SAUVEGARDE DÉTERMINISTE
     // ========================================
     const vector<Pile*>& piles = partie.getPiles();
-    f << piles.size() << endl;
+    f << partie.getNbPiles() << endl;
     
-    for (Pile* p : piles) {
-        const auto& contenu = p->getTuiles();
-        f << contenu.size() << endl;
+    for (auto it = partie.debutPiles(); it != partie.finPiles(); ++it) {
+        Pile* p = *it;
+        f << p->getNbTuiles() << endl;
         
-        for (Tuile* t : contenu) {
-            // Métadonnées de la tuile
-            f << t->getId() << " " << t->getPrix() << " " << t->getInversion() << endl;
-            
-            // ========================================
-            // NOUVEAU : Sauvegarde des 3 hexagones
-            // ========================================
+        for (auto itT = p->begin(); itT != p->end(); ++itT) {
+            Tuile* t = *itT;
+            f << t->getId() << " " << t->getPrix() << " " << t->getInversion() << " " << endl;
             for (size_t h = 0; h < t->getNbHexagones(); h++) {
                 const Hexagone* hexa = t->getHexagone(static_cast<int>(h));
-                f << static_cast<int>(hexa->getType()) << " ";
-                f << hexa->getEtoiles() << " ";
+                f << static_cast<int>(hexa->getType()) << " " << hexa->getEtoiles() << " ";
             }
             f << endl;
         }
@@ -75,8 +73,8 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
     const Chantier& chantier = partie.getChantier();
     f << chantier.getNbTuiles() << endl;
     
-    for (size_t i = 0; i < chantier.getNbTuiles(); i++) {
-        const Tuile* t = chantier.getTuile(i);
+    for (auto it = chantier.begin(); it != chantier.end(); ++it){
+        const Tuile* t = *it;
         if (!t) continue;
         
         // Métadonnées
@@ -92,7 +90,8 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
     }
 
     // 7. JOUEURS
-    for (const Joueur* j : partie.getJoueurs()) {
+    for (auto itJ = partie.debutJoueurs(); itJ != partie.finJoueurs(); ++itJ) {
+        const Joueur* j = *itJ;
         if (!j) continue;
         
         string nom = j->getNom();

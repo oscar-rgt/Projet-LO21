@@ -17,7 +17,6 @@ public:
     unsigned int getId() const { return id; }
     int getNbTuiles() const { return static_cast<int>(tuiles.size()); }
     bool estVide() const { return tuiles.empty(); }
-    const std::vector<Tuile*>& getTuiles() const { return tuiles; }
     void vider() { tuiles.clear(); }
     void ajouterTuile(Tuile* t) { tuiles.push_back(t); }
 

@@ -69,7 +69,7 @@ public:
     const vector<Pile*>& getPiles() const { return piles; }
     const Chantier& getChantier() const { return chantier; }
     Chantier& getChantier() { return chantier; }
-    int getNbPiles() const { return (int)piles.size(); }
+    int getNbPiles() const { return static_cast<int>(piles.size()); }
     int getIndexPileActuelle() const { return indexPileActuelle; }
 
     // Fin de partie
@@ -87,15 +87,24 @@ public:
     void ajouterJoueur(Joueur* j) { gestionnaireJoueurs.ajouterJoueurExistant(j); }
     void ajouterPile(Pile* p) { piles.push_back(p); }
 
-    // ==========================================
-    // ITERATEURS
-    // ==========================================
-    auto debutJoueurs() { return gestionnaireJoueurs.begin(); }
-    auto finJoueurs() { return gestionnaireJoueurs.end(); }
+    GestionnaireJoueurs::Iterator debutJoueurs() const { return gestionnaireJoueurs.begin(); }
+    GestionnaireJoueurs::Iterator finJoueurs() const { return gestionnaireJoueurs.end(); }
 
-    // Itérateur Piles
-    auto debutPiles() const { return piles.begin(); }
-    auto finPiles() const { return piles.end(); }
+    // ITERATEUR PILES
+    class PileIterator {
+        friend class Partie;
+        vector<Pile*>::const_iterator current;
+        PileIterator(vector<Pile*>::const_iterator it) : current(it) {}
+    public:
+        PileIterator() {}
+        PileIterator& operator++() { ++current; return *this; }
+        bool operator!=(const PileIterator& other) const { return current != other.current; }
+        Pile* operator*() const { return *current; }
+        Pile* operator->() const { return *current; }
+    };
+
+    PileIterator debutPiles() const { return PileIterator(piles.begin()); }
+    PileIterator finPiles() const { return PileIterator(piles.end()); }
 
 private:
     Partie();

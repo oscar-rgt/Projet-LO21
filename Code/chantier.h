@@ -21,14 +21,7 @@ public:
     void vider() { 
         tuiles.clear(); 
     }
-
-    // Accesseurs pour l'affichage (références constantes)
-    const Tuile* getTuile(size_t index) const{
-    if (index >= tuiles.size()) return nullptr;
-    return tuiles[index];}
-
-
-
+    Tuile* getTuile(int index) const;
     void ajouterTuileSpecifique(Tuile* t);
 
     // ==========================================

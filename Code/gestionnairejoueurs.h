@@ -33,11 +33,22 @@ public:
     // Logique Architecte Chef (Premier Joueur)
     void designerArchitecteChefAleatoire();
 
-    // Itérateurs (pour compatibilité avec votre code existant)
-    auto begin() { return joueurs.begin(); }
-    auto end() { return joueurs.end(); }
-    auto begin() const { return joueurs.cbegin(); }
-    auto end() const { return joueurs.cend(); }
+    class Iterator {
+        // On itère sur le vecteur de joueurs
+        std::vector<Joueur*>::const_iterator current;
+    public:
+        Iterator(std::vector<Joueur*>::const_iterator it) : current(it) {}
+
+        Iterator& operator++() { ++current; return *this; }
+        bool operator!=(const Iterator& other) const { return current != other.current; }
+        bool operator==(const Iterator& other) const { return current == other.current; }
+
+        Joueur* operator*() const { return *current; }
+    };
+
+    // Méthodes de factory d'itérateur
+    Iterator begin() const { return Iterator(joueurs.begin()); }
+    Iterator end() const { return Iterator(joueurs.end()); }
 
     // Gestion Fin de partie
     std::vector<Joueur*> determinerGagnants();
