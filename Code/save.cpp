@@ -4,7 +4,7 @@
 #include "joueur.h"
 #include "ia.h" 
 #include "pile.h"
-#include "cite.h" 
+#include "cite.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -160,7 +160,7 @@ bool SaveManager::charger(Partie& partie, const string& nomFichier) {
     // MODE TUILE CITE
     int modeTuileInt;
     f >> modeTuileInt;
-    Partie::TuileCite modeTuile = static_cast<Partie::TuileCite>(modeTuileInt);
+    TuileCite modeTuile = static_cast<TuileCite>(modeTuileInt);
 
     // VARIANTES
     std::array<bool, 5> variantes;

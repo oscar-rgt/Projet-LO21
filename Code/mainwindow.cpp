@@ -1,6 +1,8 @@
 #include "mainwindow.h"
+#include "cite.h"
 #include "tuileitem.h"
 #include "save.h"
+#include "score.h"
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QMessageBox>
@@ -828,7 +830,7 @@ void MainWindow::validerConfiguration()
     }
 
     // Mode Tuiles
-    Partie::TuileCite mode = checkModeAugmente->isChecked() ? Partie::TuileCite::AUGMENTE : Partie::TuileCite::STANDARD;
+    TuileCite mode = checkModeAugmente->isChecked() ? TuileCite::AUGMENTE : TuileCite::STANDARD;
 
     // --- LANCEMENT DU MOTEUR ---
     try {

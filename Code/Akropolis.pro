@@ -3,6 +3,8 @@ QT += widgets
 HEADERS += \
     chantier.h \
     cite.h \
+    configjeu.h \
+    gestionnairejoueurs.h \
     hexagone.h \
     hexagoneitem.h \
     ia.h \
@@ -21,6 +23,8 @@ HEADERS += \
 SOURCES += \
     chantier.cpp \
     cite.cpp \
+    configjeu.cpp \
+    gestionnairejoueurs.cpp \
     hexagone.cpp \
     hexagoneitem.cpp \
     ia.cpp \
