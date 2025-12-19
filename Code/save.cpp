@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 #include <cstdio>
+#include <algorithm>
 
 using namespace std;
 
@@ -94,7 +95,9 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
     for (const Joueur* j : partie.getJoueurs()) {
         if (!j) continue;
         
-        f << j->getNom() << endl;
+        string nom = j->getNom();
+        std::replace(nom.begin(), nom.end(), ' ', '_');
+        f << nom << endl;
         f << j->getPierres() << endl;
 
         // CITE (Historique)
@@ -116,20 +119,30 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
         if (j->estIA()) {
             const IA* l_ia = dynamic_cast<const IA*>(j);
             if (l_ia) {
-                const auto& sesTuiles = l_ia->getTuilesAcquises();
-                f << sesTuiles.size() << endl;
-                
-                for (const Tuile* t : sesTuiles) {
+                int nbTuilesReelles = 0;
+                for (auto it = l_ia->begin(); it != l_ia->end(); ++it) {
+                    Tuile* t = *it; // Déréférencement de l'itérateur
+                    if (t && t->getId() != 0 && t->getNbHexagones() == 3) {
+                        nbTuilesReelles++;
+                    }
+                }
+                f << nbTuilesReelles << endl;
+                for (auto it = l_ia->begin(); it != l_ia->end(); ++it) {
+                    Tuile* t = *it;
                     if (!t) continue;
-                    
-                    // Métadonnées
+
+                    // Filtre : On ignore la tuile de départ
+                    if (t->getId() == 0 || t->getNbHexagones() != 3) {
+                        continue;
+                    }
+
+                    // Sauvegarde d'une tuile standard (3 hexagones)
                     f << t->getId() << " " << t->getPrix() << " " << t->getInversion() << endl;
                     
                     // Hexagones
-                    for (size_t h = 0; h < t->getNbHexagones(); h++) {
-                        const Hexagone* hexa = t->getHexagone(static_cast<int>(h));
-                        f << static_cast<int>(hexa->getType()) << " ";
-                        f << hexa->getEtoiles() << " ";
+                    for (int h = 0; h < 3; h++) {
+                        const Hexagone* hexa = t->getHexagone(h);
+                        f << static_cast<int>(hexa->getType()) << " " << hexa->getEtoiles() << " ";
                     }
                     f << endl;
                 }
@@ -271,7 +284,10 @@ bool SaveManager::charger(Partie& partie, const string& nomFichier) {
     // ========================================
     for (int i = 0; i < nombreParticipants; i++) {
         string nom;
-        f >> nom; 
+        f >> nom;
+
+        // --- A. GESTION DU NOM (_ -> Espaces) ---
+        std::replace(nom.begin(), nom.end(), '_', ' ');
 
         Joueur* j = nullptr;
         IA* ptrIA = nullptr;
@@ -334,7 +350,7 @@ bool SaveManager::charger(Partie& partie, const string& nomFichier) {
             bool inversion;
             
             if (!(f >> id >> prix >> inversion)) return false;
-            
+
             // Lire les hexagones
             struct HexaInfo { int type; int etoiles; };
             HexaInfo hexas[3];

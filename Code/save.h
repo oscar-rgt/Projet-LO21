@@ -1,8 +1,14 @@
 #ifndef SAVE_H
 #define SAVE_H
+#include"except.h"
 
 #include <string>
 class Partie;
+
+class SaveException : public AkropolisException {
+public:
+    SaveException(const std::string& i) : AkropolisException(i) {}
+};
 
 class SaveManager {
 public:
