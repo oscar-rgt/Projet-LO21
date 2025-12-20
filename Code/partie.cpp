@@ -119,7 +119,7 @@ void Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
     //sinon on renvoie une erreur et on remet la rotation/inversion à leur état initial
     catch (const CiteException& e) {
         for (int r = 0; r < (3 - rotation) % 3; ++r) t->tourner();
-        if (t->inversion) t->inverser();
+        if (t->getInversion()) t->inverser();
         throw;
     }
 

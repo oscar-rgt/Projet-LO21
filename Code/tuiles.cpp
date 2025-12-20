@@ -31,26 +31,21 @@ int randomPlaceValue() {
 
 Tuile::Tuile(unsigned int i, unsigned int p) : id(i), inversion(0), prix(p), design()
 {
-    cout << "[DEBUG] Création de la tuile ID=" << id << ", Prix=" << prix << endl;
     hexagones.resize(3); // Initialize vector with 3 elements
     auto itHex = hexagones.begin();
 
     for (int k = 0; k < 3; k++, ++itHex) {
         int t = randomIndexAkropolis();
-        cout << "[DEBUG]   Hexagone " << k << " : Type=" << t << endl;
 
         if (TypeQuartier(t) == Carriere) {
             *itHex = new Hexagone(TypeQuartier(t), 0, this);
-            cout << "[DEBUG]     Hexagone " << k << " est une carrière." << endl;
         } else {
             bool place = randomPlaceValue();
             if (place) {
                 int etoiles = randomStarValue();
-                *itHex = new Hexagone(TypeQuartier(t), 0, this, etoiles, place);
-                cout << "[DEBUG]     Hexagone " << k << " est une place avec " << etoiles << " étoiles." << endl;
+                *itHex = new Hexagone(TypeQuartier(t), 0, this, etoiles, place);;
             } else {
                 *itHex = new Hexagone(TypeQuartier(t), 0, this);
-                cout << "[DEBUG]     Hexagone " << k << " est un quartier standard." << endl;
             }
         }
     }
@@ -183,10 +178,8 @@ string& Tuile::getDesign() {
 }
 
 void Tuile::reconstruireHexagone(int index, int typeInt, int etoiles) {
-    cout << "[DEBUG] Reconstruction de l'hexagone " << index << " : Type=" << typeInt << ", Étoiles=" << etoiles << endl;
 
     if (index < 0 || index >= (int)hexagones.size()) {
-        cout << "[DEBUG]   Index invalide !" << endl;
         return;
     }
 
@@ -197,7 +190,6 @@ void Tuile::reconstruireHexagone(int index, int typeInt, int etoiles) {
     h->etoiles = etoiles;
     h->place = (etoiles > 0);
 
-    cout << "[DEBUG]   Hexagone " << index << " reconstruit avec succès." << endl;
 }
 
 bool Tuile::contientPlace() const{

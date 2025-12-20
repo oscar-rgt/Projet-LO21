@@ -4,11 +4,9 @@
 #include <vector>
 
 Pile::Pile(unsigned int id_, unsigned int nb) : id(id_) {
-    cout << "[DEBUG] Création de la pile " << id_ << " avec " << nb << " tuiles." << endl;
     tuiles.reserve(nb);
     for (unsigned int i = 0; i < nb; i++) {
         Tuile* t = new Tuile(id_ * 10 + i, i + 1);
-        cout << "[DEBUG]   Tuile créée : ID=" << t->getId() << ", Prix=" << t->getPrix() << endl;
         tuiles.push_back(t);
     }
 }

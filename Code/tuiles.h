@@ -15,7 +15,6 @@ public:
 };
 
 class Tuile {
-	friend class Partie;
 protected:
 	friend class Pile;
 	unsigned int id;
