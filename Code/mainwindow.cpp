@@ -46,6 +46,9 @@ MainWindow::MainWindow(QWidget *parent)
     setWindowTitle("Akropolis - Qt");
     resize(1024, 768);
 
+    setFocusPolicy(Qt::StrongFocus);
+
+
     // --- THEME GRAPHIQUE AKROPOLIS ---
     // On définit une palette globale inspirée du jeu
     QString styleGlobal = R"(
@@ -837,6 +840,9 @@ void MainWindow::validerConfiguration()
     // --- LANCEMENT DU MOTEUR ---
     try {
         Partie::getInstance().initialiser(nbJoueurs, noms, mode, variantes, niveauIA);
+
+        // Afficher la fenêtre d'information sur les raccourcis
+        afficherInfoRaccourcisClavier();
 
         // Changement de page
         stackedWidget->setCurrentWidget(pageJeu);
@@ -1655,5 +1661,109 @@ void MainWindow::afficherFinDePartie() {
     }
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+    // Vérifie si une tuile est sélectionnée
+    if (indexTuileSelectionnee == -1) {
+        QMainWindow::keyPressEvent(event);
+        return;
+    }
+
+    // Récupère la tuile sélectionnée
+    const Chantier& chantier = Partie::getInstance().getChantier();
+    if (indexTuileSelectionnee >= chantier.getNbTuiles()) {
+        QMainWindow::keyPressEvent(event);
+        return;
+    }
+
+    auto it = chantier.begin();
+    for (int i = 0; i < indexTuileSelectionnee; ++i) {
+        ++it;
+    }
+    Tuile* t = *it;
+
+    // Gestion de la touche P (pivoter)
+    if (event->key() == Qt::Key_P) {
+        t->tourner();
+        rotationCompteur = (rotationCompteur + 1) % 3;
+        mettreAJourInterface();
+    }
+    // Gestion de la touche I (inverser)
+    else if (event->key() == Qt::Key_I) {
+        t->inverser();
+        inversionEtat = !inversionEtat;
+        mettreAJourInterface();
+    }
+    // Gestion de la touche Entrée (valider le placement)
+    else if ((event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) && previewActive) {
+        onValidationClicked(); // Appelle la même fonction que le bouton "Valider Placement"
+    }
+    else {
+        // Passe l'événement au parent pour les autres touches
+        QMainWindow::keyPressEvent(event);
+    }
+}
 
 
+void MainWindow::afficherInfoRaccourcisClavier()
+{
+    // Fenêtre modale
+    QDialog dialog(this);
+    dialog.setWindowTitle("Astuce : Raccourcis Clavier");
+    dialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
+    dialog.setFixedSize(420, 280);
+
+    // Layout principal
+    QVBoxLayout* layout = new QVBoxLayout(&dialog);
+    layout->setContentsMargins(15, 15, 15, 15);
+
+    // Cadre unifié
+    QFrame* frame = new QFrame(&dialog);
+    frame->setProperty("class", "CadreConfig");
+
+    QVBoxLayout* frameLayout = new QVBoxLayout(frame);
+    frameLayout->setSpacing(15);
+
+    // Titre
+    QLabel* titre = new QLabel("Astuce : Raccourcis Clavier", frame);
+    titre->setAlignment(Qt::AlignCenter);
+    titre->setStyleSheet(
+        "font-size: 18px;"
+        "font-weight: bold;"
+        "color: #dc8d55;"
+        );
+    frameLayout->addWidget(titre);
+
+    // Texte explicatif (MIS À JOUR)
+    QLabel* texte = new QLabel(frame);
+    texte->setAlignment(Qt::AlignCenter);
+    texte->setWordWrap(true);
+    texte->setText(
+        "Vous pouvez utiliser les touches du clavier :<br><br>"
+        "<span style='font-weight:bold; color:#dc8d55; font-size:16px;'>P</span>"
+        " : Pivoter la tuile sélectionnée<br>"
+        "<span style='font-weight:bold; color:#dc8d55; font-size:16px;'>I</span>"
+        " : Inverser la tuile sélectionnée<br>"
+        "<span style='font-weight:bold; color:#dc8d55; font-size:16px;'>Entrée</span>"
+        " : Valider le placement de la tuile<br><br>"
+        "Les boutons <b>Pivoter Tuile</b>, <b>Inverser Tuile</b> "
+        "et <b>Valider Placement</b> restent disponibles."
+        );
+    texte->setStyleSheet(
+        "color: #4E2E1E;"
+        "font-size: 14px;"
+        );
+    frameLayout->addWidget(texte);
+
+    // Bouton OK
+    QPushButton* btnOk = new QPushButton("OK, compris !", frame);
+    btnOk->setProperty("class", "BoutonMenu");
+    btnOk->setDefault(true);
+    btnOk->setAutoDefault(true);
+
+    connect(btnOk, &QPushButton::clicked, &dialog, &QDialog::accept);
+    frameLayout->addWidget(btnOk, 0, Qt::AlignCenter);
+
+    layout->addWidget(frame);
+    dialog.exec();
+}
