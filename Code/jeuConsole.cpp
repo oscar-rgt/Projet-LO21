@@ -24,6 +24,7 @@ int JeuConsole::saisieNombre(const string& prompt, int min, int max) {
     cout << prompt << " (" << min << " - " << max << ") : ";
     while (!(cin >> reponse) || reponse < min || reponse > max) {
         cout << "Erreur. Entrez un nombre entre " << min << " et " << max << " : ";
+        //si l'utilisateur saisie un mauvais nombre on efface le buffer et on redemande
         cin.clear();
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
     }
@@ -49,14 +50,12 @@ void JeuConsole::afficherChantier() {
     const int largeur_reelle = 20;
     const int largeur_visuelle = 19;
 
-
-    // Calcul : Total piles - Index pile actuelle
     int pilesRestantes = Partie::getInstance().getNbPiles() - Partie::getInstance().getIndexPileActuelle();
     cout << "\n=== CHANTIER === " << pilesRestantes << " pile(s) restante(s)" << endl;
 
-    // --- 2. AFFICHAGE DES TUILES VIA ITÉRATEUR ---
+    //affichage des tuiles du chantier
     for (auto it = chantier.begin(); it != chantier.end(); ++it) {
-        Tuile* t = *it; // Accès à la tuile via l'itérateur
+        Tuile* t = *it; 
         string designTuile = t->getDesign();
         for (int j = 0; j < hauteur; j++) {
             string segment = designTuile.substr(j * largeur_reelle, largeur_visuelle);
@@ -69,9 +68,8 @@ void JeuConsole::afficherChantier() {
     }
     cout << "\n\n";
 
-    // --- 3. AFFICHAGE DES PRIX VIA ITÉRATEUR ---
+    //affichage du prix des tuiles
     for (auto it = chantier.begin(); it != chantier.end(); ++it) {
-        // (*it) donne le pointeur Tuile*, donc (*it)->getPrix() donne le prix
         int pierres = (*it)->getPrix();
         cout << "    ";
         cout << pierres << " pierres";
@@ -97,21 +95,17 @@ void JeuConsole::afficherEtatJeu() {
     else {
         Cite * c = j->getCite();
         if (!c) throw AkropolisException("Cite non initialisée");
-        // --- NOUVEAU CODE D'AFFICHAGE ---
 
-        // 1. On vide la vue des tours précédents
         vue.reset(); 
 
-        // 2. On remplit la vue avec les hexagones de la cité du joueur
+        //on remplit la cité du joueur avec ses tuiles
         for (auto it = c->begin(); it != c->end(); ++it) {
-            // it->first est la Coord, it->second est l'Hexagone*
             vue.remplir(it->first, it->second);
         }
 
-        // 3. On demande à la vue de dessiner le résultat
+        //on dessine le résultat sur l'écran
         vue.afficher();
 
-        // --------------------------------
         afficherChantier();
     }
 
@@ -125,7 +119,6 @@ void JeuConsole::jouerTour() {
 
     Joueur* j = Partie::getInstance().getJoueurActuel();
 
-    // --- TOUR IA (Inchangé) ---
     if (j->estIA()) {
         cout << "\n\n--- TOUR DE L'IA ---" << endl;
         cout << "\nL'Illustre Constructeur reflechit..." << endl;
@@ -134,27 +127,26 @@ void JeuConsole::jouerTour() {
         try {
             cout << "\n\nL'IA choisit la tuile " << indexChoisi << endl;
             cout << "Appuyez sur une touche pour continuer...";
+            //simule un appui sur entrée puis vide le buffer
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
             cin.get();
         }
         catch (const PartieException& e) {
             cout << "L'IA a rencontre une erreur : " << e.what() << endl;
         }
-        return;
+        return; //si c'est l'IA on quitte la fonction
     }
-
-    // --- TOUR HUMAIN ---
-
+    
+    //tour du joueur humain
     const auto& chantier = Partie::getInstance().getChantier();
 
     int maxChoix = chantier.getNbTuiles() - 1;
 
     cout << "\n--- ACTION ---" << endl;
     
-    // MODIFICATION 1 : On appelle saisieNombre avec min = -1
     int index = saisieNombre("Quelle tuile choisir ? (-1 pour Sauvegarder & Quitter)", -1, (int)maxChoix);
-
-    // MODIFICATION 2 : Gestion de la sauvegarde
+   
+    //cas de la sauvegarde (choix -1)
     if (index == -1) {
         if (saisieOuiNon("Voulez-vous sauvegarder et quitter la partie ?")) {
             cout << "\nSauvegarde en cours..." << endl;
@@ -165,22 +157,22 @@ void JeuConsole::jouerTour() {
             }
             
             cout << "A bientot !" << endl;
-            exit(0); // On ferme le programme proprement
+            exit(0);
         } else {
-            // Si on annule, on relance le tour
+            //Si on annule, on relance le tour
             jouerTour(); 
             return;
         }
     }
 
-    // 2. Récupérer la tuile choisie (Suite logique inchangée)
+    //récupére la tuile choisie
     auto itTuile = chantier.begin();
     for (int k = 0; k < index; ++k) {
         ++itTuile;
     }
     Tuile* tuileAffichee = *itTuile;
 
-    // --- MODE PREVISUALISATION (Inchangé) ---
+    //prévisualisation :
     bool placementValide = false;
     int rotationCompteur = 0;
     bool inversionEtat = false;
@@ -203,11 +195,12 @@ void JeuConsole::jouerTour() {
             tuileAffichee->inverser();
         }
         else if (choix == "A" || choix == "a") {
-            // Reset visuel avant d'annuler
+
+            //si on annule la tuile revient à son état initial
             if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser();
             for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) tuileAffichee->tourner();
             
-            jouerTour(); // On recommence le tour
+            jouerTour(); //et on recommence le tour
             return;
         }
         else if (choix == "V" || choix == "v") {
@@ -215,7 +208,7 @@ void JeuConsole::jouerTour() {
         }
     }
 
-    // Placement (Inchangé)
+    //choix des coordonnées
     int x = saisieNombre("Coord X", -999, 999);
     int y = saisieNombre("Coord Y", -99, 999);
     int z = saisieNombre("Coord Z (Niveau)", 0, 10);
@@ -249,7 +242,7 @@ void JeuConsole::jouerTour() {
         }
     }
     else {
-        // Annulation finale
+        //si le joueur annule, on remet la tuile choisie dans son état initial et on rejoue le tour
         if (tuileAffichee->getInversion() != 0) tuileAffichee->inverser(); 
         for (int i = 0; i < (3 - rotationCompteur) % 3; ++i) tuileAffichee->tourner(); 
         jouerTour();
@@ -258,30 +251,30 @@ void JeuConsole::jouerTour() {
 
 void JeuConsole::lancer() {
 
-    // --- ECRAN TITRE --- (identique à avant)
+    
     cout << "\n\n\n\n\n\n\n";
-    cout << "                __       __   ___   _______     ______    _______    ______    ___        __      ________  " << endl;
-    cout << "               /\"\"\\     |/\"| /  \") /\"      \\   /    \" \\  |   __ \"\\  /    \" \\  |\"  |      |\" \\    /\"       ) " << endl;
-    cout << "              /    \\    (: |/   / |:        | // ____  \\ (. |__) :)// ____  \\ ||  |      ||  |  (:   \\___/  " << endl;
-    cout << "             /' /\\  \\   |    __/  |_____/   )/  /    ) :)|:  ____//  /    ) :)|:  |      |:  |   \\___  \\    " << endl;
-    cout << "            //  __'  \\  (// _  \\   //      /(: (____/ // (|  /   (: (____/ //  \\  |___   |.  |    __/  \\\\   " << endl;
-    cout << "           /   /  \\\\  \\ |: | \\  \\ |:  __   \\ \\        / /|__/ \\   \\        /  ( \\_|:  \\  /\\  |\\  /\" \\   :)  " << endl;
-    cout << "          (___/    \\___)(__|  \\__)|__|  \\___) \\\"_____/ (_______)   \\\"_____/    \\_______)(__\\_|_)(_______/   " << endl;
+    cout << "                                    __       __   ___   _______     ______    _______    ______    ___        __      ________  " << endl;
+    cout << "                                   /\"\"\\     |/\"| /  \") /\"      \\   /    \" \\  |   __ \"\\  /    \" \\  |\"  |      |\" \\    /\"       ) " << endl;
+    cout << "                                  /    \\    (: |/   / |:        | // ____  \\ (. |__) :)// ____  \\ ||  |      ||  |  (:   \\___/  " << endl;
+    cout << "                                 /' /\\  \\   |    __/  |_____/   )/  /    ) :)|:  ____//  /    ) :)|:  |      |:  |   \\___  \\    " << endl;
+    cout << "                                //  __'  \\  (// _  \\   //      /(: (____/ // (|  /   (: (____/ //  \\  |___   |.  |    __/  \\\\   " << endl;
+    cout << "                               /   /  \\\\  \\ |: | \\  \\ |:  __   \\ \\        / /|__/ \\   \\        /  ( \\_|:  \\  /\\  |\\  /\" \\   :)  " << endl;
+    cout << "                              (___/    \\___)(__|  \\__)|__|  \\___) \\\"_____/ (_______)   \\\"_____/    \\_______)(__\\_|_)(_______/   " << endl;
     cout << "\n\n";
 
 
 
 
-    cout << "                              ===========================================================" << endl;
-    cout << "                                         B I E N V E N U E   D A N S   L A               " << endl;
-    cout << "                                            C I T E   D E S   D I E U X                  " << endl;
-    cout << "                              ===========================================================" << endl;
+    cout << "                                                  ===========================================================" << endl;
+    cout << "                                                             B I E N V E N U E   D A N S   L A               " << endl;
+    cout << "                                                                C I T E   D E S   D I E U X                  " << endl;
+    cout << "                                                  ===========================================================" << endl;
     cout << "\n\n";
-    cout << "                                        >>> APPUYEZ SUR ENTREE POUR COMMENCER <<<        " << endl;
+    cout << "                                                            >>> APPUYEZ SUR ENTREE POUR COMMENCER <<<        " << endl;
     cout << "\n\n\n\n\n";
 
 
-    //Crédits
+
     cout << "-----------------------------------------------------------" << endl;
     cout << " LO21 - Programmation C++ | Semestre Automne 2025          " << endl;
     cout << " Oscar.R, Louane.R, Valentin.R, Noemie.M, Jeanne.D     " << endl;
@@ -294,7 +287,7 @@ void JeuConsole::lancer() {
     unsigned int choixMenu;
     bool partieChargeeSucces = false;
 
-    // --- BOUCLE MENU ---
+    //boucle menu
     do {
         nettoyerEcran();
         cout << "1. JOUER UNE PARTIE" << endl;
@@ -308,16 +301,15 @@ void JeuConsole::lancer() {
         switch (choixMenu)
         {
         case 1:
-            // Nouvelle partie : on sort juste de la boucle
-            // partieChargeeSucces reste à false
+            //si le joueur choisi de jouer une partie, on sort de la boucle
             break;
 
         case 2: {
             cout << "\nChargement..." << endl;
             if (SaveManager::charger(Partie::getInstance(), "save.txt")) {
                 cout << ">> Succes !" << endl;
-                partieChargeeSucces = true; // On retient qu'on a chargé
-                choixMenu = 1; // On force la sortie du menu
+                partieChargeeSucces = true; 
+                choixMenu = 1; //on force la sortie du menu
                 
                 cout << "Appuyez sur Entree pour reprendre...";
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -342,34 +334,31 @@ void JeuConsole::lancer() {
         }
     } while (choixMenu != 1);
 
-    // --- GESTION DE LA CONFIGURATION ---
+
     nettoyerEcran();
 
     // C'EST ICI LA CORRECTION PRINCIPALE :
     if (partieChargeeSucces) {
-        // Si on a chargé une partie, ON NE FAIT RIEN DE PLUS.
         cout << ">> Reprise de la partie sauvegardee..." << endl;
-        // On laisse une pause
         cout << "Appuyez sur Entree...";
     } 
     else {
-        // Si c'est une nouvelle partie (pas chargée) : ON CONFIGURE
+        //si la partie n'a pas été chargée, on demande la configuration
         demanderConfiguration();
     }
 
-    // --- BOUCLE DE JEU ---
+    //boucle de jeu
     while (!Partie::getInstance().estFinDePartie()) {
         jouerTour();
     }
     SaveManager::supprimerSauvegarde("save.txt");;
-    // --- FIN DE PARTIE ---
+
     nettoyerEcran();
     cout << "=== FIN DE PARTIE ===" << endl;
 
     cout << "\n--- SCORES ---" << endl;
 	int s = 0;
 
-    // Utilisation de debutJoueurs() et finJoueurs() au lieu de l'index
     for (auto it = Partie::getInstance().debutJoueurs(); it != Partie::getInstance().finJoueurs(); ++it) {
         Joueur* j = *it;
         if (!j) throw AkropolisException("Joueur non initialisé");
@@ -379,6 +368,26 @@ void JeuConsole::lancer() {
         s = j->getScore()->calculerScore();
 
         cout << j->getNom() << " : " << s << " points (" << j->getPierres() << " pierres)" << endl;
+    }
+
+    //determination du vainqueur
+    vector<Joueur*> gagnants = Partie::getInstance().determinerGagnants();
+
+    if (gagnants.empty()) {
+        cout << "\nErreur : Aucun vainqueur determine." << endl;
+    } 
+    else if (gagnants.size() == 1) {
+        cout << "\n##########################################" << endl;
+        cout << "   LE VAINQUEUR EST : " << gagnants[0]->getNom() << " !" << endl;
+        cout << "##########################################" << endl;
+    } 
+    else {
+        cout << "\n##########################################" << endl;
+        cout << "   EGALITE ENTRE :" << endl;
+        for (auto* g : gagnants) {
+            cout << "   - " << g->getNom() << endl;
+        }
+        cout << "##########################################" << endl;
     }
 
     cout << "\n\nAppuyez sur Entree pour quitter.";

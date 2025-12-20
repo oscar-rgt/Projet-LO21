@@ -49,6 +49,7 @@ public:
 	// Méthode statique pour créer une tuile sans passer par une Pile
 	// (Utile pour le chargement de partie)
 	static Tuile* fabriquer(unsigned int id, unsigned int prix) {return new Tuile(id, prix);}
+	bool contientPlace() const;
 };
 
 // Tuile spécifique : tuile avec 4 hexagones 

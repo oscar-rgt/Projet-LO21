@@ -358,6 +358,7 @@ Score::~Score() {
 }
 
 int Score::calculerScore() const {
+    if (!joueur) return 0;
     int totalCalcule = 0;
     // Cas spécial : IA (Optimisation)
     // Si c'est une IA, elle utilise un calcul simplifié 

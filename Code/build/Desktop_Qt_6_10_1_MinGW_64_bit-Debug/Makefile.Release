@@ -1420,7 +1420,13 @@ release/mainwindow.o: ../../mainwindow.cpp ../../mainwindow.h \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/QGraphicsProxyWidget \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qgraphicsproxywidget.h \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qgraphicswidget.h \
-		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qgraphicslayoutitem.h
+		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qgraphicslayoutitem.h \
+		C:/Qt/6.10.1/mingw_64/include/QtCore/QOperatingSystemVersion \
+		C:/Qt/6.10.1/mingw_64/include/QtCore/qoperatingsystemversion.h \
+		C:/Qt/6.10.1/mingw_64/include/QtCore/qversionnumber.h \
+		C:/Qt/6.10.1/mingw_64/include/QtCore/qtyperevision.h \
+		C:/Qt/6.10.1/mingw_64/include/QtGui/QFontDatabase \
+		C:/Qt/6.10.1/mingw_64/include/QtGui/qfontdatabase.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\mainwindow.o ..\..\mainwindow.cpp
 
 release/partie.o: ../../partie.cpp ../../partie.h \
@@ -1444,6 +1450,7 @@ release/pile.o: ../../pile.cpp ../../pile.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\pile.o ..\..\pile.cpp
 
 release/save.o: ../../save.cpp ../../save.h \
+		../../except.h \
 		../../partie.h \
 		../../configjeu.h \
 		../../gestionnairejoueurs.h \
@@ -1453,7 +1460,6 @@ release/save.o: ../../save.cpp ../../save.h \
 		../../tuiles.h \
 		../../hexagone.h \
 		../../pile.h \
-		../../except.h \
 		../../cite.h \
 		../../coord.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\save.o ..\..\save.cpp

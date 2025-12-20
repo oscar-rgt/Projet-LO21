@@ -6,7 +6,6 @@
 #include "joueur.h"
 #include "ia.h"
 
-
 class GestionnaireJoueurs {
 private:
     std::vector<Joueur*> joueurs;
@@ -16,24 +15,26 @@ public:
     GestionnaireJoueurs();
     ~GestionnaireJoueurs();
 
-    // Gestion de la liste
     void initialiser(const std::vector<std::string>& noms, bool modeSolo, unsigned int niveauIA);
     void vider();
 
-    // Navigation
     void passerAuSuivant();
     Joueur* getJoueurActuel() const;
 
-    // Accesseurs
     size_t getNbJoueurs() const { return joueurs.size(); }
     int getIndexJoueurActuel() const { return static_cast<int>(indexJoueurActuel); }
     void setIndexJoueurActuel(int idx) { indexJoueurActuel = idx; }
 
-    // Logique Architecte Chef (Premier Joueur)
     void designerArchitecteChefAleatoire();
 
+    std::vector<Joueur*> determinerGagnants();
+
+    //pour sauvegarde
+    void ajouterJoueurExistant(Joueur* j);
+    const std::vector<Joueur*>& getJoueurs() const { return joueurs; }
+
     class Iterator {
-        // On itère sur le vecteur de joueurs
+        friend class GestionnaireJoueurs;
         std::vector<Joueur*>::const_iterator current;
     public:
         Iterator(std::vector<Joueur*>::const_iterator it) : current(it) {}
@@ -45,16 +46,8 @@ public:
         Joueur* operator*() const { return *current; }
     };
 
-    // Méthodes de factory d'itérateur
     Iterator begin() const { return Iterator(joueurs.begin()); }
     Iterator end() const { return Iterator(joueurs.end()); }
-
-    // Gestion Fin de partie
-    std::vector<Joueur*> determinerGagnants();
-
-    // Pour la sauvegarde
-    void ajouterJoueurExistant(Joueur* j);
-    const std::vector<Joueur*>& getJoueurs() const { return joueurs; }
 };
 
-#endif // GESTIONNAIRE_JOUEURS_H
+#endif 

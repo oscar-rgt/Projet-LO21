@@ -13,47 +13,47 @@ Partie& Partie::getInstance() {
 Partie::Partie() : indexPileActuelle(0) {}
 
 Partie::~Partie() {
-    // GestionnaireJoueurs se nettoie tout seul
     for (auto p : piles) delete p;
     piles.clear();
     chantier.vider();
+    //gestionnaire joueurs gère sa destruction
 }
 
 void Partie::resetPourChargement() {
-    gestionnaireJoueurs.vider(); // Délégation
+    gestionnaireJoueurs.vider(); 
     chantier.vider();
     for (auto p : piles) delete p;
     piles.clear();
     indexPileActuelle = 0;
-    config = ConfigJeu(); // Reset config par défaut
+    config = ConfigJeu(); //config par défaut
 }
 
 void Partie::initialiser(int nb, const vector<string>& noms, TuileCite mode, const array<bool, 5>& vars, unsigned int nivIC) {
     resetPourChargement();
 
-    // 1. Configurer
+    //config du jeu
     config.nbJoueurs = nb;
     config.modeTuileCite = mode;
     config.variantes = vars;
     config.niveauIllustreConstructeur = nivIC;
 
-    // 2. Initialiser les joueurs (Délégation)
+    //init. joueurs
     gestionnaireJoueurs.initialiser(noms, config.estModeSolo(), nivIC);
 
-    // 3. Préparer le matériel
+    //init. piles
     initialiserPiles();
 
-    // 4. Déterminer qui commence
+    //determiner qui commence à jouer
     if (!config.estModeSolo()) {
         gestionnaireJoueurs.designerArchitecteChefAleatoire();
     }
-    // En solo, c'est toujours l'humain (index 0) qui commence, géré par défaut.
+    //si le jeu est solo l'humain commence par défaut
 }
 
 void Partie::initialiserPiles() {
-    int nbPiles = 11;
+    int nbPiles = 11; //nb piles par défaut
 
-    if (config.modeTuileCite == TuileCite::AUGMENTE) {
+    if (config.modeTuileCite == TuileCite::AUGMENTE) { //nb piles en mode augmenté
         size_t n = gestionnaireJoueurs.getNbJoueurs();
         if (n == 2) nbPiles = 19;
         else if (n == 3) nbPiles = 15;
@@ -97,11 +97,8 @@ bool Partie::estFinDePartie() const {
     return (indexPileActuelle == piles.size() && chantier.getNbTuiles() == 1);
 }
 
-// =========================================================
-// ACTION PRINCIPALE : L'ORCHESTRATION DU JEU
-// =========================================================
 void Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
-    // 1. Récupération Tuile
+    //on recupere la tuile choisie par le joueur
     auto itTuile = chantier.begin();
     for (int i = 0; i < index; ++i) {
         ++itTuile;
@@ -109,28 +106,30 @@ void Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
     }
     Tuile* t = *itTuile;
 
-    // 2. Vérification Joueur
+    //on recupere le joueur qui est en train de jouer
     Joueur* j = gestionnaireJoueurs.getJoueurActuel();
 
-    // 3. Vérification Coût
+    //on verifie qu'il ait assez de pierres
     int coutPierre = index;
     if (j->getPierres() < coutPierre) throw PartieException("Pas assez de pierres !");
 
-    // 4. Placement (Tentative)
+    //on place la tuile si possible
     try {
         j->getCite()->placer(t, { x, y, z }, j, rotation);
     }
+    //sinon on renvoie une erreur et on remet la rotation/inversion à leur état initial
     catch (const CiteException& e) {
         for (int r = 0; r < (3 - rotation) % 3; ++r) t->tourner();
         if (t->getInversion()) t->inverser();
         throw;
     }
 
-    // 5. Paiement et distribution des pierres
+    //le joueur depense les pierres que coutent la tuile choisie
     j->utiliserPierres(coutPierre);
 
+
     if (config.estModeSolo() && !j->estIA()) {
-        // En solo, les pierres vont à l'IA
+        //En mode solo les pierres vont à l'IA
         for (auto it = debutJoueurs(); it != finJoueurs(); ++it) {
             Joueur* joueur = *it;
             if (joueur->estIA()) {
@@ -140,7 +139,8 @@ void Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
         }
     }
     else {
-        // En multi, pierres sur les tuiles sautées
+        //En mode multi, on redistribue le prix sur les tuiles restantes du chantier
+        //En mode solo, la redistribution est gérée dans la methode jouerTourIA
         auto itPaiement = chantier.begin();
         for (int k = 0; k < index; ++k) {
             (*itPaiement)->setPrix((*itPaiement)->getPrix() + 1);
@@ -148,19 +148,25 @@ void Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
         }
     }
 
+    //on calcule le nouveau score du joueur
     j->getScore()->calculerScore();
+
+    //on enleve la tuile du chantier
     chantier.retirerTuile(t);
 
+    //si la partie n'est pas fini, on essaie de remplir le chantier
     if (!estFinDePartie()) remplirChantier();
 
     passerAuJoueurSuivant();
 }
 
 int Partie::jouerTourIA() {
+    //verification que l'ia joue bien 
     Joueur* j = gestionnaireJoueurs.getJoueurActuel();
     IA* ia = dynamic_cast<IA*>(j);
     if (!ia) return -1;
 
+    //l'ia choisi sa tuile
     int indexChoisi = ia->choisirTuile(chantier);
 
     auto it = chantier.begin();
@@ -168,16 +174,18 @@ int Partie::jouerTourIA() {
     Tuile* t = *it;
 
     if (indexChoisi > 0) {
+        //l'ia depense ses pierres
         ia->utiliserPierres(indexChoisi);
         auto itP = chantier.begin();
         for (int i = 0; i < indexChoisi; i++) {
+            //redistribution des pierres sur les tuiles restantes du chantier
             (*itP)->setPrix((*itP)->getPrix() + 1);
             ++itP;
         }
     }
 
-    ia->ajouterPierres(t->getPrix());
     ia->ajouterTuile(t);
+
     chantier.retirerTuile(t);
 
     if (!estFinDePartie()) remplirChantier();
