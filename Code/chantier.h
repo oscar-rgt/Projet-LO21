@@ -8,25 +8,13 @@
 class Chantier {
 public:
     
-
-    // Gestion des tuiles
     void ajouterPile(Pile& p);
-
     int getNbTuiles() const { return static_cast<int>(tuiles.size()); }
-
-    void retirerTuile(Tuile* t); // Modifié pour prendre un pointeur
+    void retirerTuile(Tuile* t); 
     bool estVide() const;
-
-    // Nettoyage
-    void vider() { 
-        tuiles.clear(); 
-    }
-    Tuile* getTuile(int index) const;
+    void vider() { tuiles.clear(); } 
     void ajouterTuileSpecifique(Tuile* t);
 
-    // ==========================================
-    // ITERATOR
-    // ==========================================
     class Iterator {
         friend class Chantier;
         std::vector<Tuile*>::const_iterator current;

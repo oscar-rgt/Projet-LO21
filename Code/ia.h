@@ -7,25 +7,20 @@
 
 class IA : public Joueur {
 private:
-    int difficulte; // 1: Hippodamos, 2: Métagénès, 3: Callicratès
+    int difficulte; //1: Hippodamos, 2: Métagénès, 3: Callicratès
     std::vector<Tuile*> tuilesAcquises;
-	TuileDepart* tuileDepart; // Tuile de départ de l'IA
+	TuileDepart* tuileDepart; 
 
 public:
     IA(const string& nom, int diff);
     virtual ~IA();
 
-    // Méthode pour choisir une tuile dans le chantier
-    // Retourne l'index de la tuile choisie
     int choisirTuile(const Chantier& chantier);
 
-    // Ajoute la tuile aux tuiles acquises (sans la placer dans une cité)
+    //ajoute la tuile aux tuiles acquises SANS LA PLACER DANS UNE CITE
     void ajouterTuile(Tuile* t);
 
 
-    // ==========================================
-    // ITERATEUR POUR LES TUILES ACQUISES
-    // ==========================================
     class Iterator {
         friend class IA;
         std::vector<Tuile*>::const_iterator current;
@@ -38,18 +33,15 @@ public:
         Tuile* operator*() const { return *current; }
     };
 
-    // Méthodes pour récupérer l'itérateur
     Iterator begin() const { return Iterator(tuilesAcquises.begin()); }
     Iterator end() const { return Iterator(tuilesAcquises.end()); }
 
 	int getDifficulte() const { return difficulte; }
 
-    // Helper pour vérifier si une tuile contient une Place
-    static bool tuileContientPlace(Tuile* t);
-
-    // Helper pratique pour savoir combien de tuiles afficher (QT)
     int getNbTuilesAcquises() const { return static_cast<int>(tuilesAcquises.size()); }
+
     bool estIA() const override { return true; }
+
     const std::vector<Tuile*>& getTuilesAcquises() const { return tuilesAcquises; }
 };
 

@@ -199,3 +199,14 @@ void Tuile::reconstruireHexagone(int index, int typeInt, int etoiles) {
 
     cout << "[DEBUG]   Hexagone " << index << " reconstruit avec succès." << endl;
 }
+
+bool Tuile::contientPlace() const{
+    if (!this) return false;
+    for (int i = 0; i < getNbHexagones(); ++i) {
+        Hexagone* h = getHexagone((int)i);
+        if (h->estPlace()) {
+            return true;
+        }
+    }
+    return false;
+}

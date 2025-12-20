@@ -41,6 +41,7 @@ public:
 	string& getDesign();
 	void reconstruireHexagone(int index, int typeInt, int etoiles);
 	static Tuile* fabriquer(unsigned int id, unsigned int prix) {return new Tuile(id, prix);}
+	bool contientPlace() const;
 };
 
 class TuileDepart : public Tuile {

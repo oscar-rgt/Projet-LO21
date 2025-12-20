@@ -5,18 +5,16 @@
 #include <vector>
 #include <string>
 
-// Enum déplacé ici pour être accessible partout
 enum class TuileCite { STANDARD, AUGMENTE };
 
 struct ConfigJeu {
     int nbJoueurs;
     TuileCite modeTuileCite;
-    std::array<bool, 5> variantes; // Habitation, Marché, Caserne, Temple, Jardin
-    unsigned int niveauIllustreConstructeur; // 0 = Pas d'IA ou Multi
+    std::array<bool, 5> variantes; //Habitation, Marché, Caserne, Temple, Jardin
+    unsigned int niveauIllustreConstructeur; //0 = Pas d'IA
 
     ConfigJeu() : nbJoueurs(2), modeTuileCite(TuileCite::STANDARD), variantes({false}), niveauIllustreConstructeur(0) {}
 
-    // Helper pour savoir si on est en solo
     bool estModeSolo() const { return niveauIllustreConstructeur > 0; }
 };
 
