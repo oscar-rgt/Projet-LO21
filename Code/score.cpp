@@ -294,6 +294,7 @@ Score::~Score() {
 }
 
 int Score::calculerScore() const {
+    if (!joueur) return 0;
     int totalCalcule = 0;
     if(IA* ia = dynamic_cast<IA*>(joueur)) {
 		
