@@ -21,7 +21,6 @@ public:
     void vider() { 
         tuiles.clear(); 
     }
-    Tuile* getTuile(int index) const;
     void ajouterTuileSpecifique(Tuile* t);
 
     // ==========================================

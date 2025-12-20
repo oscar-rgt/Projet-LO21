@@ -3,17 +3,15 @@
 #include "tuiles.h"
 #include <vector>
 
+using namespace std;
 
+// Forward declarations pour éviter les inclusions circulaires
 class Partie;
 class SaveManager;
 
 
 class Pile {
 public:
-    static void detruire(Pile* p) { delete p; }
-    static Pile* creer(unsigned int id) { 
-        return new Pile(id); 
-    }
     unsigned int getId() const { return id; }
     int getNbTuiles() const { return static_cast<int>(tuiles.size()); }
     bool estVide() const { return tuiles.empty(); }
@@ -21,12 +19,12 @@ public:
     void ajouterTuile(Tuile* t) { tuiles.push_back(t); }
 
     // =========================================================
-    // IT�RATEUR POUR LA PILE
+    // ITERATEUR POUR LA PILE
     // =========================================================
     class Iterator {
         friend class Pile;
-        std::vector<Tuile*>::const_iterator current;
-        Iterator(std::vector<Tuile*>::const_iterator it) : current(it) {}
+        vector<Tuile*>::const_iterator current;
+        Iterator(vector<Tuile*>::const_iterator it) : current(it) {}
     public:
         Iterator() {}
         Iterator& operator++() { ++current; return *this; }
@@ -40,12 +38,12 @@ public:
     Iterator end() const { return Iterator(tuiles.end()); }
 
 private:
-    friend class Partie;
-    friend class SaveManager;
+	friend class Partie; // important pour créer les piles de la partie
+	friend class SaveManager; // important pour charger les piles
     ~Pile();
     Pile(unsigned int id_, unsigned int nb = 3);
-    unsigned int id;
-    std::vector<Tuile*> tuiles;
+	unsigned int id; //ID unique de la pile
+	vector<Tuile*> tuiles; //Conteneur des tuiles dans la pile
 };
 
 #endif
