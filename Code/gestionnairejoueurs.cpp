@@ -24,8 +24,7 @@ void GestionnaireJoueurs::initialiser(const std::vector<std::string>& noms, bool
     }
 
     if (modeSolo) {
-        // En solo, l'humain paie 1 pierre au début (Règle officielle)
-        if (!joueurs.empty()) joueurs[0]->utiliserPierres(1);
+        if (!joueurs.empty()) joueurs[0]->utiliserPierres(1); //en solo, l'humain a 1 pierre au début
         joueurs.push_back(new IA("Illustre Architecte", niveauIA));
     }
 }
@@ -44,6 +43,7 @@ Joueur* GestionnaireJoueurs::getJoueurActuel() const {
 
 void GestionnaireJoueurs::designerArchitecteChefAleatoire() {
     if (joueurs.empty()) return;
+
     std::random_device rd;
     std::mt19937 gen(rd());
     std::shuffle(joueurs.begin(), joueurs.end(), gen);
@@ -58,20 +58,20 @@ std::vector<Joueur*> GestionnaireJoueurs::determinerGagnants() {
     int maxScore = -1;
     std::map<Joueur*, int> memoScores;
 
-    // 1. Calculer tous les scores
+    //calculer tous les scores
     for (auto j : joueurs) {
         int s = j->getScore()->calculerScore();
         memoScores[j] = s;
         if (s > maxScore) maxScore = s;
     }
 
-    // 2. Trouver les ex-aequo
+    //trouver les egalités
     std::vector<Joueur*> candidats;
     for (auto j : joueurs) {
         if (memoScores[j] == maxScore) candidats.push_back(j);
     }
 
-    // 3. Départager aux pierres
+    //on départage aux pierres
     if (candidats.size() > 1) {
         int maxPierres = -1;
         for (auto j : candidats) {

@@ -39,35 +39,37 @@ public:
     void passerAuJoueurSuivant();
     bool estFinDePartie() const;
 
+    //methodes liées à gestionnaire joueurs
     Joueur* getJoueurActuel() const { return gestionnaireJoueurs.getJoueurActuel(); }
     int getIndexJoueurActuel() const { return gestionnaireJoueurs.getIndexJoueurActuel(); }
     int getNbJoueurs() const { return (int)gestionnaireJoueurs.getNbJoueurs(); }
     const vector<Joueur*>& getJoueurs() const { return gestionnaireJoueurs.getJoueurs(); }
+    vector<Joueur*> determinerGagnants() { return gestionnaireJoueurs.determinerGagnants(); }
+    void ajouterJoueur(Joueur* j) { gestionnaireJoueurs.ajouterJoueurExistant(j); }
+    GestionnaireJoueurs::Iterator debutJoueurs() const { return gestionnaireJoueurs.begin(); }
+    GestionnaireJoueurs::Iterator finJoueurs() const { return gestionnaireJoueurs.end(); }
 
+    //methodes liées à config
     unsigned int getNiveauIllustreConstructeur() const { return config.niveauIllustreConstructeur; }
     TuileCite getModeTuileCite() const { return config.modeTuileCite; }
     const std::array<bool, 5>& getVariantes() const { return config.variantes; }
 
-    
+    //méthodes liées au chantier
     const Chantier& getChantier() const { return chantier; }
     Chantier& getChantier() { return chantier; }
+
+    //méthodes liées aux piles
     int getNbPiles() const { return static_cast<int>(piles.size()); }
+    void ajouterPile(Pile* p) { piles.push_back(p); }
     int getIndexPileActuelle() const { return indexPileActuelle; }
 
-    vector<Joueur*> determinerGagnants() { return gestionnaireJoueurs.determinerGagnants(); }
 
-    //Pour la sauvegarde :
+    //méthodes liées à la sauvegarde
     void setIndexJoueurActuel(int idx) { gestionnaireJoueurs.setIndexJoueurActuel(idx); }
     void setIndexPileActuelle(int idx) { indexPileActuelle = idx; }
     void setNiveauIllustreConstructeur(unsigned int lvl) { config.niveauIllustreConstructeur = lvl; }
     void setModeTuileCite(TuileCite mode) { config.modeTuileCite = mode; }
     void setVariantes(const std::array<bool, 5>& vars) { config.variantes = vars; }
-
-    void ajouterJoueur(Joueur* j) { gestionnaireJoueurs.ajouterJoueurExistant(j); }
-    void ajouterPile(Pile* p) { piles.push_back(p); }
-
-    GestionnaireJoueurs::Iterator debutJoueurs() const { return gestionnaireJoueurs.begin(); }
-    GestionnaireJoueurs::Iterator finJoueurs() const { return gestionnaireJoueurs.end(); }
 
     
     class PileIterator {

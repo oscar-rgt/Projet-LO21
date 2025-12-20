@@ -20,6 +20,13 @@ public:
     //ajoute la tuile aux tuiles acquises SANS LA PLACER DANS UNE CITE
     void ajouterTuile(Tuile* t);
 
+    int getDifficulte() const { return difficulte; }
+
+    int getNbTuilesAcquises() const { return static_cast<int>(tuilesAcquises.size()); }
+
+    bool estIA() const override { return true; }
+
+    const std::vector<Tuile*>& getTuilesAcquises() const { return tuilesAcquises; }
 
     class Iterator {
         friend class IA;
@@ -35,14 +42,6 @@ public:
 
     Iterator begin() const { return Iterator(tuilesAcquises.begin()); }
     Iterator end() const { return Iterator(tuilesAcquises.end()); }
-
-	int getDifficulte() const { return difficulte; }
-
-    int getNbTuilesAcquises() const { return static_cast<int>(tuilesAcquises.size()); }
-
-    bool estIA() const override { return true; }
-
-    const std::vector<Tuile*>& getTuilesAcquises() const { return tuilesAcquises; }
 };
 
 #endif

@@ -6,7 +6,6 @@
 #include "joueur.h"
 #include "ia.h"
 
-
 class GestionnaireJoueurs {
 private:
     std::vector<Joueur*> joueurs;
@@ -28,6 +27,12 @@ public:
 
     void designerArchitecteChefAleatoire();
 
+    std::vector<Joueur*> determinerGagnants();
+
+    //pour sauvegarde
+    void ajouterJoueurExistant(Joueur* j);
+    const std::vector<Joueur*>& getJoueurs() const { return joueurs; }
+
     class Iterator {
         friend class GestionnaireJoueurs;
         std::vector<Joueur*>::const_iterator current;
@@ -43,12 +48,6 @@ public:
 
     Iterator begin() const { return Iterator(joueurs.begin()); }
     Iterator end() const { return Iterator(joueurs.end()); }
-
-    std::vector<Joueur*> determinerGagnants();
-
-    //pour sauvegarde
-    void ajouterJoueurExistant(Joueur* j);
-    const std::vector<Joueur*>& getJoueurs() const { return joueurs; }
 };
 
 #endif 

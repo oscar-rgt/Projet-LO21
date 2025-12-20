@@ -16,6 +16,7 @@ Partie::~Partie() {
     for (auto p : piles) delete p;
     piles.clear();
     chantier.vider();
+    //gestionnaire joueurs gère sa destruction
 }
 
 void Partie::resetPourChargement() {
