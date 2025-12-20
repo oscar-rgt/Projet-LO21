@@ -29,6 +29,8 @@ public:
 
 protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+
 
 private slots:
     // --- 1. Navigation & Menus ---
@@ -39,6 +41,7 @@ private slots:
     void resetConfiguration();              // Réinitialiser le formulaire
     void afficherMenuRegles();
     void quitterJeu();
+    void afficherInfoRaccourcisClavier();
 
     // --- 2. Moteur de Jeu & Rendu ---
     void mettreAJourInterface();            // Rafraîchissement global
