@@ -126,6 +126,7 @@ void Partie::actionPlacerTuile(int index, int x, int y, int z, int rotation) {
     //le joueur depense les pierres que coutent la tuile choisie
     j->utiliserPierres(coutPierre);
 
+
     if (config.estModeSolo() && !j->estIA()) {
         //En mode solo les pierres vont à l'IA
         for (auto it = debutJoueurs(); it != finJoueurs(); ++it) {
@@ -182,7 +183,6 @@ int Partie::jouerTourIA() {
         }
     }
 
-    ia->ajouterPierres(t->getPrix());
     ia->ajouterTuile(t);
 
     chantier.retirerTuile(t);
