@@ -678,7 +678,7 @@ void MainWindow::onSauvegarderClicked() {
 
     if (reponse == QMessageBox::Yes) {
 
-        bool succes = SaveManager::sauvegarder(Partie::getInstance(), "save.txt");
+        bool succes = SaveManager::sauvegarder(Partie::getInstance(), "../../../save.txt");
 
         if (succes) {
             QMessageBox::information(this, "Succès", "Partie sauvegardée avec succès dans 'save.txt' !");
