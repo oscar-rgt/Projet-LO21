@@ -7,6 +7,8 @@
 #include "quadrillageView.h"
 #include "partie.h" 
 
+using namespace std;
+
 class JeuConsole {
 public:
     void lancer();
@@ -19,12 +21,12 @@ private:
     void nettoyerEcran();
     void afficherRegles();
 
-    int saisieNombre(const std::string& prompt, int min, int max);
-    bool saisieOuiNon(const std::string& prompt);
+    int saisieNombre(const string& prompt, int min, int max);
+    bool saisieOuiNon(const string& prompt);
 
     TuileCite modeTuileCite;
-    std::vector<std::string> nomsJoueurs;
-    std::array<bool, 5> variantesActives = { false };
+    vector<string> nomsJoueurs;
+    array<bool, 5> variantesActives = { false };
     Quadrillage vue;
 };
 

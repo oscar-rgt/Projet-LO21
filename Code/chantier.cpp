@@ -1,6 +1,8 @@
 #include "chantier.h"
 #include <algorithm> // Pour std::find
 
+using namespace std;
+
 Chantier::Chantier() {}
 
 Chantier::~Chantier() {
@@ -14,7 +16,7 @@ void Chantier::ajouterPile(Pile& p) {
 }
 
 void Chantier::retirerTuile(Tuile* t) {
-    auto it = std::find(tuiles.begin(), tuiles.end(), t);
+    auto it = find(tuiles.begin(), tuiles.end(), t);
     if (it != tuiles.end()) {
         tuiles.erase(it);
     }

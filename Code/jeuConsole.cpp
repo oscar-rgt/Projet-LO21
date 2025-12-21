@@ -13,9 +13,9 @@ using namespace std;
 
 void JeuConsole::nettoyerEcran() {
 #ifdef _WIN32
-    std::system("cls");
+    system("cls");
 #else
-    std::system("clear");
+    system("clear");
 #endif
 }
 

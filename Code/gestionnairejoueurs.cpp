@@ -5,6 +5,8 @@
 #include <random>
 #include <map>
 
+using namespace std;
+
 GestionnaireJoueurs::GestionnaireJoueurs() : indexJoueurActuel(0) {}
 
 GestionnaireJoueurs::~GestionnaireJoueurs() {
@@ -17,7 +19,7 @@ void GestionnaireJoueurs::vider() {
     indexJoueurActuel = 0;
 }
 
-void GestionnaireJoueurs::initialiser(const std::vector<std::string>& noms, bool modeSolo, unsigned int niveauIA) {
+void GestionnaireJoueurs::initialiser(const vector<string>& noms, bool modeSolo, unsigned int niveauIA) {
     vider();
     for (const auto& nom : noms) {
         joueurs.push_back(new Joueur(nom));
@@ -44,9 +46,14 @@ Joueur* GestionnaireJoueurs::getJoueurActuel() const {
 void GestionnaireJoueurs::designerArchitecteChefAleatoire() {
     if (joueurs.empty()) return;
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::shuffle(joueurs.begin(), joueurs.end(), gen);
+    //initialisation du générateur aléatoire
+    random_device rd;
+    mt19937 gen(rd());
+
+	//mélange des joueurs
+    shuffle(joueurs.begin(), joueurs.end(), gen);
+
+    //on prend le joueur qui a été placé en premier
     indexJoueurActuel = 0;
 }
 
@@ -54,9 +61,9 @@ void GestionnaireJoueurs::ajouterJoueurExistant(Joueur* j) {
     joueurs.push_back(j);
 }
 
-std::vector<Joueur*> GestionnaireJoueurs::determinerGagnants() {
+vector<Joueur*> GestionnaireJoueurs::determinerGagnants() {
     int maxScore = -1;
-    std::map<Joueur*, int> memoScores;
+    map<Joueur*, int> memoScores;
 
     //calculer tous les scores
     for (auto j : joueurs) {
@@ -66,7 +73,7 @@ std::vector<Joueur*> GestionnaireJoueurs::determinerGagnants() {
     }
 
     //trouver les egalités
-    std::vector<Joueur*> candidats;
+    vector<Joueur*> candidats;
     for (auto j : joueurs) {
         if (memoScores[j] == maxScore) candidats.push_back(j);
     }
@@ -77,7 +84,7 @@ std::vector<Joueur*> GestionnaireJoueurs::determinerGagnants() {
         for (auto j : candidats) {
             if (j->getPierres() > maxPierres) maxPierres = j->getPierres();
         }
-        std::vector<Joueur*> gagnantsFinaux;
+        vector<Joueur*> gagnantsFinaux;
         for (auto j : candidats) {
             if (j->getPierres() == maxPierres) gagnantsFinaux.push_back(j);
         }

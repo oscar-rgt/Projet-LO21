@@ -19,6 +19,8 @@
 #include "tuileitem.h"
 #include "ia.h"
 
+using namespace std;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -31,110 +33,103 @@ protected:
     bool eventFilter(QObject *watched, QEvent *event) override;
     void keyPressEvent(QKeyEvent *event) override;
 
-
 private slots:
-    // --- 1. Navigation & Menus ---
+    //Navigation et menus
     void afficherMenuJeu();
-    void afficherMenuConfig();              // Nouveau slot pour afficher la page config
-    void mettreAJourVisibiliteConfig();     // Gestion dynamique du formulaire config
-    void validerConfiguration();            // Lancer la partie
-    void resetConfiguration();              // Réinitialiser le formulaire
+    void afficherMenuConfig();              
+    void mettreAJourVisibiliteConfig();     
+    void validerConfiguration();            
+    void resetConfiguration();              
     void afficherMenuRegles();
     void quitterJeu();
     void afficherInfoRaccourcisClavier();
 
-    // --- 2. Moteur de Jeu & Rendu ---
-    void mettreAJourInterface();            // Rafraîchissement global
+	//Moteur de jeu
+    void mettreAJourInterface();            
     void onRotationClicked();
     void onInversionClicked();
     void onValidationClicked();
     void selectionnerTuileChantier(int index);
+    void onContinuerIAClicked();
 
-    // --- 3. Fin de Partie & IA ---
-    void afficherFinDePartie();             // Affiche l'overlay de fin
-    void onContinuerIAClicked();            // Passe l'écran de résumé IA
+    
+    void afficherFinDePartie();             
+               
 
-    // --- 4. Système (Pause & Sauvegarde) ---
-    void onReglagesClicked();               // Pop-up Pause
-    void onSauvegarderClicked();            // Sauvegarde
+    //Système (pause et sauvegarde)
+    void onReglagesClicked();               
+    void onSauvegarderClicked();            
     void onChargerPartieClicked();
 
 private:
-    // =============================================================
-    // 1. WIDGETS & PAGES
-    // =============================================================
-
-    // Gestionnaire de pages
+    //Wigets :
+    //pages
     QStackedWidget *stackedWidget;
     QWidget *pageMenuPrincipal;
     QWidget *pageRegles;
     QWidget *pageJeu;
     QWidget *pageConfig;
-    QWidget *pagePrecedente; // Mémoire de navigation
+    QWidget *pagePrecedente;
 
-    // Page Configuration
+    //configuration jeu
     QButtonGroup *groupeNbJoueurs;
     QGroupBox *groupeIA;
     QButtonGroup *groupeNiveauIA;
-    std::vector<QLineEdit*> champsNomsJoueurs;
-    std::vector<QCheckBox*> checkBoxesVariantes;
+    vector<QLineEdit*> champsNomsJoueurs;
+    vector<QCheckBox*> checkBoxesVariantes;
     QCheckBox *checkModeAugmente;
     QString htmlTexteJoueur;
 
-    // Page Jeu (Interface)
+    //Cité et chantier
     QGraphicsScene *sceneCite;
     QGraphicsView *viewCite;
     QGraphicsScene *sceneChantier;
     QGraphicsView *viewChantier;
 
-    // Contrôles Jeu
-    QLabel *labelInfoJoueur;
-    QLabel *labelPilesRestantes;
+    //boutons
     QPushButton *btnRotation;
     QPushButton *btnInversion;
     QPushButton *btnValidation;
     QPushButton *btnReglages;
 
-    // =============================================================
-    // 2. ÉTAT DU JEU
-    // =============================================================
+	//labels
+    QLabel* labelInfoJoueur;
+    QLabel* labelPilesRestantes;
 
-    // Sélection & Manipulation
+    //gestion couleur
+    QColor getTypeColor(TypeQuartier t);
+
+    //attributs :
+    //tuile
     int indexTuileSelectionnee;
     int rotationCompteur;
     bool inversionEtat;
 
-    // Prévisualisation
+    //previsualisation
     bool previewActive;
     int previewX;
     int previewY;
     int previewZ;
 
-    // État IA
+    //ia
     bool affichageResultatIA;
     int dernierIndexIA;
 
-    // =============================================================
-    // 3. MÉTHODES D'INITIALISATION
-    // =============================================================
+	//methodes :
+    //initialisations
     void initialiserPageMenuPrincipal();
     void initialiserPageRegles();
     void initialiserPageConfiguration();
     void initialiserPageJeu();
 
-    // =============================================================
-    // 4. MÉTHODES DE DESSIN & LOGIQUE INTERNE (Helpers)
-    // =============================================================
-
-    // Ces fonctions d'affichent
+    //affichage
     void dessinerCite(Joueur* joueur);
     void dessinerChantier();
     void dessinerPreview(Joueur* j);
     void dessinerInterfaceIA(IA* ia);
 
-    // Utilitaires
+	//interactions
     void traiterClicPlateau(QPointF positionScene);
-    QColor getTypeColor(TypeQuartier t);
 };
 
-#endif // MAINWINDOW_H
+#endif

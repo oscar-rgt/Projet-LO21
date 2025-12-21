@@ -5,6 +5,8 @@
 #include "tuiles.h"
 #include "pile.h"
 
+using namespace std;
+
 class Chantier {
 public:
     
@@ -17,8 +19,8 @@ public:
 
     class Iterator {
         friend class Chantier;
-        std::vector<Tuile*>::const_iterator current;
-        Iterator(std::vector<Tuile*>::const_iterator it) : current(it) {}
+        vector<Tuile*>::const_iterator current;
+        Iterator(vector<Tuile*>::const_iterator it) : current(it) {}
     public:
         Iterator() {}
         Iterator& operator++() { ++current; return *this; }
@@ -34,7 +36,7 @@ private:
     friend class Partie;
     Chantier();
     ~Chantier();
-    std::vector<Tuile*> tuiles;
+    vector<Tuile*> tuiles;
 };
 
 #endif

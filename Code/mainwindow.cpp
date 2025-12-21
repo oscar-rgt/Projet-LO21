@@ -20,7 +20,7 @@
 
 using namespace std;
 
-// --- PALETTE UNIFIÉE (Pour garder le même style partout) ---
+//palette de couleurs du thème Akropolis
 namespace Theme {
 const QColor ORANGE(220, 141, 85);       // #dc8d55
 const QColor MARRON_FONCE(78, 46, 30);    // #4E2E1E
@@ -29,37 +29,30 @@ const QColor BEIGE_CARTE(217, 180, 143);  // #D9B48F
 const QColor ROUGE_ERREUR(192, 57, 43); //#c0392b
 }
 
+//constantes taille tuiles
 const double TUILE_TAILLE = 30.0;
 const double COEFF_X = 1.53;
 const double OFFSET_Y = sqrt(3.0) * TUILE_TAILLE;
-
-
-
-// =============================================================
-// 1. CONSTRUCTEUR & DESTRUCTEUR
-// =============================================================
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), indexTuileSelectionnee(-1), rotationCompteur(0), inversionEtat(false), previewActive(false), previewX(0), previewY(0), previewZ(0), affichageResultatIA(false)
 {
 
-    setWindowTitle("Akropolis - Qt");
+    setWindowTitle("Akropolis");
     resize(1024, 768);
 
+    //permet de capturer les évenements clavier et souris
     setFocusPolicy(Qt::StrongFocus);
 
-
-    // --- THEME GRAPHIQUE AKROPOLIS ---
-    // On définit une palette globale inspirée du jeu
     QString styleGlobal = R"(
-        /* 1. FOND GÉNÉRAL (Effet Pierre Chaude / Marbre) */
+        /* 1. Fond général*/
         QMainWindow, QWidget {
             background-color: #FAF8EF;
             color: #2C3E50; /* Texte Gris Foncé (Lisible) */
             font-family: 'Segoe UI', Arial, sans-serif;
         }
 
-        /* 2. BOUTONS STANDARDS */
+        /* 2. Boutons*/
         QPushButton {
             background-color: #dc8d55;
             color: white;
@@ -82,7 +75,7 @@ MainWindow::MainWindow(QWidget *parent)
             border: 2px solid #cccccc;
         }
 
-        /* 3. CHAMPS DE TEXTE (Style Parchemin/Papier) */
+        /* 3. Champs de texte*/
         QLineEdit {
             background-color: #FFFFFF;
             border: 2px solid #BDC3C7;
@@ -94,7 +87,7 @@ MainWindow::MainWindow(QWidget *parent)
             border-color: #F39C12; /* Bordure Orange quand on écrit */
         }
 
-        /* 4. GROUPBOX */
+        /* 4. GroupBox*/
         QGroupBox {
             background-color: transparent;
             border: 1px solid #dc8d55;
@@ -111,14 +104,14 @@ MainWindow::MainWindow(QWidget *parent)
             font-size: 14px;
         }
 
-        /* 5. CHECKBOX & RADIOBUTTON (CORRIGÉ - VISIBILITÉ) */
+        /* 5. Checkbox/Radio bouton*/
         QCheckBox, QRadioButton {
             spacing: 8px;
             font-size: 13px;
             color: #2C3E50;
         }
 
-        /* L'indicateur (le petit carré ou rond) */
+        /*L'indicateur*/
         QCheckBox::indicator, QRadioButton::indicator {
             width: 18px;
             height: 18px;
@@ -127,12 +120,12 @@ MainWindow::MainWindow(QWidget *parent)
             border-radius: 4px; /* Coins arrondis pour checkbox */
         }
 
-        /* Quand on passe la souris dessus */
+        /*Quand on passe la souris dessus*/
         QCheckBox::indicator:hover, QRadioButton::indicator:hover {
             border-color: #dc8d55;
         }
 
-        /* Quand c'est COCHÉ */
+        /*Quand c'est COCHÉ */
         QCheckBox::indicator:checked, QRadioButton::indicator:checked {
             background-color: #dc8d55; /* Fond Orange */
             border-color: #dc8d55;
@@ -144,7 +137,7 @@ MainWindow::MainWindow(QWidget *parent)
             border-radius: 10px; /* Cercle parfait */
         }
 
-        /* 6. CADRE SPÉCIFIQUE CONFIGURATION */
+        /* 6. Cadre spécifique*/
 
         /* Gros bouton pour les menus (Accueil, Config, Fin) */
         .BoutonMenu {
@@ -163,7 +156,7 @@ MainWindow::MainWindow(QWidget *parent)
             background-color: #e74c3c;
         }
 
-        /* CADRE UNIFIÉ (Transparent + Bord Orange) */
+        /* Cadre unifié */
         .CadreConfig {
             border: 2px solid #dc8d55;
             border-radius: 15px;
@@ -171,7 +164,7 @@ MainWindow::MainWindow(QWidget *parent)
             /* Si vous voulez 100% transparent comme avant, mettez : background-color: transparent; */
         }
 
-        /* 7. ETIQUETTES D'INFORMATION (Score, Tour, Piles) */
+        /* 7. labels d'info (Score, Tour, Piles) */
         .InfoLabel {
             background-color: rgba(255, 255, 255, 0.6); /* Fond blanc semi-transparent */
             border: 2px solid #dc8d55;                  /* Bordure Orange */
@@ -182,21 +175,19 @@ MainWindow::MainWindow(QWidget *parent)
         }
     )";
 
-    // Application du style à toute l'application
+    //application du style à toute l'application
     this->setStyleSheet(styleGlobal);
-    // ---------------------------------
 
-    // StackedWidget pour gérer les différentes pages
+    //StackedWidget pour gérer les différentes pages
     stackedWidget = new QStackedWidget(this);
     setCentralWidget(stackedWidget);
 
-    // Initialisation des pages
     initialiserPageMenuPrincipal();
     initialiserPageRegles();
     initialiserPageJeu();
     initialiserPageConfiguration();
 
-    // Affichage du menu principal par défaut
+    //Affichage menu principal par défaut
     stackedWidget->setCurrentWidget(pageMenuPrincipal);
 
     pagePrecedente = nullptr;
@@ -204,28 +195,19 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow() {}
 
-
-// =============================================================
-// 2. INITIALISATION DES PAGES (INTERFACE)
-// =============================================================
-
 void MainWindow::initialiserPageMenuPrincipal()
 {
     pageMenuPrincipal = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(pageMenuPrincipal);
 
-    // --- DESIGN GÉNÉRAL ---
     layout->setAlignment(Qt::AlignCenter);
     layout->setSpacing(30);
     layout->setContentsMargins(50, 50, 50, 50);
 
-    // --- 1. LE LOGO (IMAGE) ---
+	//logo Akropolis
     QLabel *labelLogo = new QLabel(pageMenuPrincipal);
-
     labelLogo->setStyleSheet("border: none; background-color: transparent; margin-bottom: 10px;");
-    // Chargement de l'image depuis les ressources
     QPixmap logoPixmap(":/images/akropolis-title.png");
-
     if (logoPixmap.isNull()) {
         labelLogo->setText("AKROPOLIS");
         QFont fontLogo;
@@ -236,47 +218,45 @@ void MainWindow::initialiserPageMenuPrincipal()
         QPixmap scaledLogo = logoPixmap.scaledToWidth(600, Qt::SmoothTransformation);
         labelLogo->setPixmap(scaledLogo);
     }
-
     labelLogo->setAlignment(Qt::AlignCenter);
     layout->addWidget(labelLogo);
-
     layout->addSpacing(20);
 
-    // --- 2. LES BOUTONS ---
+	//boutons du menu principal :
     QVBoxLayout *layoutBoutons = new QVBoxLayout();
     layoutBoutons->setSpacing(20);
 
-    // Bouton JOUER
+    //bouton jouer
     QPushButton *btnJouer = new QPushButton("JOUER UNE PARTIE", pageMenuPrincipal);
-    btnJouer->setProperty("class", "BoutonMenu"); // <--- Utilise la classe globale
+    btnJouer->setProperty("class", "BoutonMenu"); 
     btnJouer->setCursor(Qt::PointingHandCursor);
     connect(btnJouer, &QPushButton::clicked, this, &MainWindow::afficherMenuConfig);
     layoutBoutons->addWidget(btnJouer, 0, Qt::AlignCenter);
 
-    // Bouton RÈGLES
+    //bouton règles
     QPushButton *btnRegles = new QPushButton("RÈGLES DU JEU", pageMenuPrincipal);
-    btnRegles->setProperty("class", "BoutonMenu"); // <--- Utilise la classe globale
+    btnRegles->setProperty("class", "BoutonMenu");
     btnRegles->setCursor(Qt::PointingHandCursor);
     connect(btnRegles, &QPushButton::clicked, this, &MainWindow::afficherMenuRegles);
     layoutBoutons->addWidget(btnRegles, 0, Qt::AlignCenter);
 
-    // Bouton CHARGER
+    //bouton charger
     QPushButton *btnCharger = new QPushButton("CHARGER UNE PARTIE", pageMenuPrincipal);
-    btnCharger->setProperty("class", "BoutonMenu"); // <--- Utilise la classe globale
+    btnCharger->setProperty("class", "BoutonMenu");
     btnCharger->setCursor(Qt::PointingHandCursor);
     connect(btnCharger, &QPushButton::clicked, this, &MainWindow::onChargerPartieClicked);
     layoutBoutons->addWidget(btnCharger, 0, Qt::AlignCenter);
 
-    // Bouton QUITTER
+    //bouton quitter
     QPushButton *btnQuitter = new QPushButton("QUITTER", pageMenuPrincipal);
-    // On combine les deux classes : C'est un bouton menu ET il est rouge
-    btnQuitter->setProperty("class", "BoutonMenu BoutonDanger");
+    btnQuitter->setProperty("class", "BoutonMenu BoutonDanger"); //bouton menu rouge
     btnQuitter->setCursor(Qt::PointingHandCursor);
     connect(btnQuitter, &QPushButton::clicked, this, &MainWindow::quitterJeu);
     layoutBoutons->addWidget(btnQuitter, 0, Qt::AlignCenter);
 
     layout->addLayout(layoutBoutons);
 
+    //crédits
     QLabel *credits = new QLabel(
         "-----------------------------------------------------------\n"
         "LO21 - Programmation et conception orientée objet         \n"
@@ -287,7 +267,6 @@ void MainWindow::initialiserPageMenuPrincipal()
         );
     credits->setStyleSheet("font-size: 12px; margin-top: 20px; text-align: justify;");
     layout->addWidget(credits, 0, Qt::AlignCenter);
-
     stackedWidget->addWidget(pageMenuPrincipal);
 }
 
@@ -296,15 +275,15 @@ void MainWindow::initialiserPageMenuPrincipal()
 void MainWindow::initialiserPageRegles() {
     pageRegles = new QWidget();
     QVBoxLayout *layout = new QVBoxLayout(pageRegles);
-    layout->setContentsMargins(20, 20, 20, 20); // Marges externes
-    layout->setSpacing(10); // Espacement entre les éléments
+    layout->setContentsMargins(20, 20, 20, 20); 
+    layout->setSpacing(10); 
 
-    // Titre
+    //titre
     QLabel *titleLabel = new QLabel("RÈGLES D'AKROPOLIS", pageRegles);
     titleLabel->setStyleSheet("font-size: 24px; font-weight: bold; color: #dc8d55; margin-bottom: 20px;");
     layout->addWidget(titleLabel, 0, Qt::AlignCenter);
 
-    // Zone de défilement (occupe tout l'espace disponible)
+	//zone de scroll pour le texte des règles
     QScrollArea *scrollArea = new QScrollArea(pageRegles);
     scrollArea->setWidgetResizable(true);
     scrollArea->setFrameShape(QFrame::NoFrame);
@@ -326,24 +305,21 @@ void MainWindow::initialiserPageRegles() {
         "}"
         );
 
-    // Widget interne pour le texte (avec layout centré)
+    //widget interne pour contenir le texte des règles
     QWidget *textContainer = new QWidget();
     QVBoxLayout *textContainerLayout = new QVBoxLayout(textContainer);
-    textContainerLayout->setContentsMargins(20, 20, 20, 20); // Marges internes
-
-    // Widget pour centrer le texte (largeur fixe)
-    QWidget *centerWidget = new QWidget();
-    centerWidget->setFixedWidth(1400); // Largeur fixe pour le texte
+    textContainerLayout->setContentsMargins(20, 20, 20, 20); 
+    QWidget *centerWidget = new QWidget(); //on crée un autre widget pour centrer le texte
+    centerWidget->setFixedWidth(1400);
     centerWidget->setFixedHeight(1000);
     QVBoxLayout *centerLayout = new QVBoxLayout(centerWidget);
     centerLayout->setContentsMargins(0, 0, 0, 0);
-
-    QTextEdit *textRegles = new QTextEdit(centerWidget);
+    QTextEdit *textRegles = new QTextEdit(centerWidget); //et un widget pour le texte
     textRegles->setReadOnly(true);
     textRegles->setFrameShape(QFrame::NoFrame);
     textRegles->setStyleSheet("background-color: transparent; color: #2C3E50; font-size: 16px;");
     textRegles->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
+    //on remplit le widget texte :
     QString contenuHtml = R"(
         <div style='font-size: 16px; line-height: 1.4;'>
             <h3 style='color: #dc8d55;'>1. LE BUT</h3>
@@ -383,29 +359,25 @@ void MainWindow::initialiserPageRegles() {
     textRegles->setHtml(contenuHtml);
     centerLayout->addWidget(textRegles);
 
-    // Ajoute le widget centré au conteneur principal
+    //ajoute le widget centré au conteneur principal
     textContainerLayout->addWidget(centerWidget, 0, Qt::AlignCenter);
     scrollArea->setWidget(textContainer);
+    layout->addWidget(scrollArea, 1); //1 permet à la scrollArea de prendre tout l'espace disponible
 
-    // Ajoute la scrollArea au layout principal avec un stretch maximal
-    layout->addWidget(scrollArea, 1); // Le "1" permet à la scrollArea de prendre tout l'espace disponible
-
-    // Bouton Retour (toujours visible en bas)
+    //bouton retour
     QPushButton *btnRetour = new QPushButton("RETOUR", pageRegles);
     btnRetour->setFixedSize(150, 40);
     btnRetour->setStyleSheet("font-weight: bold; background-color: #dc8d55; color: white; border-radius: 5px;");
     layout->addWidget(btnRetour, 0, Qt::AlignCenter);
-
-    // Connexion du bouton
     connect(btnRetour, &QPushButton::clicked, [this]() {
 
-        // Cas 1 : On vient du JEU (Pause)
+        //Cas 1 : on vient du jeu (pause)
         if (pagePrecedente == pageJeu) {
-            stackedWidget->setCurrentWidget(pageJeu); // 1. On affiche le jeu
-            onReglagesClicked();                      // 2. On ROUVRE le pop-up Réglages par-dessus
+            stackedWidget->setCurrentWidget(pageJeu); //on affiche le jeu
+            onReglagesClicked();                      //on rouvre le pop-up Réglages par-dessus
         }
 
-        // Cas 2 : On vient du MENU PRINCIPAL
+        //Cas 2 : on vient du menu
         else {
             stackedWidget->setCurrentWidget(pageMenuPrincipal);
         }
@@ -415,49 +387,39 @@ void MainWindow::initialiserPageRegles() {
 
 void MainWindow::initialiserPageConfiguration()
 {
+	//creation de la page de configuration
     pageConfig = new QWidget();
-
-    // 1. Layout PRINCIPAL de la page (qui contient le ScrollArea)
     QVBoxLayout *layoutPage = new QVBoxLayout(pageConfig);
-    layoutPage->setContentsMargins(0, 0, 0, 0); // On occupe tout l'espace
+    layoutPage->setContentsMargins(0, 0, 0, 0); //pour occuper tout l'espace
 
-    // --- CRÉATION DE LA ZONE DE SCROLL ---
+    //zone de scroll
     QScrollArea *scrollArea = new QScrollArea(pageConfig);
-    scrollArea->setWidgetResizable(true);       // Le contenu s'adapte à la largeur
-    scrollArea->setFrameShape(QFrame::NoFrame); // Pas de bordure autour du scroll
-    scrollArea->setStyleSheet("background: transparent;"); // Fond transparent pour voir le background global
-
-    // Conteneur interne (ce qui va scroller)
+    scrollArea->setWidgetResizable(true);       //le contenu s'adapte à la largeur
+    scrollArea->setFrameShape(QFrame::NoFrame); //enlève les bordures
+    scrollArea->setStyleSheet("background: transparent;");
     QWidget *scrollContent = new QWidget();
     scrollContent->setStyleSheet("background: transparent;");
-
-    // Layout du contenu (pour centrer le cadre au milieu)
     QVBoxLayout *layoutScroll = new QVBoxLayout(scrollContent);
     layoutScroll->setAlignment(Qt::AlignCenter);
-    layoutScroll->setContentsMargins(20, 20, 20, 20); // Marges de sécurité
+    layoutScroll->setContentsMargins(20, 20, 20, 20);
 
-    // --------------------------------------
-
-    // 2. LE CADRE DE CONFIGURATION (Maintenant dans le scrollContent)
+	//Cadre principal
     QFrame *cadreConfig = new QFrame(scrollContent);
-    // On utilise la classe unifiée définie dans le constructeur
     cadreConfig->setProperty("class", "CadreConfig");
     cadreConfig->setFixedWidth(600);
-
-    // Layout INTERNE du cadre
     QVBoxLayout *layoutCadre = new QVBoxLayout(cadreConfig);
     layoutCadre->setSpacing(15);
     layoutCadre->setContentsMargins(30, 30, 30, 30);
 
-    // --- CONTENU DU FORMULAIRE ---
+    //Contenu du formulaire :
 
-    // A. TITRE
+    //titre
     QLabel *titre = new QLabel("CONFIGURATION DE LA PARTIE", cadreConfig);
     titre->setStyleSheet("font-size: 22px; font-weight: bold; color: #dc8d55; margin-bottom: 10px;");
     titre->setAlignment(Qt::AlignCenter);
     layoutCadre->addWidget(titre);
 
-    // B. NOMBRE DE JOUEURS
+    //nb joueurs
     QGroupBox *boxJoueurs = new QGroupBox("Nombre de joueurs", cadreConfig);
     QHBoxLayout *layoutJoueurs = new QHBoxLayout(boxJoueurs);
     groupeNbJoueurs = new QButtonGroup(this);
@@ -470,7 +432,7 @@ void MainWindow::initialiserPageConfiguration()
     }
     layoutCadre->addWidget(boxJoueurs);
 
-    // C. NOMS DES JOUEURS
+    //noms des joueurs
     QGroupBox *boxNoms = new QGroupBox("Noms des architectes", cadreConfig);
     QVBoxLayout *layoutNoms = new QVBoxLayout(boxNoms);
 
@@ -484,11 +446,10 @@ void MainWindow::initialiserPageConfiguration()
     }
     layoutCadre->addWidget(boxNoms);
 
-    // D. CONFIGURATION IA
+    //IA
     groupeIA = new QGroupBox("L'Illustre Constructeur (IA)", cadreConfig);
     QHBoxLayout *layoutIA = new QHBoxLayout(groupeIA);
     groupeNiveauIA = new QButtonGroup(this);
-
     QStringList niveaux = {"Hippodamos (Facile)", "Métagénès (Moyen)", "Callicratès (Difficile)"};
     for (int i = 0; i < 3; ++i) {
         QRadioButton *btn = new QRadioButton(niveaux[i], groupeIA);
@@ -498,20 +459,19 @@ void MainWindow::initialiserPageConfiguration()
     }
     layoutCadre->addWidget(groupeIA);
 
-    // E. MODE DE JEU
+    //mode de jeu
     QGroupBox *boxMode = new QGroupBox("Mode de jeu", cadreConfig);
     QVBoxLayout *layoutMode = new QVBoxLayout(boxMode);
     checkModeAugmente = new QCheckBox("Tuiles Cité Augmentée", boxMode);
     layoutMode->addWidget(checkModeAugmente);
     layoutCadre->addWidget(boxMode);
 
-    // F. VARIANTES
+    //variantes
     QGroupBox *boxVariantes = new QGroupBox("Variantes", cadreConfig);
     QVBoxLayout *layoutVariantes = new QVBoxLayout(boxVariantes);
     QStringList nomsVariantes = {
         "Habitations", "Marchés", "Casernes", "Temples", "Jardins"
     };
-
     checkBoxesVariantes.clear();
     for (const QString &nom : nomsVariantes) {
         QCheckBox *cb = new QCheckBox(nom, boxVariantes);
@@ -520,14 +480,13 @@ void MainWindow::initialiserPageConfiguration()
     }
     layoutCadre->addWidget(boxVariantes);
 
-    // G. BOUTONS ACTION
+    //boutons
     QHBoxLayout *layoutAction = new QHBoxLayout();
     layoutAction->setContentsMargins(0, 20, 0, 0);
-
     QPushButton *btnRetour = new QPushButton("ANNULER", cadreConfig);
     QPushButton *btnValider = new QPushButton("JOUER", cadreConfig);
 
-    // a cause du scrollbar, on doit forcer le style des boutons
+    //a cause du scrollbar, on doit forcer le style des boutons
     QString styleBtn =
         "QPushButton { "
         "  background-color: #dc8d55; color: white; border: 2px solid #b56d38; "
@@ -547,18 +506,13 @@ void MainWindow::initialiserPageConfiguration()
 
     layoutCadre->addLayout(layoutAction);
 
-    // --- ASSEMBLAGE FINAL ---
+    //assemblage de la page :
 
-    // 1. On ajoute le cadre au conteneur scrollable
     layoutScroll->addWidget(cadreConfig);
-
-    // 2. On définit le widget du ScrollArea
     scrollArea->setWidget(scrollContent);
-
-    // 3. On ajoute le ScrollArea à la page principale
     layoutPage->addWidget(scrollArea);
 
-    // Connexions
+    //connexions
     connect(groupeNbJoueurs, &QButtonGroup::idClicked, this, &MainWindow::mettreAJourVisibiliteConfig);
     connect(btnRetour, &QPushButton::clicked, [this]() { stackedWidget->setCurrentWidget(pageMenuPrincipal); });
     connect(btnValider, &QPushButton::clicked, this, &MainWindow::validerConfiguration);
@@ -572,14 +526,14 @@ void MainWindow::initialiserPageJeu()
     pageJeu = new QWidget();
     QHBoxLayout *mainLayout = new QHBoxLayout(pageJeu);
 
-    // 2. Zone gauche : La Cité (Visuel)
+    //zone gauche = cite
     sceneCite = new QGraphicsScene(this);
     viewCite = new QGraphicsView(sceneCite);
     viewCite->setRenderHint(QPainter::Antialiasing);
     viewCite->viewport()->installEventFilter(this);
     mainLayout->addWidget(viewCite, 2);
 
-    // 3. Zone droite : Contrôles et Chantier
+	//zone droite = chantier + boutons
     QVBoxLayout *sideLayout = new QVBoxLayout();
     labelInfoJoueur = new QLabel("En attente...", pageJeu);
     labelInfoJoueur->setProperty("class", "InfoLabel");
@@ -597,51 +551,38 @@ void MainWindow::initialiserPageJeu()
     connect(btnValidation, &QPushButton::clicked, this, &MainWindow::onValidationClicked);
     sideLayout->addWidget(btnValidation);
 
-    // --- AJOUT BOUTON RÉGLAGES (FLOTTANT) ---
+    //bouton réglages (haut à gauche)
     btnReglages = new QPushButton("Paramètres", pageJeu);
-    // On le place en haut à gauche (absolu) pour qu'il soit par-dessus la vue 3D
     btnReglages->move(20, 20);
-
     btnReglages->setCursor(Qt::PointingHandCursor);
-
-    // Connexion
     connect(btnReglages, &QPushButton::clicked, this, &MainWindow::onReglagesClicked);
-
-    // Important : On s'assure qu'il reste au premier plan
-    btnReglages->raise();
-
+    btnReglages->raise(); //on le laisse au premier plan
     stackedWidget->addWidget(pageJeu);
 
-
+	//label chantier
     QLabel *labelChantier = new QLabel("--- CHANTIER ---", pageJeu);
     labelChantier->setAlignment(Qt::AlignCenter);
     labelChantier->setStyleSheet("font-size: 16px; font-weight: bold; color: #dc8d55; margin-top: 20px; margin-bottom: 5px;");
     sideLayout->addWidget(labelChantier);
 
-    // Création de la scène et de la vue pour le chantier
+    //création de la scène et de la vue pour le chantier
     sceneChantier = new QGraphicsScene(this);
     viewChantier = new QGraphicsView(sceneChantier);
-    viewChantier->setFixedWidth(200); // Largeur fixe pour la colonne
-
-    // On ajoute la VUE directement au layout (plus besoin de layoutChantier)
+    viewChantier->setFixedWidth(200); 
     sideLayout->addWidget(viewChantier);
     viewChantier->setAlignment(Qt::AlignTop | Qt::AlignLeft);
 
-    // On ajoute le layout latéral au layout principal
-    mainLayout->addLayout(sideLayout, 1); // Prend 1/3 de la largeur
+    //on ajoute le layout latéral au layout principal
+    mainLayout->addLayout(sideLayout, 1); //prend 1/3 de la largeur
 
     stackedWidget->addWidget(pageJeu);
 
+	//label piles restantes
     labelPilesRestantes = new QLabel("Piles : -", pageJeu);
     labelPilesRestantes->setProperty("class", "InfoLabel");
     labelPilesRestantes->setAlignment(Qt::AlignCenter);
     sideLayout->addWidget(labelPilesRestantes);
 }
-
-// =============================================================
-// 3. NAVIGATION & MENUS
-// =============================================================
-
 
 void MainWindow::afficherMenuJeu()
 {
@@ -656,8 +597,8 @@ void MainWindow::afficherMenuRegles()
 
 void MainWindow::afficherMenuConfig()
 {
-    resetConfiguration(); // <--- On nettoie d'abord
-    stackedWidget->setCurrentWidget(pageConfig); // Ensuite on affiche
+    resetConfiguration(); //nettoie la page
+    stackedWidget->setCurrentWidget(pageConfig); 
 }
 
 void MainWindow::quitterJeu()
@@ -666,14 +607,12 @@ void MainWindow::quitterJeu()
 }
 
 void MainWindow::onReglagesClicked() {
-    // Fenêtre modale transparente
     QDialog dialog(this);
     dialog.setWindowTitle("Pause");
     dialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     dialog.setAttribute(Qt::WA_TranslucentBackground);
     dialog.setFixedSize(300, 350);
 
-    // Style
     dialog.setStyleSheet(
         "QFrame { background-color: #FAF8EF; border: 3px solid #dc8d55; border-radius: 15px; }"
         "QLabel { color: #dc8d55; font-size: 20px; font-weight: bold; margin-bottom: 15px; }"
@@ -688,35 +627,34 @@ void MainWindow::onReglagesClicked() {
     titre->setAlignment(Qt::AlignCenter);
     l->addWidget(titre);
 
-    // BOUTON REPRENDRE
+    QString styleTaille = "font-size: 14px;"; 
 
-    QString styleTaille = "font-size: 14px;"; // changement pour une taille de texte plus petite
-
+    //bouton reprise
     QPushButton* btnReprendre = new QPushButton("REPRENDRE");
     btnReprendre->setProperty("class", "BoutonMenu");
     btnReprendre->setStyleSheet(styleTaille);
     connect(btnReprendre, &QPushButton::clicked, &dialog, &QDialog::accept);
     l->addWidget(btnReprendre);
 
-    // BOUTON RÈGLES (Navigation Intelligente)
+    //bouton règles
     QPushButton* btnRegles = new QPushButton("RÈGLES");
     btnRegles->setProperty("class", "BoutonMenu");
     btnRegles->setStyleSheet(styleTaille);
     connect(btnRegles, &QPushButton::clicked, [this, &dialog]() {
-        pagePrecedente = pageJeu;     // <--- On mémorise "Jeu"
+		pagePrecedente = pageJeu;     //on mémorie jeu comme page précédente
         stackedWidget->setCurrentWidget(pageRegles);
-        dialog.accept(); // On ferme le pop-up
+        dialog.accept(); //ferme le pop-up
     });
     l->addWidget(btnRegles);
 
-    // BOUTON SAUVEGARDER
+    //bouton sauvegarder et quitter
     QPushButton* btnSave = new QPushButton("SAUVEGARDER ET QUITTER");
     btnSave->setProperty("class", "BoutonMenu");
     btnSave->setStyleSheet(styleTaille);
     connect(btnSave, &QPushButton::clicked, this, &MainWindow::onSauvegarderClicked);
     l->addWidget(btnSave);
 
-    // BOUTON SAUVEGARDER
+	//bouton sauvegarder sans quitter
     QPushButton* btnQuitter = new QPushButton("QUITTER SANS SAUVEGARDER");
     btnQuitter->setProperty("class", "BoutonMenu BoutonDanger");
     btnQuitter->setStyleSheet(styleTaille);
@@ -731,7 +669,7 @@ void MainWindow::onReglagesClicked() {
 
 
 void MainWindow::onSauvegarderClicked() {
-    // 1. Pop-up de confirmation (Oui / Non)
+	//pop up de confirmation
     QMessageBox::StandardButton reponse = QMessageBox::question(
         this,
         "Sauvegarder & Quitter",
@@ -739,58 +677,45 @@ void MainWindow::onSauvegarderClicked() {
         QMessageBox::Yes | QMessageBox::No
         );
 
-    // 2. Si l'utilisateur clique sur OUI
     if (reponse == QMessageBox::Yes) {
 
-        // On tente de sauvegarder via le SaveManager
         bool succes = SaveManager::sauvegarder(Partie::getInstance(), "save.txt");
 
         if (succes) {
-            // ">> Partie sauvegardee avec succes..."
             QMessageBox::information(this, "Succès", "Partie sauvegardée avec succès dans 'save.txt' !");
-
-            // On quitte l'application proprement
             QApplication::quit();
         }
         else {
-            // ">> ERREUR CRITIQUE..."
             QMessageBox::critical(this, "Erreur Critique", "La sauvegarde a échoué.\nImpossible d'écrire le fichier.");
-            // On ne quitte PAS, pour laisser au joueur une chance de réessayer ou de continuer
+			//on ne quitte pas le jeu pour laisser le choix au joueur de continuer sa partie
         }
     }
-    // Si Non, on ne fait rien, le pop-up se ferme juste.
+	//si le joueur répond non, on ne fait rien et on revient au jeu
 }
 
 
-
-// =============================================================
-// 4. LOGIQUE DE CONFIGURATION (AVANT-PARTIE)
-// =============================================================
-
 void MainWindow::mettreAJourVisibiliteConfig()
 {
-    int nbJoueurs = groupeNbJoueurs->checkedId(); // Récupère l'ID (1, 2, 3 ou 4)
+    int nbJoueurs = groupeNbJoueurs->checkedId(); //récupère l'id (1, 2, 3, 4)
 
-    // 1. Gestion de l'IA
+    //Gestion ia
     if (nbJoueurs == 1) {
         groupeIA->setVisible(true);
-        // En mode solo, on force le nom du joueur 2 à être l'IA pour la logique interne (optionnel mais propre)
+        //en mode solo on force le nom du joueur 2 à être IA
         champsNomsJoueurs[1]->setText("Illustre Architecte");
-        champsNomsJoueurs[1]->setEnabled(false); // On ne peut pas renommer l'IA
+        champsNomsJoueurs[1]->setEnabled(false); //pour ne pas pouvoir le renommer
     } else {
         groupeIA->setVisible(false);
         champsNomsJoueurs[1]->setEnabled(true);
         if (champsNomsJoueurs[1]->text() == "Illustre Architecte") champsNomsJoueurs[1]->clear();
     }
 
-    // 2. Gestion des champs de noms
-    // On affiche autant de champs que de joueurs
-    // Si mode solo (1 joueur), on affiche quand même le champ 1
-    // Pour simplifier, on affiche les champs 1 à nbJoueurs
+    //gestion champs de noms
+    //on affiche autant de champs que de joueurs
 
     for (int i = 0; i < 4; ++i) {
-        // Le champ est visible si son index < nbJoueurs
-        // Exception: en mode solo, on veut juste le nom du joueur 1, l'IA est gérée à part
+        //le champ est visible si son index < nbJoueurs
+        //exception: en mode solo, on veut juste le nom du joueur 1, l'IA est gérée à part
         bool visible = (i < nbJoueurs);
         champsNomsJoueurs[i]->setVisible(visible);
     }
@@ -800,55 +725,49 @@ void MainWindow::validerConfiguration()
 {
     int nbJoueurs = groupeNbJoueurs->checkedId();
 
-    // Récupération des noms + verif erreurs (non saisie)
-    std::vector<std::string> noms;
+    vector<string> noms;
 
     for (int i = 0; i < nbJoueurs; ++i) {
-        // .trimmed() enlève les espaces au début et à la fin
-        // Cela empêche un joueur de s'appeler juste "   "
-        QString nomSaisi = champsNomsJoueurs[i]->text().trimmed();
+       
+        QString nomSaisi = champsNomsJoueurs[i]->text().trimmed(); //.trimmed() enlève les espaces au début et à la fin
 
         if (nomSaisi.isEmpty()) {
-            // Affichage de l'erreur
             QMessageBox::warning(this, "Configuration incomplète",
                                  QString("Le nom du Joueur %1 est obligatoire !").arg(i + 1));
 
-            // UX : On met le focus (le curseur) directement dans la case fautive
-            champsNomsJoueurs[i]->setFocus();
+			champsNomsJoueurs[i]->setFocus(); //on met le curseur dans le champ concerné
 
-            return; // <--- STOP ! On n'exécute pas la suite, le jeu ne se lance pas.
+            return;
         }
 
         noms.push_back(nomSaisi.toStdString());
     }
 
-    // Mode IA
+    //mode IA
     int niveauIA = 0;
     if (nbJoueurs == 1) {
         niveauIA = groupeNiveauIA->checkedId();
     }
 
-    // Variantes
-    std::array<bool, 5> variantes;
+    //Variantes
+    array<bool, 5> variantes;
     for (int i = 0; i < 5; ++i) {
         variantes[i] = checkBoxesVariantes[i]->isChecked();
     }
 
-    // Mode Tuiles
+    //mode tuiles
     TuileCite mode = checkModeAugmente->isChecked() ? TuileCite::AUGMENTE : TuileCite::STANDARD;
 
-    // --- LANCEMENT DU MOTEUR ---
+	//lancement de la partie
     try {
         Partie::getInstance().initialiser(nbJoueurs, noms, mode, variantes, niveauIA);
 
-        // Afficher la fenêtre d'information sur les raccourcis
         afficherInfoRaccourcisClavier();
 
-        // Changement de page
         stackedWidget->setCurrentWidget(pageJeu);
-        mettreAJourInterface(); // Premier dessin
+        mettreAJourInterface(); 
 
-    } catch (const std::exception &e) {
+    } catch (const exception &e) {
         QMessageBox::critical(this, "Erreur", e.what());
     }
 }
@@ -857,51 +776,52 @@ void MainWindow::validerConfiguration()
 
 void MainWindow::resetConfiguration()
 {
-    // 1. Remettre 2 joueurs par défaut
-    // Note : QButtonGroup::button(id) permet d'accéder au bouton via son ID
+    //on remet 2 joueurs par défaut
     if (QAbstractButton *btn = groupeNbJoueurs->button(2)) {
         btn->setChecked(true);
     }
 
-    // 2. Vider les noms
+    //vider les noms
     for (QLineEdit *champ : champsNomsJoueurs) {
         champ->clear();
     }
 
-    // 3. Remettre l'IA au niveau 1 (Hippodamos)
+    //on remet l'IA au niveau 1
     if (QAbstractButton *btn = groupeNiveauIA->button(1)) {
         btn->setChecked(true);
     }
 
-    // 4. Décocher le mode augmenté
+    //on décoche le mode augmenté
     checkModeAugmente->setChecked(false);
 
-    // 5. Décocher toutes les variantes
+    //on décoche toutes les variantes
     for (QCheckBox *cb : checkBoxesVariantes) {
         cb->setChecked(false);
     }
 
-    // 6. Forcer la mise à jour visuelle (cacher l'IA car on est repassé à 2 joueurs)
     mettreAJourVisibiliteConfig();
 }
 
-// =============================================================
-// 5. GESTION DES ÉVÉNEMENTS (SOURIS & CLICS)
-// =============================================================
-
 bool MainWindow::eventFilter(QObject *watched, QEvent *event)
 {
+	//on ne regarde que les clics sur la vue de la cité
     if (watched == viewCite->viewport() && event->type() == QEvent::MouseButtonPress) {
+
+		//si on est en train d'afficher le résultat de l'IA, on ignore les clics
         if (affichageResultatIA) {
             return false;
         }
+        //reaction au bouton gauche de la souris
         QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
         if (mouseEvent->button() == Qt::LeftButton) {
+			//conversion position en pixel ecran -> position en scene du jeu
             QPointF scenePos = viewCite->mapToScene(mouseEvent->pos());
+			//on envoie la position au gestionnaire de clics
             traiterClicPlateau(scenePos);
-            return true;
+			return true; //indique que l'événement a été traité
         }
     }
+	//pour les autres événements, on laisse le traitement par défaut
     return QMainWindow::eventFilter(watched, event);
 }
 
@@ -914,29 +834,28 @@ void MainWindow::traiterClicPlateau(QPointF positionScene)
         return;
     }
 
-    // 1. Conversion Pixels -> Grille (Algorithme plus proche voisin)
+	//dimensions cases hexagonales
     double w = COEFF_X * TUILE_TAILLE;
     double h = sqrt(3.0) * TUILE_TAILLE;
 
-    // On estime la grille en ignorant le Z pour l'instant (on vise le sol)
+	//on divise la coordonnée x par la largeur d'une case d'hexagone pour avoir une estimation de la case cliquée
     int x_est = round(positionScene.x() / w);
 
     double minDistance = 1000000.0;
     int bestX = 0, bestY = 0;
 
-    // Recherche locale du centre d'hexagone le plus proche du clic
+	//recherche du centre d'hexagone le plus proche du clic (meilleur candidat)
     for (int i = -2; i <= 2; ++i) {
         for (int j = -3; j <= 3; ++j) {
-            int tx = x_est + i;
-            // Formule inverse de Y : pixelY = y*-h + offset => y ~ (pixelY - offset)/-h
-            double offset = abs(tx % 2) * (h / 2.0);
-            int ty = round((positionScene.y() - offset) / -h) + j;
+            int tx = x_est + i; //candidat potentiel
+            double offset = abs(tx % 2) * (h / 2.0); //les colonnes impaires sont décalées verticalement d'un demi-hexagone (h/2).
+			int ty = round((positionScene.y() - offset) / -h) + j; //on ajuste y avec le décalage
 
-            // Recalcul du centre exact de ce candidat (au niveau 0)
+            //recalcul du centre du candidat 
             double cx = tx * w;
             double cy = ty * -h + offset;
 
-            // On compare la distance (en 2D, vue de dessus)
+            //on compare la distance
             double dist = pow(positionScene.x() - cx, 2) + pow(positionScene.y() - cy, 2);
             if (dist < minDistance) {
                 minDistance = dist;
@@ -946,18 +865,20 @@ void MainWindow::traiterClicPlateau(QPointF positionScene)
         }
     }
 
-    // 2. CALCUL AUTOMATIQUE DE LA HAUTEUR (Z)
-    // On regarde si la case est occupée. Si oui, on monte.
+	//on trouve la hauteur où il faut placer la tuile
     int autoZ = 0;
     Joueur* j = Partie::getInstance().getJoueurActuel();
     Cite* cite = j->getCite();
-
-    // On cherche le premier étage libre à ces coordonnées (x,y)
-    while (!cite->estLibre({bestX, bestY, autoZ}) && autoZ < 10) {
-        autoZ++;
+    int hMax = cite->getHauteurMax();
+    for (int z = hMax + 1; z >= 0; --z) {
+        //si on trouve une tuile à l'étage z, on doit se poser à z+1
+        if (!cite->estLibre({ bestX, bestY, z })) {
+            autoZ = z + 1;
+            break;
+        }
     }
 
-    // 3. Mise à jour de l'état de prévisualisation
+    //mise à jour de l'état de prévisualisation
     previewX = bestX;
     previewY = bestY;
     previewZ = autoZ;
@@ -971,47 +892,50 @@ void MainWindow::traiterClicPlateau(QPointF positionScene)
 void MainWindow::selectionnerTuileChantier(int index)
 {
     indexTuileSelectionnee = index;
-    qDebug() << "Tuile selectionnee index :" << index;
 
     previewActive = false;
 
-    // On redessine pour mettre à jour l'affichage de la sélection (l'opacité changée ci-dessus)
+    //on redessine pour mettre à jour l'affichage de la sélection (tuile foncée dans le chantier)
     dessinerChantier();
     mettreAJourInterface();
 }
 
-// =============================================================
-// 6. ACTIONS DU JOUEUR (SLOTS BOUTONS)
-// =============================================================
-
 
 void MainWindow::onRotationClicked() {
+    //verifs de securité
     if (indexTuileSelectionnee == -1) return;
     const Chantier& chantier = Partie::getInstance().getChantier();
     if (indexTuileSelectionnee >= chantier.getNbTuiles()) {
         indexTuileSelectionnee = -1;
         return;
     }
+
     auto it = chantier.begin();
     for(int i = 0; i < indexTuileSelectionnee; ++i) ++it;
     Tuile* t = *it;
     t->tourner();
-    rotationCompteur = (rotationCompteur + 1) % 3; // Incrémente le compteur
+
+    rotationCompteur = (rotationCompteur + 1) % 3; 
+
     mettreAJourInterface();
 }
 
 void MainWindow::onInversionClicked() {
+	//verifs de securité
     if (indexTuileSelectionnee == -1) return;
     const Chantier& chantier = Partie::getInstance().getChantier();
     if (indexTuileSelectionnee >= chantier.getNbTuiles()) {
         indexTuileSelectionnee = -1;
         return;
     }
+
     auto it = chantier.begin();
     for(int i = 0; i < indexTuileSelectionnee; ++i) ++it;
     Tuile* t = *it;
     t->inverser();
-    inversionEtat = !inversionEtat; // Bascule l'état d'inversion
+
+    inversionEtat = !inversionEtat; 
+
     mettreAJourInterface();
 }
 
@@ -1025,7 +949,7 @@ void MainWindow::onValidationClicked()
 
     try {
         Partie::getInstance().actionPlacerTuile(indexTuileSelectionnee, previewX, previewY, previewZ, rotationCompteur);
-        // Reset état
+		//reset tuile état initial
         previewActive = false;
         rotationCompteur = 0;
         inversionEtat = false;
@@ -1039,12 +963,11 @@ void MainWindow::onValidationClicked()
         }
 
         //Tour IA
-        Joueur* joueurSuivant = Partie::getInstance().getJoueurActuel(); //joueur suivant a été fait par placer tuile
+		Joueur* joueurSuivant = Partie::getInstance().getJoueurActuel(); //on est déjà passé au joueur suivant grace à actionPlacerTuile
 
         if (joueurSuivant->estIA()) {
             dernierIndexIA = Partie::getInstance().jouerTourIA();
 
-            //active le mode "Écran de l'IA"
             affichageResultatIA = true;
         }
 
@@ -1052,53 +975,45 @@ void MainWindow::onValidationClicked()
         mettreAJourInterface();
 
 
-    } // --- GESTION DES ERREURS ---
+    } 
+    //gestion des erreurs :
     catch (const CiteException& e) {
-        // Erreur géométrique (Cité)
         QMessageBox::warning(this, "Construction Impossible", e.what());
     }
     catch (const PartieException& e) {
-        // Erreur de règles (Pierres)
         QMessageBox::warning(this, "Action Interdite", e.what());
     }
-    catch (const std::exception& e) {
-        // Autre (Bug ?)
+    catch (const exception& e) {
         QMessageBox::critical(this, "Erreur", e.what());
     }
 }
 
 void MainWindow::onChargerPartieClicked() {
-    // Petit message d'attente (optionnel, mais sympa)
-    // On utilise un try/catch au cas où SaveManager lance une exception
     try {
         bool succes = SaveManager::charger(Partie::getInstance(), "save.txt");
 
         if (succes) {
-            // 1. Message de succès
             QMessageBox::information(this, "Chargement terminé", "Votre partie a été restaurée avec succès !");
 
-            // 2. On change de page (On va vers le JEU)
+            //on lance le jeu
             stackedWidget->setCurrentWidget(pageJeu);
-
-            // 3. IMPORTANT : On force le redessin de l'interface avec les données chargées
             mettreAJourInterface();
         }
         else {
-            // Echec (Fichier introuvable ou corrompu)
             QMessageBox::warning(this, "Echec du chargement",
                                  "Impossible de charger la sauvegarde.\n"
                                  "Le fichier 'save.txt' est introuvable ou illisible.");
         }
     }
-    catch (const std::exception& e) {
-        // En cas de gros crash pendant la lecture
+    catch (const exception& e) {
+        //en cas de gros crash pendant la lecture
         QMessageBox::critical(this, "Erreur Critique",
                               QString("Une erreur est survenue pendant le chargement :\n%1").arg(e.what()));
     }
 }
 
 
-void MainWindow::onContinuerIAClicked()
+void MainWindow::onContinuerIAClicked() //bouton "Continuer" sur la page du tour de l'ia (en bas)
 {
     //désactive le mode IA
     affichageResultatIA = false;
@@ -1106,23 +1021,16 @@ void MainWindow::onContinuerIAClicked()
     if (Partie::getInstance().estFinDePartie()) {
         afficherFinDePartie();
     } else {
-        // La partie continue, on rafraîchit pour afficher le plateau du joueur humain
         mettreAJourInterface();
     }
 }
 
-
-// =============================================================
-// 7. MOTEUR DE RENDU & MISE À JOUR VISUELLE
-// =============================================================
-
-
 void MainWindow::mettreAJourInterface()
 {
     int pilesRestantes = Partie::getInstance().getNbPiles() - Partie::getInstance().getIndexPileActuelle();
-    if (pilesRestantes < 0) pilesRestantes = 0;
+    if (pilesRestantes < 0) pilesRestantes = 0; //securité
 
-    // Détection du support des emojis
+    //détection du support des emojis :
     bool supportEmojis = false;
     QFontDatabase fontDb;
     QStringList families = fontDb.families();
@@ -1137,7 +1045,7 @@ void MainWindow::mettreAJourInterface()
         }
     }
 
-    // Choix des icônes et couleurs
+    //choix des emojis en fonction du nb de piles restantes :
     QString couleurPile = (pilesRestantes <= 2) ? Theme::ROUGE_ERREUR.name() : Theme::ORANGE.name();
     QString iconePile = supportEmojis ? ((pilesRestantes <= 2) ? "⚠️" : "📚") : ((pilesRestantes <= 2) ? "!" : "P");
 
@@ -1151,13 +1059,13 @@ void MainWindow::mettreAJourInterface()
                                      "</div>"
                                      ).arg(iconePile).arg(couleurPile).arg(pilesRestantes));
 
-    if (affichageResultatIA) {
-        // Mode IA
+    if (affichageResultatIA) { //si on est en mode ia
         btnRotation->hide();
         btnInversion->hide();
         btnValidation->hide();
         btnReglages->raise();
 
+        //on cherche l'ia dans la liste des joueurs :
         IA* iaTrouvee = nullptr;
         auto it = Partie::getInstance().debutJoueurs();
         while(it != Partie::getInstance().finJoueurs()) {
@@ -1173,8 +1081,12 @@ void MainWindow::mettreAJourInterface()
             dessinerInterfaceIA(iaTrouvee);
         }
     }
+
+	//sinon mode joueur humain :
     else {
         Joueur* j = Partie::getInstance().getJoueurActuel();
+
+		//affichage des infos du joueur :
         QString symbolePierres = supportEmojis ? "💎" : "P";
         QString symboleScore = supportEmojis ? "⭐" : "S";
 
@@ -1204,17 +1116,20 @@ void MainWindow::mettreAJourInterface()
 
         labelInfoJoueur->setText(htmlTexteJoueur);
 
+        //activation des boutons utiles pour le joueur :
         btnRotation->setEnabled(indexTuileSelectionnee!=-1);
         btnRotation->show();
         btnInversion->setEnabled(indexTuileSelectionnee!=-1);
         btnInversion->show();
-
         btnValidation->setEnabled(previewActive);
         btnValidation->show();
 
+		//dessin de la cité et de la prévisualisation que pour le joueur
         dessinerCite(j);
         dessinerPreview(j);
     }
+
+    //dans les deux cas (humain/ia) on dessine le chantier
     dessinerChantier();
 }
 
@@ -1225,19 +1140,21 @@ void MainWindow::dessinerCite(Joueur* joueur) {
     double taille = 30.0;
 
     for (auto it = cite->begin(); it != cite->end(); ++it) {
+		//pour chaque case cite on recupère la position et l'hexagone
         Coord pos = it->first;
         Hexagone* hex = it->second;
 
+		//propriétés de l'hexagone pour notre interface graphique
         double w = COEFF_X * taille;
         double h = (sqrt(3.) * taille);
         double pixelX = pos.x * w;
-        double pixelY = pos.y * -h + abs((pos.x % 2)) * (h / 2);
+		double pixelY = pos.y * -h + abs((pos.x % 2)) * (h / 2); //calcul compliqué dû au décalage des colonnes impaires de la grille hexagonale
 
 
         QColor couleur = TuileItem::getTypeColor(hex->getType());
         int nbEtoiles = hex->estPlace() ? hex->getEtoiles() : 0;
 
-        // Création de l'hexagone avec les étoiles
+        //création de l'hexagone
         HexagoneItem* item = new HexagoneItem(pixelX, pixelY, taille, couleur, pos.x, pos.y, pos.z, nbEtoiles);
         QString strHauteur = QString::number(pos.z);
         QGraphicsTextItem* txt = new QGraphicsTextItem(strHauteur, item);
@@ -1251,6 +1168,8 @@ void MainWindow::dessinerCite(Joueur* joueur) {
         QRectF bound = txt->boundingRect();
         txt->setPos(-bound.width() / 2.0, bound.height() - 14);
         txt->setZValue(1000);
+
+		//ajout de l'hexa à la scène
         sceneCite->addItem(item);
 
     }
@@ -1262,100 +1181,85 @@ void MainWindow::dessinerPreview(Joueur* j) {
 
     // Récupération de la tuile sélectionnée
     const Chantier& chantier = Partie::getInstance().getChantier();
-    auto it = chantier.begin(); //CACA BOUDIN JE SUIS VALENTIN
+    auto it = chantier.begin(); 
     for(int i =0; i < indexTuileSelectionnee; i++) ++it;
     Tuile* t = *it;
 
-    // Création du "Fantôme" en utilisant TuileItem
-    // On passe -1 en index car c'est un objet temporaire hors chantier
+    //création du "fantome" en utilisant TuileItem
+    //on passe -1 en index car c'est un objet temporaire hors chantier
     TuileItem* ghost = new TuileItem(t, -1, TUILE_TAILLE);
-    // Application du style (Pointillés blancs + Transparence)
     ghost->setSelection(true);
     ghost->setZValue(1000); // Toujours au-dessus de tout
 
 
-
+	//caractéristiques de la grille hexagonale
     double taille = TUILE_TAILLE;
     double w = COEFF_X * taille;
     double h = sqrt(3.) * taille;
 
-    double anchorPixelX = previewX * w;
-    double anchorPixelY = previewY * -h + abs((previewX % 2)) * (h / 2);
+    //conversion des attributs hexagonaux aux valeurs de la scene
+    double sceneX = previewX * w;
+    double sceneY = previewY * -h + abs((previewX % 2)) * (h / 2);
+
     //on trouve le plus haut hexagone en dessous de la preview pour l'afficher au dessus
-    int hmax = 0; // Par défaut au sol
+    int hmax = 0; //par défaut au sol
     Cite* cite = j->getCite();
-    // On scanne les étages pour trouver la tuile "survivante" (celle du dessus)
+    // On scanne les étages pour trouver la tuile la plus haute
     for (int z = 0; z < 20; z++) {
-        // Si on trouve une tuile occupée (!estLibre), c'est le sommet actuel de la tour
         if (!cite->estLibre({previewX, previewY, z})) {
-            hmax = z + 1; // On se place donc à l'étage juste au-dessus
-            break;        // On a trouvé, pas besoin de chercher plus haut
+            hmax = z + 1; //on se place donc à l'étage juste au-dessus
+            break;       
         }
     }
 
-    // On met à jour la variable membre pour la validation future
-    previewZ = hmax;
+    previewZ = hmax; //la preview sera au dessus de la tuile de hauteur max (hmax = z+1)
 
-    double positionY = anchorPixelY - 11.0;
+    //calcul pour que le pivot de la tuile (hexagone 0) soit celui sous la souris
+    double sensInversion = (t->getInversion() ? 1.0 : -1.0) * w;
+    double centrageX = -(sensInversion / 3.0); 
 
-    // b. Compensation du centrage de TuileItem
-    // TuileItem décale ses hexagones pour être centré.
-    // L'ancre (Index 0) se trouve donc décalée de 'shiftX' à l'intérieur de l'item.
-    // Il faut soustraire ce décalage pour que l'Ancre tombe pile sur la souris.
+    //placement final
+    if(hmax == 0) ghost->setPos(sceneX - centrageX, sceneY); //si la tuile est au sol on la pose sans décalage y
+    else ghost->setPos(sceneX - centrageX, sceneY - 11.0); //sinon on le décale de la hauteur d'une tuile vers le haut
 
-    double sideOffset = (t->getInversion() ? 1.0 : -1.0) * w;
-    double shiftX = -(sideOffset / 3.0); // Le même calcul que dans TuileItem.cpp
-
-    // 6. Placement final
-    if(hmax == 0) ghost->setPos(anchorPixelX - shiftX, anchorPixelY);
-    else ghost->setPos(anchorPixelX - shiftX, positionY);
-
-    // 7. Ajout à la scène
+    //ajout de la preview à la scène
     sceneCite->addItem(ghost);
 }
 
 
-
-
-
-
 void MainWindow::dessinerChantier()
 {
-    sceneChantier->clear(); // On vide l'ancienne scène
+    sceneChantier->clear(); //on vide l'ancienne scène
+
     const Chantier& chantier = Partie::getInstance().getChantier();
     int index = 0;
-    double yPos = 40; // Position verticale initiale
-    double rayon = 20.0; // Rayon des hexagones
+    //valeurs arbitraires mises manuellement pour que le positionnement des hexas sur le chantier soit joli
+    double yPos = 40; 
+    double rayon = 20.0; 
+    double xPos = 70; 
 
-    // Position horizontale optimale pour centrer les tuiles (valeur ajustée manuellement)
-    double xPos = 70; // Valeur testée pour un rayon de 20.0
-
-    // On parcourt les tuiles du modèle
+    
     for (auto it = chantier.begin(); it != chantier.end(); ++it) {
         Tuile* tuile = *it;
 
-        // Création de la tuile graphique
         TuileItem* item = new TuileItem(tuile, index, rayon);
         if (index == indexTuileSelectionnee) {
-            item->setSelection(true); // <--- Ça active les pointillés blancs !
+            item->setSelection(true); //si la tuile est selectionnée on l'assombrie
         } else {
             item->setSelection(false);
         }
-        item->setPos(xPos, yPos); // Position ajustée
-        yPos += 120; // Espace entre les tuiles
+        item->setPos(xPos, yPos); 
+        yPos += 120; //espace entre les tuiles
 
-        // Ajout de la tuile à la scène
-        sceneChantier->addItem(item);
+        sceneChantier->addItem(item); //ajout de la tuile au chantier graphiquement
 
-        // Connexion du signal de clic
+        //connexion clique/selection tuile
         connect(item, &TuileItem::clicked, this, [this, index]() {
             selectionnerTuileChantier(index);
         });
 
 
-
-        // Affichage du prix à droite de la tuile
-        // 1. Texte avec le carré (■) au lieu de "pierres"
+        //affichage du prix à droite de la tuile :
         QString textePrix = QString(
                                 "<div style='text-align: center;'>"
                                 "   <div style='font-size: 11px; color: #734526;'>COÛT</div>"
@@ -1370,64 +1274,60 @@ void MainWindow::dessinerChantier()
         index++;
     }
 
-    // Ajustement de la zone de scroll
+    //ajustement zone de scroll
     sceneChantier->setSceneRect(0, 0, 180, yPos);
 }
-
-
-
 
 
 void MainWindow::dessinerInterfaceIA(IA* ia) {
     sceneCite->clear();
 
-    // --- 1. POLICES (Réglées comme avant) ---
+    //reglage des polices
     QFont fontTitre; fontTitre.setPixelSize(24); fontTitre.setBold(true);
     QFont fontTexte; fontTexte.setPixelSize(16);
     QFont fontSousTitre; fontSousTitre.setPixelSize(18); fontSousTitre.setBold(true);
     QFont fontStats; fontStats.setPixelSize(16); fontStats.setBold(true);
 
-    // --- 2. TITRE ---
+    //titre
     QGraphicsTextItem* titre = sceneCite->addText("L'ILLUSTRE ARCHITECTE A JOUÉ");
     titre->setDefaultTextColor(Theme::ORANGE); // Au lieu de 14454101
     titre->setFont(fontTitre);
     titre->setPos(-titre->boundingRect().width() / 2, -260);
 
-    // --- 3. INFO ACTION ---
+    //infos sur ce qu'a joué l'ia
     QString actionText = QString("Il a pris la tuile n°%1 du chantier.").arg(dernierIndexIA + 1);
     QGraphicsTextItem* info = sceneCite->addText(actionText);
-    info->setDefaultTextColor(Theme::MARRON_FONCE); // Au lieu de 5123614
+    info->setDefaultTextColor(Theme::MARRON_FONCE);
     info->setFont(fontTexte);
     info->setPos(-info->boundingRect().width() / 2, -220);
 
-    // --- 4. STATS (Cadre centré) ---
+    //cadre pour afficher les stats de l'ia
     double statsW = 260;
     double statsH = 80;
-    // Cadre blanc avec bordure CUIVRE (comme dans votre ancien code 7554342)
     QGraphicsRectItem* statsBg = sceneCite->addRect(0, 0, statsW, statsH, QPen(Theme::CUIVRE, 2), QBrush(Qt::white));
     statsBg->setPos(-statsW / 2, -160);
 
-    // Pierres
+    //stats de l'ia :
+    //pierres
     QGraphicsTextItem* pierres = sceneCite->addText(QString("Pierres : %1 ■").arg(ia->getPierres()));
     pierres->setDefaultTextColor(Theme::ORANGE);
     pierres->setFont(fontStats);
-    // Centrage relatif au cadre
     pierres->setPos(-statsW/2 + (statsW - pierres->boundingRect().width())/2, -160 + 10);
 
-    // Score
+    //score
     ia->getScore()->calculerScore();
     QGraphicsTextItem* score = sceneCite->addText(QString("Score Actuel : %1").arg(ia->getScore()->calculerScore()));
     score->setDefaultTextColor(Theme::MARRON_FONCE);
     score->setFont(fontStats);
     score->setPos(-statsW/2 + (statsW - score->boundingRect().width())/2, -160 + 45);
 
-    // --- 5. COLLECTION ---
+    //tuiles acquises
     QGraphicsTextItem* stashTitle = sceneCite->addText("SA COLLECTION :");
     stashTitle->setDefaultTextColor(Theme::CUIVRE);
     stashTitle->setFont(fontSousTitre);
     stashTitle->setPos(-stashTitle->boundingRect().width() / 2, -50);
 
-    // Paramètres Grille
+    //paramètres des cadres autour des tuiles
     double cardW = 90; double cardH = 110; double space = 15;
     int cols = 6;
     double gridTotalWidth = (cols * cardW) + ((cols - 1) * space);
@@ -1436,22 +1336,24 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
     double currentY = 0;
     int count = 0;
 
+    //on parcourt les tuiles de l'ia :
     for (auto it = ia->begin(); it != ia->end(); ++it) {
-        // Carte Fond
+        
+        //on crée leur cadre
         QGraphicsRectItem* card = new QGraphicsRectItem(0, 0, cardW, cardH);
-        card->setBrush(QBrush(Theme::BEIGE_CARTE)); // Au lieu de 14267535
-        card->setPen(QPen(Theme::CUIVRE, 3));       // Bordure épaisse
+        card->setBrush(QBrush(Theme::BEIGE_CARTE)); 
+        card->setPen(QPen(Theme::CUIVRE, 3));      
         card->setPos(currentX, currentY);
         sceneCite->addItem(card);
 
-        // Tuile
+       //on crée la tuile
         Tuile* t = *it;
         TuileItem* item = new TuileItem((*it), -1);
-        if (t->getNbHexagones() == 4) {
-            item->setScale(0.45); // Plus petit pour rentrer (0.45 au lieu de 0.55)
+        if (t->getNbHexagones() == 4) { //cas tuile de depart
+            item->setScale(0.45); //on réduit sa taille de base
             item->setPos(currentX + cardW/2, currentY + cardH/2 + 5);
-        } else {
-            item->setScale(0.55); // Taille normale pour les trios
+        } else { //tuile normale
+            item->setScale(0.55); //on réduit moins la taille des tuiles classiques (déjà plus petites)
             item->setPos(currentX + cardW/2 + 2, currentY + cardH/2 - 11);
         }
 
@@ -1466,9 +1368,8 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
         }
     }
 
-    // --- 6. BOUTON CONTINUER ---
+    //bouton continuer
     QPushButton* btnLocal = new QPushButton("CONTINUER");
-    // On garde votre style CSS qui marche bien ici
     btnLocal->setStyleSheet(
         "QPushButton { "
         "   background-color: #dc8d55; color: white; border: 2px solid #b56d38; "
@@ -1478,19 +1379,18 @@ void MainWindow::dessinerInterfaceIA(IA* ia) {
         );
     btnLocal->setCursor(Qt::PointingHandCursor);
     btnLocal->setFixedWidth(220);
-
     connect(btnLocal, &QPushButton::clicked, this, &MainWindow::onContinuerIAClicked, Qt::QueuedConnection);
+
+	//on utilise un proxy car un QPushButton ne peut être ajouté à une QGraphicsScene
+	//QGraphicsScene n'accepte que des QGraphicsItem
+	//le proxy est un QGraphicsItem cliquable qui simule donc le comportement d'un QPushButton
     QGraphicsProxyWidget* proxy = sceneCite->addWidget(btnLocal);
     proxy->setPos(-110, currentY + cardH + 40);
 }
 
-// =============================================================
-// 8. FIN DE PARTIE
-// =============================================================
-
 
 void MainWindow::afficherFinDePartie() {
-    // --- DÉTECTION AUTOMATIQUE DES EMOJIS ---
+
     bool supportEmojis = false;
 
 #ifdef Q_OS_WIN
@@ -1500,7 +1400,7 @@ void MainWindow::afficherFinDePartie() {
         supportEmojis = true;
     }
 #elif defined(Q_OS_MACOS)
-    /* macOS supporte bien les emojis
+    macOS supporte bien les emojis
     supportEmojis = true;
 #elif defined(Q_OS_LINUX)
     // Sur Linux, on teste si une police emoji est installée
@@ -1510,28 +1410,38 @@ void MainWindow::afficherFinDePartie() {
     if (families.contains("Noto Color Emoji") ||
         families.contains("Twitter Color Emoji") ||
         families.contains("Segoe UI Emoji")) {
-        supportEmojis = true;*/
+        supportEmojis = true;
 #endif
 
-    // --- 1. CALCUL DES SCORES AVEC CLASSEMENT ---
+    
     vector<Joueur*> joueursClasses;
     for (auto it = Partie::getInstance().debutJoueurs(); it != Partie::getInstance().finJoueurs(); ++it) {
         joueursClasses.push_back(*it);
     }
-    std::sort(joueursClasses.begin(), joueursClasses.end(), [](Joueur* a, Joueur* b) {
-        return a->getScore()->calculerScore() > b->getScore()->calculerScore();
-    });
 
-    // Choix des symboles selon le support
+	//on trie les joueurs par score décroissant (et par nb de pierres en cas d'égalité)
+	//on ne peut pas utiliser determinerGagnants car on veut le classement complet
+	//or determinerGagnants ne renvoie que le premier (les premiers en cas d'égalité)
+    sort(joueursClasses.begin(), joueursClasses.end(), [](Joueur* a, Joueur* b) {
+        int scoreA = a->getScore()->calculerScore();
+        int scoreB = b->getScore()->calculerScore();
+
+        //si les scores sont différents, le plus grand gagne
+        if (scoreA != scoreB) {
+            return scoreA > scoreB;
+        }
+        //si égalité de score, celui qui a le plus de pierres gagne
+        return a->getPierres() > b->getPierres();
+        });
+
+    //choix des symboles selon le support
     QStringList medailles;
     QStringList couleursMedailles;
 
     if (supportEmojis) {
-        // Version emoji (colorée nativement)
         medailles = {"🥇", "🥈", "🥉", "🎖️"};
-        couleursMedailles = {"inherit", "inherit", "inherit", "inherit"}; // Pas besoin de couleur
+        couleursMedailles = {"inherit", "inherit", "inherit", "inherit"}; //pas besoin de couleur
     } else {
-        // Version fallback (Unicode + couleurs)
         medailles = {"★", "◆", "●", "○"};
         couleursMedailles = {"#FFD700", "#C0C0C0", "#CD7F32", "#B8860B"};
     }
@@ -1542,7 +1452,7 @@ void MainWindow::afficherFinDePartie() {
         Joueur* j = joueursClasses[i];
         QString couleur = (i == 0) ? "#E67E22" : "#734526";
         QString bgColor = (i == 0) ? "rgba(230, 126, 34, 0.15)" : "rgba(115, 69, 38, 0.08)";
-        QString couleurMedaille = couleursMedailles[std::min((int)i, 3)];
+        QString couleurMedaille = couleursMedailles[min((int)i, 3)];
 
         int tailleMedaille = supportEmojis ? 20 : 24; // Emojis un peu plus petits
 
@@ -1555,7 +1465,7 @@ void MainWindow::afficherFinDePartie() {
                            ).arg(bgColor)
                            .arg(tailleMedaille)
                            .arg(couleurMedaille)
-                           .arg(medailles[std::min((int)i, 3)])
+                           .arg(medailles[min((int)i, 3)])
                            .arg(couleur)
                            .arg(QString::fromStdString(j->getNom()))
                            .arg(j->getScore()->calculerScore());
@@ -1597,7 +1507,7 @@ void MainWindow::afficherFinDePartie() {
                              .arg(symboleEgalite);
     }
 
-    // --- 3. CRÉATION DE LA FENÊTRE (reste identique) ---
+    //création fenetre désignation gagnant :
     QDialog overlay(this);
     overlay.setWindowFlags(Qt::FramelessWindowHint | Qt::Dialog);
     overlay.setAttribute(Qt::WA_TranslucentBackground);
@@ -1635,6 +1545,7 @@ void MainWindow::afficherFinDePartie() {
     lblScores->setTextFormat(Qt::RichText);
     frameLayout->addWidget(lblScores);
 
+    //boutons :
     QHBoxLayout* btnLayout = new QHBoxLayout();
 
     QPushButton* btnMenu = new QPushButton("MENU PRINCIPAL", frame);
@@ -1651,9 +1562,11 @@ void MainWindow::afficherFinDePartie() {
 
     layout->addWidget(frame);
 
+	//connexions des boutons
     connect(btnMenu, &QPushButton::clicked, &overlay, &QDialog::accept);
     connect(btnQuitter, &QPushButton::clicked, this, &MainWindow::quitterJeu);
 
+	//si on clique sur menu principal on revient au menu principal
     if (overlay.exec() == QDialog::Accepted) {
         stackedWidget->setCurrentWidget(pageMenuPrincipal);
         sceneCite->clear();
@@ -1661,45 +1574,48 @@ void MainWindow::afficherFinDePartie() {
     }
 }
 
+
 void MainWindow::keyPressEvent(QKeyEvent *event)
 {
-    // Vérifie si une tuile est sélectionnée
+    //securités :
     if (indexTuileSelectionnee == -1) {
         QMainWindow::keyPressEvent(event);
         return;
     }
 
-    // Récupère la tuile sélectionnée
     const Chantier& chantier = Partie::getInstance().getChantier();
     if (indexTuileSelectionnee >= chantier.getNbTuiles()) {
         QMainWindow::keyPressEvent(event);
         return;
     }
 
+	//recupere la tuile sélectionnée
     auto it = chantier.begin();
     for (int i = 0; i < indexTuileSelectionnee; ++i) {
         ++it;
     }
     Tuile* t = *it;
 
-    // Gestion de la touche P (pivoter)
+    //gestion de la touche P (pivoter)
     if (event->key() == Qt::Key_P) {
         t->tourner();
         rotationCompteur = (rotationCompteur + 1) % 3;
         mettreAJourInterface();
     }
-    // Gestion de la touche I (inverser)
+
+    //gestion de la touche I (inverser)
     else if (event->key() == Qt::Key_I) {
         t->inverser();
         inversionEtat = !inversionEtat;
         mettreAJourInterface();
     }
-    // Gestion de la touche Entrée (valider le placement)
+
+    //gestion de la touche Entrée (valider le placement)
     else if ((event->key() == Qt::Key_Return || event->key() == Qt::Key_Enter) && previewActive) {
-        onValidationClicked(); // Appelle la même fonction que le bouton "Valider Placement"
+        onValidationClicked(); 
     }
     else {
-        // Passe l'événement au parent pour les autres touches
+        //passe l'événement au parent pour les autres touches
         QMainWindow::keyPressEvent(event);
     }
 }
@@ -1707,24 +1623,23 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 
 void MainWindow::afficherInfoRaccourcisClavier()
 {
-    // Fenêtre modale
+	//fenêtre  d'affichage des raccourcis clavier
     QDialog dialog(this);
     dialog.setWindowTitle("Astuce : Raccourcis Clavier");
     dialog.setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     dialog.setFixedSize(420, 280);
 
-    // Layout principal
+    //layout principal
     QVBoxLayout* layout = new QVBoxLayout(&dialog);
     layout->setContentsMargins(15, 15, 15, 15);
 
-    // Cadre unifié
+    //création du cadre
     QFrame* frame = new QFrame(&dialog);
     frame->setProperty("class", "CadreConfig");
-
     QVBoxLayout* frameLayout = new QVBoxLayout(frame);
     frameLayout->setSpacing(15);
 
-    // Titre
+    //titre
     QLabel* titre = new QLabel("Astuce : Raccourcis Clavier", frame);
     titre->setAlignment(Qt::AlignCenter);
     titre->setStyleSheet(
@@ -1734,7 +1649,7 @@ void MainWindow::afficherInfoRaccourcisClavier()
         );
     frameLayout->addWidget(titre);
 
-    // Texte explicatif (MIS À JOUR)
+    //explications :
     QLabel* texte = new QLabel(frame);
     texte->setAlignment(Qt::AlignCenter);
     texte->setWordWrap(true);
@@ -1755,7 +1670,7 @@ void MainWindow::afficherInfoRaccourcisClavier()
         );
     frameLayout->addWidget(texte);
 
-    // Bouton OK
+    //bouton OK
     QPushButton* btnOk = new QPushButton("OK, compris !", frame);
     btnOk->setProperty("class", "BoutonMenu");
     btnOk->setDefault(true);

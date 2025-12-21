@@ -7,10 +7,10 @@
 #include <QPen>
 #include <QFont>
 
+//la classe hérite de QGraphicsPolygonItem pour dessiner un hexagone dans une scène graphique
 class HexagoneItem : public QGraphicsPolygonItem {
 public:
-    // On stocke les coordonnées logiques du jeu pour renvoyer l'info au clic
-    int gridX, gridY, gridZ;
+	int gridX, gridY, gridZ; //coordonnées dans la grille hexagonale
 
     HexagoneItem(double x, double y, double rayon, QColor couleur, int gx, int gy, int gz, int etoiles = 0, QGraphicsItem* parent = nullptr);
 

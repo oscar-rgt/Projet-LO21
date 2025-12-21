@@ -6,16 +6,18 @@
 #include "joueur.h"
 #include "ia.h"
 
+using namespace std;
+
 class GestionnaireJoueurs {
 private:
-    std::vector<Joueur*> joueurs;
+    vector<Joueur*> joueurs;
     size_t indexJoueurActuel;
 
 public:
     GestionnaireJoueurs();
     ~GestionnaireJoueurs();
 
-    void initialiser(const std::vector<std::string>& noms, bool modeSolo, unsigned int niveauIA);
+    void initialiser(const vector<string>& noms, bool modeSolo, unsigned int niveauIA);
     void vider();
 
     void passerAuSuivant();
@@ -27,17 +29,17 @@ public:
 
     void designerArchitecteChefAleatoire();
 
-    std::vector<Joueur*> determinerGagnants();
+    vector<Joueur*> determinerGagnants();
 
     //pour sauvegarde
     void ajouterJoueurExistant(Joueur* j);
-    const std::vector<Joueur*>& getJoueurs() const { return joueurs; }
+    const vector<Joueur*>& getJoueurs() const { return joueurs; }
 
     class Iterator {
         friend class GestionnaireJoueurs;
-        std::vector<Joueur*>::const_iterator current;
+        vector<Joueur*>::const_iterator current;
     public:
-        Iterator(std::vector<Joueur*>::const_iterator it) : current(it) {}
+        Iterator(vector<Joueur*>::const_iterator it) : current(it) {}
 
         Iterator& operator++() { ++current; return *this; }
         bool operator!=(const Iterator& other) const { return current != other.current; }

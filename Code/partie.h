@@ -26,8 +26,8 @@ public:
     static Partie& getInstance();
 
     
-    void initialiser(int nbJoueurs, const std::vector<std::string>& nomsJoueurs,
-                     TuileCite mode, const std::array<bool, 5>& variantesActives,
+    void initialiser(int nbJoueurs, const vector<string>& nomsJoueurs,
+                     TuileCite mode, const array<bool, 5>& variantesActives,
                      unsigned int niveauIA = 0);
 
     
@@ -52,7 +52,7 @@ public:
     //methodes liées à config
     unsigned int getNiveauIllustreConstructeur() const { return config.niveauIllustreConstructeur; }
     TuileCite getModeTuileCite() const { return config.modeTuileCite; }
-    const std::array<bool, 5>& getVariantes() const { return config.variantes; }
+    const array<bool, 5>& getVariantes() const { return config.variantes; }
 
     //méthodes liées au chantier
     const Chantier& getChantier() const { return chantier; }
@@ -69,7 +69,7 @@ public:
     void setIndexPileActuelle(int idx) { indexPileActuelle = idx; }
     void setNiveauIllustreConstructeur(unsigned int lvl) { config.niveauIllustreConstructeur = lvl; }
     void setModeTuileCite(TuileCite mode) { config.modeTuileCite = mode; }
-    void setVariantes(const std::array<bool, 5>& vars) { config.variantes = vars; }
+    void setVariantes(const array<bool, 5>& vars) { config.variantes = vars; }
 
     
     class PileIterator {

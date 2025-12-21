@@ -5,10 +5,12 @@
 #include "chantier.h"
 #include <vector>
 
+using namespace std;
+
 class IA : public Joueur {
 private:
     int difficulte; //1: Hippodamos, 2: Métagénès, 3: Callicratès
-    std::vector<Tuile*> tuilesAcquises;
+    vector<Tuile*> tuilesAcquises;
 	TuileDepart* tuileDepart; 
 
 public:
@@ -26,12 +28,12 @@ public:
 
     bool estIA() const override { return true; }
 
-    const std::vector<Tuile*>& getTuilesAcquises() const { return tuilesAcquises; }
+    const vector<Tuile*>& getTuilesAcquises() const { return tuilesAcquises; }
 
     class Iterator {
         friend class IA;
-        std::vector<Tuile*>::const_iterator current;
-        Iterator(std::vector<Tuile*>::const_iterator it) : current(it) {}
+        vector<Tuile*>::const_iterator current;
+        Iterator(vector<Tuile*>::const_iterator it) : current(it) {}
     public:
         Iterator() {}
         Iterator& operator++() { ++current; return *this; }

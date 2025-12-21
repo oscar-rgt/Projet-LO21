@@ -2,102 +2,96 @@
 #include <Qcolor>
 #include <cmath>
 
-// Constructeur de TuileItem
-TuileItem::TuileItem(Tuile* t, int index, double rayon)
-    : modeleTuile(t), indexChantier(index)
-{
-    setFlag(QGraphicsItem::ItemIsSelectable);
-    setHandlesChildEvents(false); // Désactive la gestion des événements enfants
 
-    // Calcul des dimensions de l'hexagone
+TuileItem::TuileItem(Tuile* t, int index, double rayon): modeleTuile(t), indexChantier(index){
+
+    setFlag(QGraphicsItem::ItemIsSelectable);
+    setHandlesChildEvents(false); //désactive la gestion d'événements enfants
+
+    //dimensions de nos hexagones
     double w = 1.53 * rayon;
     double h = sqrt(3.0) * rayon;
 
-    int nbHex = t->getNbHexagones();
-    // Définition des offsets relatifs pour les 3 hexagones de la tuile
-    // Ces offsets dépendent de l'inversion de la tuile
-    struct Offset { double x; double y; };
-    std::vector<Offset> offsets;
+    int nbHex = t->getNbHexagones(); //3 ou 4 selon si tuile départ ou non
 
-    // --- LOGIQUE DE PLACEMENT ---
-    if (nbHex == 4) {
-        // CAS TUILE DE DÉPART (4 Hexagones)
-        // Forme en "trèfle" ou étoile : 1 centre + 3 autour
+	//vecteur des positions possibles des hexagones dans la tuile
+    struct Position { double x; double y; };
+    std::vector<Position> pos;
 
-        // 0. Centre (Habitation)
-        offsets.push_back({0.0, 0.0});
+	if (nbHex == 4) { //tuile de départ
 
-        // 1. Haut (Carrière)
-        offsets.push_back({0.0, -1.0});
+        //centre
+        pos.push_back({0.0, 0.0});
 
-        // 2. Bas-Gauche (Carrière)
-        offsets.push_back({-1.0, 0.5});
+        //haut
+        pos.push_back({0.0, -1.0});
 
-        // 3. Bas-Droite (Carrière)
-        offsets.push_back({1.0, 0.5});
+        //bas gauche
+        pos.push_back({-1.0, 0.5});
 
-    } else {
-        // CAS TUILE STANDARD (3 Hexagones)
-        // 0. Centre
-        offsets.push_back({0.0, 0.0});
+        //bas droite
+        pos.push_back({1.0, 0.5});
 
-        // 1. Sud
-        offsets.push_back({0.0, 1.0});
+    } else { //tuile normale
+        //centre
+        pos.push_back({0.0, 0.0});
 
-        // 2. Latéral (Gauche ou Droite selon inversion)
+        //bas
+        pos.push_back({0.0, 1.0});
+
+		//coté (gauche ou droite selon inversion)
         if (t->getInversion()) {
-            offsets.push_back({1.0, 0.5}); // À droite
+            pos.push_back({1.0, 0.5}); //à droite
         } else {
-            offsets.push_back({-1.0, 0.5}); // À gauche
+            pos.push_back({-1.0, 0.5}); //à gauche
         }
     }
 
-    // Centrage approximatif
-    // Pour la tuile départ (centrée en 0,0 avec des voisins autour), le shift est 0.
-    // Pour les tuiles standards, on garde votre logique de décalage.
-    double shiftX = 0;
+	//centrage de la tuile sous la souris :
+	double decalageX = 0; //la tuile de depart n'a pas de decalage
     if (nbHex == 3) {
-        double sideX = offsets[2].x * w; 
-        shiftX = -(sideX / 3.0); // Ajout d'un décalage pour centrer la tuile
+        //on ramène l'hexagone principal (pos centre) sous la souris
+		double coteX = pos[2].x * w; //on trouve la position pixel de l'hexagone avec pos = coté
+		decalageX = -(coteX / 3.0); //on décale d'un tiers de cette position
     }
 
-    // --- CRÉATION DES ITEMS ---
-    // On boucle sur nbHex (3 ou 4) au lieu de 3 fixe
+	//on crée la tuile hexagone par hexagone
     for (int i = 0; i < nbHex; ++i) {
         Hexagone* hexModel = t->getHexagone(i);
 
-        // Sécurité : si on a défini moins d'offsets que d'hexagones (ne devrait pas arriver)
-        if (i >= static_cast<int>(offsets.size())) break;
+        //sécurité : si on a défini moins de pos que d'hexagones (ne devrait pas arriver)
+        if (i >= static_cast<int>(pos.size())) break;
 
-        double relX = offsets[i].x;
-        double relY = offsets[i].y;
+		//récupération des coordonnées relatives de l'hexagone
+        double relX = pos[i].x;
+        double relY = pos[i].y;
 
-        // Calcul des coordonnées pixel en fonction des offsets
-        double pixelX = relX * w;
+		//transforme les positions relatives en valeur pixel écran
+		double pixelX = relX * w; //ex : si relX = 3, l'hexagone sera dessiné en x = 3 * largeur_hexagone (défini plus haut)
         double pixelY = relY * h;
 
+		//application du décalage pour centrer la tuile sous la souris
+		//tous les hexagones sont décalés de la même valeur vers la droite ou la gauche
+        pixelX += decalageX;
 
-        pixelX += shiftX;
-
-        // Récupération de la couleur et du nombre d'étoiles
+		//récupération de la couleur et du nombre d'étoiles de chaque hexagone
         QColor couleur = getTypeColor(hexModel->getType());
         int nbEtoiles = hexModel->estPlace() ? hexModel->getEtoiles() : 0;
 
-        // Création et ajout de l'HexagoneItem au groupe
+		//création et ajout de l'HexagoneItem au groupe (qui forme la tuile)
         HexagoneItem* item = new HexagoneItem(pixelX, pixelY, rayon, couleur, 0, 0, 0, nbEtoiles);
         addToGroup(item);
     }
 }
 
 
-// Gestion de l'événement de clic
 void TuileItem::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     QGraphicsItemGroup::mousePressEvent(event);
-    emit clicked(indexChantier); // Émet le signal avec l'index de la tuile
+    emit clicked(indexChantier); //emet le signal avec l'index de la tuile
 }
 
-// Méthode statique pour obtenir la couleur associée à un type de quartier
+//methode statique pour obtenir la couleur de l'hexagone selon son type
 QColor TuileItem::getTypeColor(TypeQuartier t)
 {
     switch(t) {
@@ -111,12 +105,14 @@ QColor TuileItem::getTypeColor(TypeQuartier t)
     }
 }
 
+//méthode pour marquer la sélection d'une tuile lorsqu'on clique dessus
 void TuileItem::setSelection(bool estSelectionne) {
-    // On parcourt les enfants du groupe (les 3 hexagones)
+    //on parcourt les enfants du groupe (les 3 hexagones)
     for (QGraphicsItem* enfant : childItems()) {
-        // On vérifie que c'est bien un HexagoneItem
+        //on vérifie que c'est bien un HexagoneItem
         HexagoneItem* hex = dynamic_cast<HexagoneItem*>(enfant);
         if (hex) {
+			//si oui on applique la sélection
             hex->setSelection(estSelectionne);
         }
     }
