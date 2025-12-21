@@ -64,7 +64,6 @@ public:
     void placer(Tuile* t, Coord c, Joueur* j, int rotation = 0);
     void placerTuileDepart();
     bool estLibre(Coord c) const { return (carte.find(c) == carte.end()); }
-    bool estRecouvert(Coord c) const { return (!estLibre({ c.x, c.y, c.z + 1 })); }
     vector<Hexagone*> getAdjacents(Coord c) const;
     vector<Coord> getVecteursVoisins(bool isXOdd) const;
     const vector<Action>& getHistorique() const { return historique; }

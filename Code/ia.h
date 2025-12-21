@@ -24,11 +24,7 @@ public:
 
     int getDifficulte() const { return difficulte; }
 
-    int getNbTuilesAcquises() const { return static_cast<int>(tuilesAcquises.size()); }
-
     bool estIA() const override { return true; }
-
-    const vector<Tuile*>& getTuilesAcquises() const { return tuilesAcquises; }
 
     class Iterator {
         friend class IA;

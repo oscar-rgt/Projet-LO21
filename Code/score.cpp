@@ -4,8 +4,6 @@
 #include "IA.h" 
 #include "cite.h" 
 #include <vector>
-#include <iostream>
-#include <algorithm>
 
 using namespace std;
 

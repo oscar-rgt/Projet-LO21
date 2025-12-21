@@ -10,8 +10,6 @@
 #include <cmath>
 #include <QTextEdit>
 #include<QApplication>
-#include <QInputDialog>
-#include <QFileDialog>
 #include <QDialog>
 #include <QMouseEvent>
 #include <QGraphicsProxyWidget>

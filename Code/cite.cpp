@@ -1,10 +1,8 @@
-#include <iostream>
 #include "cite.h"
 #include "score.h"
 #include "tuiles.h"
 #include "joueur.h"
 #include "coord.h"
-#include <cmath>
 
 using namespace std;
 

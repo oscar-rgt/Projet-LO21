@@ -1,6 +1,4 @@
 #include "pile.h"
-#include <iostream>
-#include <string>
 #include <vector>
 
 Pile::Pile(unsigned int id_, unsigned int nb) : id(id_) {

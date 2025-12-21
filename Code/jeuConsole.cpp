@@ -6,7 +6,6 @@
 #include "score.h"
 #include <iostream>
 #include <limits>
-#include <algorithm>
 #include <cstdlib>
 
 using namespace std;

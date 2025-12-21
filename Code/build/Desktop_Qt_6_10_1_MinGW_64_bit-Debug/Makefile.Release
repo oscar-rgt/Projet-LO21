@@ -1403,18 +1403,6 @@ release/mainwindow.o: ../../mainwindow.cpp ../../mainwindow.h \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qtextedit.h \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/QApplication \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qapplication.h \
-		C:/Qt/6.10.1/mingw_64/include/QtWidgets/QInputDialog \
-		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qinputdialog.h \
-		C:/Qt/6.10.1/mingw_64/include/QtWidgets/QFileDialog \
-		C:/Qt/6.10.1/mingw_64/include/QtWidgets/qfiledialog.h \
-		C:/Qt/6.10.1/mingw_64/include/QtCore/qdir.h \
-		C:/Qt/6.10.1/mingw_64/include/QtCore/qdirlisting.h \
-		C:/Qt/6.10.1/mingw_64/include/QtCore/qfiledevice.h \
-		C:/Qt/6.10.1/mingw_64/include/QtCore/qdatetime.h \
-		C:/Qt/6.10.1/mingw_64/include/QtCore/qcalendar.h \
-		C:/Qt/6.10.1/mingw_64/include/QtCore/qfile.h \
-		C:/Qt/6.10.1/mingw_64/include/QtCore/qfileinfo.h \
-		C:/Qt/6.10.1/mingw_64/include/QtCore/qtimezone.h \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/QDialog \
 		C:/Qt/6.10.1/mingw_64/include/QtGui/QMouseEvent \
 		C:/Qt/6.10.1/mingw_64/include/QtWidgets/QGraphicsProxyWidget \

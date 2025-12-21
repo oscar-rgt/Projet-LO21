@@ -46,7 +46,6 @@ protected:
 class RegleHabitationVariante : public RegleHabitation {
 public:
     int calculer(Cite* cite) const override; // Variante : Double les points si score >= 10
-    string getNom() const override { return "Habitation (Variante)"; }
 };
 
 // --- MARCHÉS (Jaune) ---
