@@ -17,7 +17,7 @@ public:
     IA(const string& nom, int diff);
     virtual ~IA();
 
-    int choisirTuile(const Chantier& chantier);
+    virtual int choisirTuile(const Chantier& chantier);
 
     //ajoute la tuile aux tuiles acquises SANS LA PLACER DANS UNE CITE
     void ajouterTuile(Tuile* t);
