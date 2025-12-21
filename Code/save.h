@@ -5,11 +5,6 @@
 #include <string>
 class Partie;
 
-class SaveException : public AkropolisException {
-public:
-    SaveException(const std::string& i) : AkropolisException(i) {}
-};
-
 class SaveManager {
 public:
     static bool sauvegarder(const Partie& partie, const std::string& nomFichier);

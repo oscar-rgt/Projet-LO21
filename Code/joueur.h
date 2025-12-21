@@ -6,6 +6,7 @@
 
 using namespace std;
 
+//forward declarations pour éviter les inclusions circulaires
 class Score;
 class Cite;
 
@@ -17,14 +18,17 @@ private:
     Cite* cite;
 
 public:
+    Joueur(const string& n, unsigned int p = 2);
+    virtual ~Joueur();
+
     Score* getScore() const { return score; }
     Cite* getCite() const { return cite; }
-    Joueur(const string& n, unsigned int p=2);
     const string& getNom() const { return nom; }
     int getPierres() const { return pierres; }
+
     void ajouterPierres(unsigned int n = 0);
     bool utiliserPierres(unsigned int n = 1);
-    virtual ~Joueur();
+    
     virtual bool estIA() const { return false; }
 };
 

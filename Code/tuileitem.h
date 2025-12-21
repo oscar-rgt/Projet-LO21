@@ -18,8 +18,7 @@ class TuileItem : public QObject, public QGraphicsItemGroup
 
 public:
     Tuile* modeleTuile;  
-    int indexChantier;    
-
+    int indexChantier;   
     
     TuileItem(Tuile* t, int index, double rayon = 30.0);
 

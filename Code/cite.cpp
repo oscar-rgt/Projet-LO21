@@ -6,10 +6,6 @@
 
 using namespace std;
 
-// =========================================================
-// 1. OUTILS DE VOISINAGE
-// =========================================================
-
 vector<Coord> Cite::getVecteursVoisins(bool isXOdd) const{
     if (!isXOdd) return {
         {0, -1, 0}, {0, 1, 0},   // Vertical
@@ -34,39 +30,33 @@ const bool Cite::toucheCite(Coord c) const {
     return false;
 }
 
-// =========================================================
-// 2. MÉTHODE PLACER (Version Finale)
-// =========================================================
-
 void Cite::placer(Tuile* t, Coord c, Joueur* j, int rotation) {
-    // A. CALCUL DES POSITIONS (SLOTS)
-    // Nouvelle géométrie demandée :
-    Coord pos[3];
+	Coord pos[3]; //positions des 3 hexagones de la tuile
 
-    // Index 0 : L'Ancre (x, y)
+    //centre
     pos[0] = c;
 
-    // Index 1 : (x, y-1)
+    //sud
     pos[1] = c.sud();
 
-    // Index 2 : (Standard: x-1, x % 2 == 0 ? y : y - 1) | (Inversé: x+1, x % 2 == 0 ? y : y - 1)
+    //coté : (Standard: x-1, x % 2 == 0 ? y : y - 1) | (Inversé: x+1, x % 2 == 0 ? y : y - 1)
    if (t->getInversion()) {
-        // Vers la Droite
+        //vers la droite
         pos[2] = { c.x + 1, (c.x % 2 == 0) ? c.y : c.y - 1, c.z };
     } else {
-        // Vers la Gauche (Standard)
+        //vers la gauche (standard)
         pos[2] = { c.x - 1, (c.x % 2 == 0) ? c.y : c.y - 1, c.z };
     }
 
-    // B. VÉRIFICATION : DISPONIBILITÉ
+    //verif disponibilité de la case
     for (int i = 0; i < 3; i++) {
         if (!estLibre(pos[i]))
             throw CiteException("Placement impossible : Une des cases n'est pas libre.");
     }
 
-    // C. VÉRIFICATION : RÈGLES DE JEU
+    //verifs règles du jeu :
     if (c.z == 0) {
-        // Niveau 0 : Doit toucher la cité
+        //Niveau 0 : doit toucher la cité
         bool contact = false;
         for (int i = 0; i < 3; i++) {
             if (toucheCite(pos[i])) {
@@ -77,7 +67,7 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j, int rotation) {
         if (!contact) throw CiteException("Placement impossible : La tuile ne touche pas la cite.");
     }
     else {
-        // Niveau Z > 0 : Support requis sous CHAQUE hexagone
+        //niveau z > 0 : Support requis sous CHAQUE hexagone
         Tuile* supportTiles[3] = { nullptr, nullptr, nullptr };
 
         for (int i = 0; i < 3; i++) {
@@ -89,17 +79,17 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j, int rotation) {
             supportTiles[i] = carte[dessous]->getTuile();
         }
 
-        // Règle : Doit reposer sur au moins 2 tuiles différentes
+        //règle : doit reposer sur au moins 2 tuiles différentes
         bool memeSupportPartout = (supportTiles[0] == supportTiles[1]) &&
             (supportTiles[1] == supportTiles[2]);
 
         if (memeSupportPartout)
             throw CiteException("Placement impossible : La tuile recouvre une seule et même tuile.");
     }
-    // Sortie du cadrillage
+    //sortie du cadrillage
     for (Coord h : pos) if (h.y>999 || h.y < -99 || h.z < 0) throw CiteException("Placement impossible : Quadrillage trop petit (WIP)");
 
-    //D.Sauvegarde
+    // Sauvegarde
     Action act;
     act.tuileId = t->getId();
     act.pos.x = c.x;
@@ -116,7 +106,7 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j, int rotation) {
     }
     historique.push_back(act);
 
-    // E. ENREGISTREMENT
+	//enregistrement de la tuile dans la cité
     for (int i = 0; i < 3; i++) {
         if (c.z > 0) {
 			t->getHexagone(i)->setNiveau(c.z);
@@ -129,26 +119,22 @@ void Cite::placer(Tuile* t, Coord c, Joueur* j, int rotation) {
         }
         carte[pos[i]] = t->getHexagone(i);
     }
-    // F. AFFICHAGE
-
 }
 
-// =========================================================
-// 3. TUILE DE DÉPART
-// =========================================================
 
 void Cite::placerTuileDepart() {
     if (t->getNbHexagones() != 4) throw CiteException("La tuile de départ doit avoir 4 hexagones.");
 
-    // Centre (Habitation) en (0,0,0)
+    //centre en (0,0,0)
     Coord c0 = { 0, 0, 0 };
 
 
-    // placer autour de (0,0,0)    
-    Coord c1 = { -1, 0, 0 };
-    Coord c2 = { 1, 0, 0 };
-    Coord c3 = { 0, 1, 0 }; //NORD
+    //placer autour de (0,0,0)    
+	Coord c1 = { -1, 0, 0 }; //ouest
+    Coord c2 = { 1, 0, 0 }; //est
+    Coord c3 = { 0, 1, 0 }; //nord
 
+	//enregistrement de la tuile dans la cité
     carte[c0] = t->getHexagone(0);
     carte[c1] = t->getHexagone(1);
     carte[c2] = t->getHexagone(2);
@@ -156,39 +142,30 @@ void Cite::placerTuileDepart() {
 }
 
 
-
-
-
-// =========================================================
-// 5. HELPERS
-// =========================================================
-
-
 vector<Hexagone*> Cite::getAdjacents(Coord c) const {
-    vector<Hexagone*> ret;
+    vector<Hexagone*> adj;
 
-    // Pour chaque direction autour de la tuile...
+    // Pour chaque direction autour de la tuile :
     for (const auto& vec : getVecteursVoisins(c.x % 2)) {
         for (int z = 0; z <= getHauteurMax(); ++z) { // on regarde toutes les hauteurs possibles
             Coord voisin = { c.x + vec.x, c.y + vec.y, z };
             auto it = carte.find(voisin);
 
             if (it != carte.end()) {
-                ret.push_back(it->second);
+                adj.push_back(it->second);
                 break; // On a trouvé le voisin visible, on passe à la direction suivante
             }
         }
     }
-    return ret;
+    return adj;
 }
 
-
+//renvoie la hauteur maximale à laquelle est placée une tuile dans la cité
 int Cite::getHauteurMax() const {
     int maxZ = 0;
-    // On utilise votre itérateur const
+
     for (auto it = begin(); it != end(); ++it) {
-        // it->first est la clé (Coord), it->second est la valeur (Hexagone*)
-        int zActuel = it->first.z;
+		int zActuel = it->first.z; //it->first est une Coord
         if (zActuel > maxZ) {
             maxZ = zActuel;
         }
