@@ -21,9 +21,11 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
     if (!f) return false;
 
     // 1. MODE DE JEU
+    // On parcourt les joueurs pour voir si le deuxième est une IA.
     bool modeSolo = false;
     int indexJ = 0;
     for (auto it = partie.debutJoueurs(); it != partie.finJoueurs(); ++it) {
+        // Si le joueur à l'index 1 est une IA, c'est une partie Solo
         if (indexJ == 1 && (*it)->estIA()) {
             modeSolo = true;
             break;
@@ -38,6 +40,7 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
     f << partie.getNiveauIllustreConstructeur() << endl;
 
     // 3. MODE TUILE CITE
+    // On convertit l'enum TuileCite en entier pour l'écriture
     f << static_cast<int>(partie.getModeTuileCite()) << endl;
 
     // 4. VARIANTES (5 booléens)
@@ -47,15 +50,15 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
     }
     f << endl;
 
-    // ========================================
     // 5. PILES - SAUVEGARDE DÉTERMINISTE
-    // ========================================
+
+    // On sauvegarde le contenu exact des piles pour que l'ordre de tirage reste identique.
     f << partie.getNbPiles() << endl;
-    
+    //On regarde le nombre de tuiles dans chaque pile
     for (auto it = partie.debutPiles(); it != partie.finPiles(); ++it) {
         Pile* p = *it;
         f << p->getNbTuiles() << endl;
-        
+        //On sauvegarde les attributs de chaque tuile, pour une reconstrustion fidele
         for (auto itT = p->begin(); itT != p->end(); ++itT) {
             Tuile* t = *itT;
             f << t->getId() << " " << t->getPrix() << " " << t->getInversion() << " " << endl;
@@ -91,17 +94,17 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
     for (auto itJ = partie.debutJoueurs(); itJ != partie.finJoueurs(); ++itJ) {
         const Joueur* j = *itJ;
         if (!j) continue;
-        
         string nom = j->getNom();
-        std::replace(nom.begin(), nom.end(), ' ', '_');
+        std::replace(nom.begin(), nom.end(), ' ', '_'); //On met des _ pour les espaces, plus facil pour la lectuere de charger()
         f << nom << endl;
         f << j->getPierres() << endl;
 
         // CITE (Historique)
+        // Au lieu de sauvegarder la grille finale, on sauvegarde l'HISTORIQUE des coups joués.(utile pour replacer les niveaux)
         Cite* c = j->getCite();
         const vector<Action>& historique = c->getHistorique();
         f << historique.size() << endl;
-        
+        //Utilisation de action qui fait des "photos" des tuiles pour les enregistrer dans la savegarde
         for (const Action& a : historique) {
             f << a.tuileId << " " << a.pos.x << " " << a.pos.y << " " << a.pos.z 
               << " " << a.inversion << " " << a.rotation << endl;
@@ -112,7 +115,8 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
             f << endl;
         }
 
-        // IA (Inventaire)
+        // IA 
+        // L'IA ne construit pas une cité visuelle, elle a un "inventaire" de tuiles pour le scoring.
         if (j->estIA()) {
             const IA* l_ia = dynamic_cast<const IA*>(j);
             if (l_ia) {
@@ -159,7 +163,7 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
 bool SaveManager::charger(Partie& partie, const string& nomFichier) {
     ifstream f(nomFichier);
     if (!f) return false;
-
+    //On vide toute la mémoire actuelle (piles, joueurs, chantier) pour éviter de mélanger l'ancienne partie avec la sauvegarde.
     partie.resetPourChargement(); 
 
     int codeModeJeu, idxJ, idxP;
@@ -182,7 +186,7 @@ bool SaveManager::charger(Partie& partie, const string& nomFichier) {
 
     bool modeSolo = (codeModeJeu == 1);
     int nombreParticipants = modeSolo ? 2 : codeModeJeu;
-
+    //On enregitre les infos de la partie a charger
     partie.setIndexJoueurActuel(idxJ);
     partie.setIndexPileActuelle(idxP);
     partie.setNiveauIllustreConstructeur(niveauIA);
@@ -285,7 +289,7 @@ bool SaveManager::charger(Partie& partie, const string& nomFichier) {
 
         // --- A. GESTION DU NOM (_ -> Espaces) ---
         std::replace(nom.begin(), nom.end(), '_', ' ');
-
+        // Polymorphisme : Création d'IA ou de Joueur selon le cas
         Joueur* j = nullptr;
         IA* ptrIA = nullptr;
 
@@ -355,7 +359,7 @@ bool SaveManager::charger(Partie& partie, const string& nomFichier) {
             for (int h = 0; h < 3; h++) {
                 if (!(f >> hexas[h].type >> hexas[h].etoiles)) return false;
             }
-            
+            //Si c'est l'IA on refait ses tuiles et on les ajoutent à l'inventaire
             if (ptrIA) {
                 Tuile* t = Tuile::fabriquer(id, prix);
                 for (int h = 0; h < 3; h++) {
