@@ -326,17 +326,17 @@ void MainWindow::initialiserPageRegles() {
             </p>
             <h3 style='color: #dc8d55;'>2. LES QUARTIERS</h3>
             <p style='text-align: justify;'>
-                <b>- Habitation (H) :</b> 1 point pour chaque quartier habitation adjacent à un autre. (Ne compte que pour votre plus grand groupe d'habitations)<br>
-                <b>- Marché (M) :</b> 1 point si votre marché n'est adjacent à aucun autre.<br>
-                <b>- Caserne (C) :</b> 1 point si votre caserne n'est pas complètement entourée par d'autres hexagones.<br>
-                <b>- Temple (T) :</b> 1 point si votre temple est complètement entouré par d'autres hexagones.<br>
-                <b>- Jardin (J) :</b> 1 point pour chaque jardin posé sans condition.<br>
-                <b>- Carrière (X) :</b> Permet d'agrandir votre cité mais ne donne pas de points.
+                <b>- Habitation (BLEU) :</b> 1 point pour chaque quartier habitation adjacent à un autre. (Ne compte que pour votre plus grand groupe d'habitations)<br>
+                <b>- Marché (JAUNE) :</b> 1 point si votre marché n'est adjacent à aucun autre.<br>
+                <b>- Caserne (ROUGE) :</b> 1 point si votre caserne n'est pas complètement entourée par d'autres hexagones.<br>
+                <b>- Temple (VIOLET) :</b> 1 point si votre temple est complètement entouré par d'autres hexagones.<br>
+                <b>- Jardin (VERT) :</b> 1 point pour chaque jardin posé sans condition.<br>
+                <b>- Carrière (GRIS) :</b> Permet d'agrandir votre cité mais ne donne pas de points.
             </p>
             <h3 style='color: #dc8d55;'>3. LES PLACES</h3>
             <p style='text-align: justify;'>
                 Les places de chaque type vous permettent de multiplier vos points en fonction du chiffre qui est écrit dessus.<br>
-                Par exemple, un hexagone 2H est une place Habitation à 2 étoiles. Elle multiplie donc par 2 les points gagnés par vos quartiers Habitation.<br>
+                Par exemple, un hexagone bleu marqué par ★★ est une place Habitation à 2 étoiles. Elle multiplie donc par 2 les points gagnés par vos quartiers Habitation.<br>
                 <i>/!\ ATTENTION : Si vous n'avez aucune place d'un certain type, vous ne marquez aucun point pour ses quartiers correspondants.</i>
             </p>
             <h3 style='color: #dc8d55;'>4. LA PIERRE</h3>
@@ -350,6 +350,7 @@ void MainWindow::initialiserPageRegles() {
             <p style='text-align: justify;'>
                 Votre cité peut s'étendre aussi bien en surface qu'en hauteur. Lorsqu'un hexagone est placé en hauteur, son nombre de points est multiplié par son niveau d'élévation.<br>
                 Par exemple, un quartier Jardin placé au niveau 3 rapporte 3 points.<br>
+                La hauteur d'un hexagone est indiqué par un chiffre inscrit dessus.<br>
                 À vous de trouver le bon équilibre pour devenir le plus prestigieux des architectes !
             </p>
         </div>
