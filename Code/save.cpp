@@ -95,7 +95,7 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
         const Joueur* j = *itJ;
         if (!j) continue;
         string nom = j->getNom();
-        std::replace(nom.begin(), nom.end(), ' ', '_'); //On met des _ pour les espaces, plus facil pour la lectuere de charger()
+        replace(nom.begin(), nom.end(), ' ', '_'); //On met des _ pour les espaces, plus facile pour la lecture de charger()
         f << nom << endl;
         f << j->getPierres() << endl;
 
@@ -115,14 +115,14 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
             f << endl;
         }
 
-        // IA 
-        // L'IA ne construit pas une cité visuelle, elle a un "inventaire" de tuiles pour le scoring.
+
+        // L'IA ne construit pas une cité visuelle, elle a un inventaire de tuiles pour le score
         if (j->estIA()) {
             const IA* l_ia = dynamic_cast<const IA*>(j);
             if (l_ia) {
                 int nbTuilesReelles = 0;
                 for (auto it = l_ia->begin(); it != l_ia->end(); ++it) {
-                    Tuile* t = *it; // Déréférencement de l'itérateur
+                    Tuile* t = *it; 
                     if (t && t->getId() != 0 && t->getNbHexagones() == 3) {
                         nbTuilesReelles++;
                     }
@@ -132,7 +132,7 @@ bool SaveManager::sauvegarder(const Partie& partie, const string& nomFichier) {
                     Tuile* t = *it;
                     if (!t) continue;
 
-                    // Filtre : On ignore la tuile de départ
+                    // Filtre : On ignore la tuile de départ, car elle se crée automatiquement lors de la construction d'une IA
                     if (t->getId() == 0 || t->getNbHexagones() != 3) {
                         continue;
                     }
@@ -177,7 +177,7 @@ bool SaveManager::charger(Partie& partie, const string& nomFichier) {
     TuileCite modeTuile = static_cast<TuileCite>(modeTuileInt);
 
     // VARIANTES
-    std::array<bool, 5> variantes;
+    array<bool, 5> variantes;
     for (int i = 0; i < 5; i++) {
         int val;
         f >> val;
@@ -288,7 +288,7 @@ bool SaveManager::charger(Partie& partie, const string& nomFichier) {
         f >> nom;
 
         // --- A. GESTION DU NOM (_ -> Espaces) ---
-        std::replace(nom.begin(), nom.end(), '_', ' ');
+		replace(nom.begin(), nom.end(), '_', ' '); //On remet les espaces remplacé par des '_' lors de la sauvegarde
         // Polymorphisme : Création d'IA ou de Joueur selon le cas
         Joueur* j = nullptr;
         IA* ptrIA = nullptr;
@@ -378,6 +378,6 @@ bool SaveManager::charger(Partie& partie, const string& nomFichier) {
 }
 
 bool SaveManager::supprimerSauvegarde(const string& nomFichier) {
-    if (std::remove(nomFichier.c_str()) == 0) return true;
+    if (remove(nomFichier.c_str()) == 0) return true;
     return false;
 }
