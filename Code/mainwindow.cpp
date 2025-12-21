@@ -989,7 +989,7 @@ void MainWindow::onValidationClicked()
 
 void MainWindow::onChargerPartieClicked() {
     try {
-        bool succes = SaveManager::charger(Partie::getInstance(), "save.txt");
+        bool succes = SaveManager::charger(Partie::getInstance(), "../../../save.txt");
 
         if (succes) {
             QMessageBox::information(this, "Chargement terminé", "Votre partie a été restaurée avec succès !");
