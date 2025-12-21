@@ -1,12 +1,12 @@
+#ifndef HEXAGONE_H
+#define HEXAGONE_H
 #include <iostream>
 #include <string>
 #include <cstdio>
-#ifndef HEXAGONE_H
-#define HEXAGONE_H
+
 using namespace std;
 
 class Tuile;
-
 
 typedef enum { Habitation, Marche, Caserne, Temple, Jardin, Carriere} TypeQuartier;
 
@@ -26,13 +26,17 @@ private:
 	Hexagone(const Hexagone& h) = default;
 	Hexagone& operator=(const Hexagone& h) = default;
 public:
+	// Accesseurs
 	unsigned int getNiveau() const { return niveau; }
 	Tuile* getTuile() const { return tuile; }
 	TypeQuartier getType() const { return type; }
 	unsigned int getEtoiles() const { return etoiles; }
+	bool estPlace() const { return place; }
+
+	// Méthode d'affichage et setteur
 	const string affiche() const;
 	void setNiveau(unsigned int n) { niveau = n; }
-    bool estPlace() const { return place; }
+    
 };
 
-#endif // HEXAGONE_H
+#endif 

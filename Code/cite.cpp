@@ -8,12 +8,6 @@
 
 using namespace std;
 
-const Hexagone* Cite::getHexagone(Coord c) const {
-    auto it = carte.find(c);
-    if (it != carte.end()) return it->second;
-    return nullptr;
-}
-
 // =========================================================
 // 1. OUTILS DE VOISINAGE
 // =========================================================

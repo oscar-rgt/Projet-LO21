@@ -59,8 +59,6 @@ public:
     ConstIterator begin() const { return ConstIterator(carte.begin()); }
     ConstIterator end() const { return ConstIterator(carte.end()); }
 
-    const Hexagone* getHexagone(Coord c) const;
-
     Cite() : t(new TuileDepart) {}
     ~Cite() { delete t; }
     void placer(Tuile* t, Coord c, Joueur* j, int rotation = 0);
