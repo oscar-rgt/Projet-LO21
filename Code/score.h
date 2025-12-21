@@ -24,7 +24,7 @@ public:
     // Calcule le score pour un type de quartier spécifique dans la cité donnée
     virtual int calculer(Cite* cite) const = 0;
 
-    // Retourne le nom de la règle (utile pour le debug ou l'affichage, mais inutilisée)
+    // Retourne le nom de la règle (utile pour le debug ou l'affichage, mais inutilisée ici)
     virtual string getNom() const = 0;
 
 protected:
