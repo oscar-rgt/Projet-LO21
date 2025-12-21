@@ -4,17 +4,18 @@
 #include <algorithm>
 
 
-void Quadrillage::afficher() const {
+void Quadrillage::afficher() const { // Affichage console simple, ajout de la description des hexagones hors quadrillage si besoin
     cout << txt << endl;
     if (hors_txt != "") cout << hors_txt << endl;
 }
 
 
 void Quadrillage::remplir(Coord c, const Hexagone* h) {
-    for (int i = 0; i < 3; i++) {
-        if (c.y >= (maxY)) agrandir('N');
-        if (c.y <= (minY)) agrandir('S');
-        if (c.x > (maxX) || c.x < (minX)) {
+    // Agrandissement du quadrillage si besoin
+    if (c.y >= (maxY)) agrandir('N'); 
+    if (c.y <= (minY)) agrandir('S');
+    // Ajout d'informations si hexa hors quadrillage
+    if (c.x > (maxX) || c.x < (minX)) {
         hors_txt += " [";
         hors_txt += to_string(c.x);
         hors_txt += ", ";
@@ -24,52 +25,69 @@ void Quadrillage::remplir(Coord c, const Hexagone* h) {
         hors_txt += "] : ";
         hors_txt += h->affiche();
         hors_txt += "\n";
-        }
-        size_t j = 0;
-
-        int l = c.y * -hex_height + line_offset;
-        int col = c.x * hex_width + col_offset;
-        j = col + l * line_length + 1;
-        if ((c.x % 2)) j += 2 * line_length;
-        if (j > txt.length()) throw AkropolisException("Placement impossible : sortie du quadrillage");
-        //replace(txt.begin(), txt.end(), ' ', '.'); //debug ascii
-        txt.replace(j, 3, h->affiche());
     }
+
+    // Calcul du placement graphique du centre de l'hexa
+    size_t j = 0;
+
+    int l = c.y * -hauteur_hexa + decalage_ligne; // Ligne du centre de l'hexa
+    int col = c.x * largeur_hexa + decalage_col; // Colonne du centre de l'hexa
+    j = col + l * longueur_ligne + 1; // Calcul de l'indice du centre de l'hexa 
+    if ((c.x % 2)) j += 2 * longueur_ligne; // Décalage si hexa placé en x pair
+    if (j > txt.length()) throw AkropolisException("Placement impossible : sortie du quadrillage"); // Exception en cas de valeur d'indice innatendue
+    txt.replace(j, 3, h->affiche()); // Modification du quadrillage
 }
 
 
 void Quadrillage::agrandir(char dir) {
+
+    //Agrandissement au sud
     if (dir == 'S') {
-        minY--;
-        string extension = to_string(minY);
-        if (minY > -10) extension += " ";
+        string extension = to_string(minY-1); // Placement du numéro de ligne inférieur
+        if (minY > -10) extension += " "; // Décalage si le numéro ne prend que deux caractères (-1 à -9)
+
+        // Première ligne ajoutée
         extension += R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
-        txt.replace(txt.length() - line_length, line_length, extension);
+        // Modification de la dernière ligne du quadrillage (Affichage des abscisses) par la première de l'extension
+        txt.replace(txt.length() - longueur_ligne, longueur_ligne, extension);
+
+        // Ajout du bas des hexagones d'extension
         txt += R"(
   /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
   \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
    \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
      -9     -8     -7     -6     -5     -4     -3     -2     -1      0      1      2      3      4      5      6      7       8      9    
 )";
+        minY--; // Réduction du Y minimal car quadrillage agrandi
     }
+
+    // Agrandissement au sud
     if (dir == 'N') {
-        maxY++;
+        // Début de la ligne rajoutée
         string extension = R"(
   /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
   \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
    \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/  
 )";
-        extension += to_string(maxY);
+        // Ajout du numéro de ligne supérieur
+        extension += to_string(maxY+1);
+        // Gestion de la longueur de la ligne avec des espaces en fonctions de la longueur de la chaine de caractères d'affichage du numéro de ligne
         if (maxY < 10) extension += "  ";
         else if (maxY < 100) extension += " ";
+
+        // Ajout de la fin de la ligne numérotée
         extension += R"(/     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \  )";
+        // Ajout de l'extension avant le texte actuel
         txt = extension + txt;
-        line_offset += 4;
+        // Changement de decalage_ligne car la ligne 0 s'est éloignée du haut du quadrillage
+        decalage_ligne += 4;
+        // Augmentation du Y max suite à l'agrandissement
+        maxY++;
     }
 
 }
 
-void Quadrillage::reset() {
+void Quadrillage::reset() { // Remise du Quadrillage à ses valeurs par défaut
     txt=R"(
   /       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \_____/       \ 
   \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       /     \       / 
@@ -104,10 +122,10 @@ void Quadrillage::reset() {
     minX = -9;
     maxY = 3;
     minY = -2;
-    line_offset = 14;
-    hex_height = 4;
-    hex_width = 7;
-    col_offset = 68;
-    line_length = 139;
+    decalage_ligne = 14;
+    hauteur_hexa = 4;
+    largeur_hexa = 7;
+    decalage_col = 68;
+    longueur_ligne = 139;
     hors_txt = "";
 }
